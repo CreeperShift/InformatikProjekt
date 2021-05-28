@@ -9,12 +9,12 @@ import java.util.concurrent.BlockingQueue;
 
 public class UartReader extends Thread {
 
-    boolean active = true;
-    ArrayBlockingQueue<SensorData> sensorDataQueue = new ArrayBlockingQueue<>(100);
+    private boolean active = false;
+    private boolean hasStarted = false;
+    private ArrayBlockingQueue<SensorData> sensorDataQueue = new ArrayBlockingQueue<>(100);
     private static UartReader INSTANCE;
 
     private UartReader() {
-        this.start();
     }
 
     public static UartReader getInstance() {
@@ -22,6 +22,14 @@ public class UartReader extends Thread {
             INSTANCE = new UartReader();
         }
         return INSTANCE;
+    }
+
+    public void startReader(){
+        if(!hasStarted){
+            this.start();
+            hasStarted = true;
+        }
+        active = !active;
     }
 
     @Override
@@ -50,6 +58,7 @@ public class UartReader extends Thread {
                 ex.printStackTrace();
             }
         }
+        serial.disconnect();
     }
 
     public BlockingQueue<SensorData> getQueue() {

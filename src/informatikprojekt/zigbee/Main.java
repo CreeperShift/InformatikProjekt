@@ -17,8 +17,9 @@ public class Main extends Application {
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root, 300, 275));
         primaryStage.show();
-        UartReader uartReader = UartReader.getInstance();
 
+        //Call this to start the UART connection
+        UartReader.getInstance().start();
 
 
     }
