@@ -1,10 +1,8 @@
 package informatikprojekt.zigbee.backend;
 
-
 import gnu.io.NRSerialPort;
 
 import java.io.DataInputStream;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
