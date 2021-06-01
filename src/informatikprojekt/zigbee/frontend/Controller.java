@@ -124,14 +124,6 @@ public class Controller {
     public ColorPicker guiColorPicker;
     @FXML
     public TextField guiBSize;
-    @FXML
-    private Button guiWandID;
-
-    @FXML
-    private Button guiDeviceID;
-
-    @FXML
-    private Button guiDeleteID;
 
     @FXML
     void guiDelete(ActionEvent event) {
