@@ -28,8 +28,8 @@ public class UartReader extends Thread {
         if(!hasStarted){
             this.start();
             hasStarted = true;
+            active = !active;
         }
-        active = !active;
     }
 
     @Override

@@ -1,26 +1,36 @@
 package informatikprojekt.zigbee;
 
-import informatikprojekt.zigbee.backend.UartReader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.util.Objects;
 
 public class Main extends Application {
 
+    public static Scene s;
+    public static Stage dialog;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("frontend/sample.fxml")));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.setTitle("Lufqualität in Innenräumen");
+        s = new Scene(root, 1280, 800);
+        primaryStage.setScene(s);
+        primaryStage.setResizable(false);
         primaryStage.show();
 
-        //Call this to start the UART connection
-        UartReader.getInstance().start();
 
+        dialog = new Stage();
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        dialog.initOwner(primaryStage);
+        Parent pop = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("frontend/popup.fxml")));
+        Scene dialogScene = new Scene(pop, 200, 100);
+        dialog.setScene(dialogScene);
+        dialog.setResizable(false);
 
     }
 
