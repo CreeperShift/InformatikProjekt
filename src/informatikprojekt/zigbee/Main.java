@@ -17,12 +17,11 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("frontend/sample.fxml")));
-        primaryStage.setTitle("Lufqualität in Innenräumen");
+        primaryStage.setTitle("Luftqualität in Innenräumen");
         s = new Scene(root, 1280, 800);
         primaryStage.setScene(s);
         primaryStage.setResizable(false);
         primaryStage.show();
-
 
         dialog = new Stage();
         dialog.initModality(Modality.APPLICATION_MODAL);

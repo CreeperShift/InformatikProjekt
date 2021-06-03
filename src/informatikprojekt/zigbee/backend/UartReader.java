@@ -69,8 +69,7 @@ public class UartReader extends Thread {
 
         switch (Integer.parseInt(dataSplit[0])) {
             case 0:
-                SensorData current = new SensorData(Integer.parseInt(dataSplit[1]), Float.parseFloat(dataSplit[2]), LocalDateTime.now());
-                sensorDataQueue.add(current);
+                //TODO: Add sensorData
                 break;
             case 1:
                 //TODO: Battery level?
