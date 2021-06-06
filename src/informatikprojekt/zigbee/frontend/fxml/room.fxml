@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="informatikprojekt.zigbee.frontend.ControllerRoom">
+   <children>
+      <AnchorPane fx:id="drawingArea" minHeight="750.0" onDragDetected="#onDragDetected" onMouseDragEntered="#onMouseDragEntered" onMouseDragExited="#onMouseDragExited" onMouseDragOver="#onMouseDragOver" onMouseDragReleased="#onMouseDragReleased" prefHeight="750.0" stylesheets="@frontend.css" />
+      <Separator />
+      <HBox style="-fx-padding: 15; -fx-spacing: 15;" styleClass="drawingToolBar">
+         <children>
+            <Button mnemonicParsing="false" onAction="#guiWand" text="Wand" />
+            <Button mnemonicParsing="false" onAction="#guiDelete" text="Löschen" />
+            <Button mnemonicParsing="false" onAction="#guiDevice" text="Device" />
+            <ColorPicker fx:id="guiColorPicker">
+               <value>
+                  <Color />
+               </value>
+            </ColorPicker>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Size" wrappingWidth="26.982421875">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Text>
+            <TextField fx:id="guiBSize" prefHeight="26.0" prefWidth="52.0" promptText="Brush Size" text="4" />
+            <Button mnemonicParsing="false" onAction="#guiClearAll" text="Clear All" />
+         </children>
+      </HBox>
+   </children>
+</VBox>

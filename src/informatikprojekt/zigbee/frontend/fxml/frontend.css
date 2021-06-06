@@ -1,0 +1,34 @@
+.tab {
+    -fx-pref-width: 120;
+    -fx-pref-height: 50;
+    -fx-background-color: rgb(140, 175, 217);
+    -fx-text-alignment: center;
+    -fx-aligment: center;
+}
+
+.tab:disabled {
+    -fx-background-color: gray;
+}
+
+.navbarButton {
+    -fx-background-color: #b6ccdb;
+    -fx-background-radius: 0;
+    -fx-font-size: 19;
+}
+
+.navbarButton:hover {
+    -fx-background-color: #728fa3;
+    -fx-background-radius: 0;
+}
+
+.navbarButton:pressed {
+    -fx-background-color: #415b6e;
+    -fx-background-radius: 0;
+}
+.navbarButton.active {
+    -fx-background-color: #728fa3;
+}
+
+.navbar {
+    -fx-background-color: #b6ccdb;
+}

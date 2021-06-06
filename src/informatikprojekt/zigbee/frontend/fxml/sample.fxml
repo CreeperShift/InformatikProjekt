@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<TabPane fx:id="tabPanel" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="informatikprojekt.zigbee.frontend.Controller">
+  <tabs>
+      <Tab closable="false" text="Start">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <VBox alignment="CENTER" prefHeight="771.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <AnchorPane prefHeight="796.0" prefWidth="1280.0">
+                           <children>
+                              <Text layoutX="602.0" layoutY="151.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Status">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Text>
+                              <Button fx:id="btnConnect" layoutX="550.0" layoutY="171.0" mnemonicParsing="false" onAction="#guiConnect" prefHeight="73.0" prefWidth="180.0" text="Connect" />
+                              <Text layoutX="524.0" layoutY="81.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Luftqualität in Innenräumen">
+                                 <font>
+                                    <Font size="19.0" />
+                                 </font>
+                              </Text>
+                              <Circle fx:id="connectLED" fill="#ff2121" layoutX="675.0" layoutY="146.0" radius="12.0" stroke="TRANSPARENT" strokeType="INSIDE" />
+                           </children>
+                        </AnchorPane>
+                        <Separator prefWidth="200.0" />
+                        <AnchorPane prefHeight="858.0" prefWidth="1280.0">
+                           <children>
+                              <TextArea fx:id="outputConnection" editable="false" prefHeight="417.0" prefWidth="1280.0" style="-fx-padding: 50;" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                           </children>
+                        </AnchorPane>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+        </content>
+      </Tab>
+    <Tab fx:id="tabRaum" closable="false" onSelectionChanged="#onTabChange" text="Raumansicht">
+         <content>
+            <SplitPane dividerPositions="0.921832884097035" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+              <items>
+                <AnchorPane fx:id="guiDrawingArea" minHeight="0.0" minWidth="0.0" onDragDetected="#onDragDetected" onMouseDragEntered="#onMouseEntered" onMouseDragExited="#onMouseExit" onMouseDragOver="#OnMouseOver" onMouseDragReleased="#OnMouseRelease" onMousePressed="#onMouseClick" prefHeight="100.0" prefWidth="160.0" />
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                     <children>
+                        <Button layoutX="14.0" layoutY="12.0" mnemonicParsing="false" onAction="#guiWand" text="Wand" />
+                        <Button layoutX="207.0" layoutY="12.0" mnemonicParsing="false" onAction="#guiDelete" text="Löschen" />
+                        <Button layoutX="148.0" layoutY="12.0" mnemonicParsing="false" onAction="#guiDevice" text="Device" />
+                        <ColorPicker fx:id="guiColorPicker" layoutX="349.0" layoutY="15.0">
+                           <value>
+                              <Color />
+                           </value>
+                        </ColorPicker>
+                        <TextField fx:id="guiBSize" layoutX="532.0" layoutY="15.0" prefHeight="26.0" prefWidth="52.0" promptText="Brush Size" text="6" />
+                        <Button layoutX="278.0" layoutY="12.0" mnemonicParsing="false" onAction="#guiUndo" text="Undo" />
+                        <Button layoutX="603.0" layoutY="12.0" mnemonicParsing="false" onAction="#guiClearAll" text="Clear All" />
+                        <Text layoutX="500.0" layoutY="32.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Size" />
+                        <Button layoutX="74.0" layoutY="12.0" mnemonicParsing="false" onAction="#guiRechtEck" text="Rechteck" />
+                     </children>
+                  </AnchorPane>
+              </items>
+            </SplitPane>
+         </content>
+    </Tab>
+    <Tab fx:id="tabSensor" closable="false" disable="true" onSelectionChanged="#onDataTabChange" text="SensorDaten">
+      <content>
+        <AnchorPane fx:id="chartAnchor" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+      </content>
+    </Tab>
+      <Tab fx:id="tabTemp" closable="false" text="Temperatur">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <BorderPane prefHeight="771.0" prefWidth="1280.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <left>
+                        <AnchorPane prefHeight="747.0" prefWidth="29.0" BorderPane.alignment="CENTER" />
+                     </left>
+                     <top>
+                        <AnchorPane prefHeight="24.0" prefWidth="1280.0" BorderPane.alignment="CENTER" />
+                     </top>
+                     <center>
+                        <AnchorPane prefHeight="747.0" prefWidth="1259.0" BorderPane.alignment="CENTER" />
+                     </center>
+                  </BorderPane>
+               </children></AnchorPane>
+        </content>
+      </Tab>
+      <Tab fx:id="tabFeucht" closable="false" disable="true" text="Feuchtigkeit">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        </content>
+      </Tab>
+      <Tab fx:id="tabCO2" closable="false" disable="true" text="CO2">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        </content>
+      </Tab>
+      <Tab fx:id="tabVoC" closable="false" disable="true" text="VoC">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        </content>
+      </Tab>
+  </tabs>
+</TabPane>

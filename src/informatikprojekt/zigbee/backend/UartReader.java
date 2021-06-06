@@ -3,62 +3,83 @@ package informatikprojekt.zigbee.backend;
 import gnu.io.NRSerialPort;
 
 import java.io.DataInputStream;
-import java.time.LocalDateTime;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class UartReader extends Thread {
 
-    private boolean active = false;
-    private boolean hasStarted = false;
     private ArrayBlockingQueue<SensorData> sensorDataQueue = new ArrayBlockingQueue<>(100);
-    private static UartReader INSTANCE;
+    private boolean isActive = false;
+    private boolean isConnected = false;
+    private boolean isReaderActive = false;
 
-    private UartReader() {
-    }
+    final int baudRate = 38400;
+    private NRSerialPort serial = null;
 
-    public static UartReader getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new UartReader();
-        }
-        return INSTANCE;
-    }
-
-    public void startReader(){
-        if(!hasStarted){
-            this.start();
-            hasStarted = true;
-            active = !active;
-        }
+    public UartReader() {
     }
 
     @Override
     public void run() {
-        int baudRate = 38400;
-        NRSerialPort serial = new NRSerialPort("COM5", baudRate);
-        serial.connect();
+        while (isActive) {
 
-        DataInputStream ins = new DataInputStream(serial.getInputStream());
-        while (active) {
-            try {
-                String data = "";
-                while (ins.available() > 0) {// read all bytes
-                    char b = (char) ins.read();
-                    data = data.concat(String.valueOf(b));
+            serial = new NRSerialPort("COM5", baudRate);
+            DataInputStream ins;
+
+            while (serial != null && !serial.isConnected() && isActive) {
+                try {
+                    serial.connect();
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } catch (Exception e) {
+                    isConnected = false;
+                    if (serial != null) {
+                        serial.disconnect();
+                        isConnected = false;
+                    }
                 }
-                if (!data.isBlank()) {
-                    data = data.substring(0, 7);
-                    String[] dataSplit = data.split(";");
+            }
 
-                    processData(dataSplit);
+            while (serial != null && serial.isConnected() && isActive && isReaderActive) {
+                isConnected = true;
+                ins = new DataInputStream(serial.getInputStream());
+                try {
+                    String data = "";
+                    while (ins.available() > 0) {// read all bytes
+                        char b = (char) ins.read();
+                        data = data.concat(String.valueOf(b));
+                    }
+                    if (!data.isBlank()) {
+                        data = data.substring(0, data.length() - 1);
+                        String finalData = data;
+                        String[] dataSplit = data.split(";");
 
+                        processData(dataSplit);
+
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.err.println("UART ERROR");
+                    if (serial != null) {
+                        serial.disconnect();
+                        isConnected = false;
+                    }
                 }
-                Thread.sleep(200);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            if (serial != null && serial.isConnected()) {
+                serial.disconnect();
+                isConnected = false;
             }
         }
-        serial.disconnect();
     }
 
     public BlockingQueue<SensorData> getQueue() {
@@ -67,9 +88,13 @@ public class UartReader extends Thread {
 
     private void processData(String[] dataSplit) {
 
+
         switch (Integer.parseInt(dataSplit[0])) {
             case 0:
-                //TODO: Add sensorData
+
+                //0;1;086
+                SensorData s = new SensorData(Integer.parseInt(dataSplit[1]), 1, 0, Float.parseFloat(dataSplit[2]));
+                sensorDataQueue.add(s);
                 break;
             case 1:
                 //TODO: Battery level?
@@ -80,4 +105,23 @@ public class UartReader extends Thread {
         }
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
+    public boolean isConnected() {
+        return isConnected;
+    }
+
+    public boolean isReaderActive() {
+        return isReaderActive;
+    }
+
+    public void setReaderActive(boolean active) {
+        isReaderActive = active;
+    }
 }

@@ -5,7 +5,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="informatikprojekt.zigbee.frontend.Controller">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="informatikprojekt.zigbee.frontend.Popup">
    <children>
       <Button layoutX="14.0" layoutY="50.0" mnemonicParsing="false" onAction="#popupConfirm" text="Confirm" />
       <Button id="cancel_button" layoutX="117.0" layoutY="50.0" mnemonicParsing="false" onAction="#popupCancel" style="-fx-background-color: red;" stylesheets="@frontend.css" text="Cancel" />
