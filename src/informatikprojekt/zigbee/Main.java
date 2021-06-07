@@ -14,7 +14,6 @@ public class Main extends Application {
     public static Scene s;
     public static BorderPane root;
 
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("frontend/fxml/baseLayout.fxml")));
