@@ -3,7 +3,6 @@ package informatikprojekt.zigbee.util;
 import javafx.scene.shape.Circle;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 public class LineGraph {
 
