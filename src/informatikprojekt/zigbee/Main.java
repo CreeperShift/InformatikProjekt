@@ -6,6 +6,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.Style;
 
 import java.util.Objects;
 
@@ -20,6 +22,8 @@ public class Main extends Application {
         primaryStage.setTitle("Luftqualität in Innenräumen");
         s = new Scene(root, 1280, 800);
         s.getStylesheets().add("informatikprojekt/zigbee/frontend/fxml/frontend.css");
+        JMetro jMetro = new JMetro(Style.LIGHT);
+        jMetro.setScene(s);
         primaryStage.setScene(s);
         primaryStage.setResizable(false);
         primaryStage.show();

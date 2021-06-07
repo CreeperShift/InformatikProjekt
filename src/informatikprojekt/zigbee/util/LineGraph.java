@@ -2,10 +2,8 @@ package informatikprojekt.zigbee.util;
 
 import javafx.scene.shape.Circle;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class LineGraph {
 
@@ -42,5 +40,8 @@ public class LineGraph {
         return adjCircles.isEmpty();
     }
 
+    public Set<Circle> getCircles() {
+        return adjCircles.keySet();
+    }
 
 }

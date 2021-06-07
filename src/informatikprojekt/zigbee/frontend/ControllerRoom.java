@@ -7,8 +7,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
@@ -26,9 +28,16 @@ public class ControllerRoom implements Initializable {
     public ColorPicker guiColorPicker;
     public TextField guiBSize;
     public AnchorPane drawingArea;
+    public ToggleButton editMode;
+    public Button btnClear;
+    public Button btnDevice;
+    public Button btnDelete;
+    public Button btnWand;
+    public Button btnNewRoom;
     private Line currentLine;
     private LineGraph lineGraph = new LineGraph();
     private Circle currentCircle = null;
+    private boolean toggleButtonActive = false;
 
     enum TOOL_TYPE {
         NONE, WAND, DEVICE, DELETE
@@ -53,6 +62,45 @@ public class ControllerRoom implements Initializable {
             activeTool = TOOL_TYPE.NONE;
             Main.s.setCursor(Cursor.DEFAULT);
         }
+    }
+
+    public void onEditMode(ActionEvent actionEvent) {
+
+        if (!toggleButtonActive) {
+
+            setToolbarDisabled(false);
+            lineGraph.getCircles().forEach(c -> c.setStroke(Color.BLACK));
+
+        } else {
+            setToolbarDisabled(true);
+            lineGraph.getCircles().forEach(c -> c.setStroke(Color.TRANSPARENT));
+        }
+
+        toggleButtonActive = !toggleButtonActive;
+
+    }
+
+    public void onNewRoom(ActionEvent actionEvent) {
+
+        drawingArea.getChildren().clear();
+        editMode.fire();
+
+    }
+
+
+    private void setToolbarDisabled(boolean bool) {
+
+        if (bool) {
+            activeTool = TOOL_TYPE.NONE;
+            Main.s.setCursor(Cursor.DEFAULT);
+        }
+
+        btnWand.setDisable(bool);
+        btnClear.setDisable(bool);
+        btnDelete.setDisable(bool);
+        btnDevice.setDisable(bool);
+        guiColorPicker.setDisable(bool);
+        guiBSize.setDisable(bool);
     }
 
     public void guiDelete(ActionEvent actionEvent) {
