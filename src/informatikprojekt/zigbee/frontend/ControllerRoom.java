@@ -119,20 +119,30 @@ public class ControllerRoom implements Initializable {
 
             Circle circle;
 
+            /*
+            There is no circle where we release the mouse
+             */
             if (matches.isEmpty()) {
-                currentLine.setEndX(mouseDragEvent.getX());
-                currentLine.setEndY(mouseDragEvent.getY());
+                if (mouseDragEvent.isShiftDown()) {
+                    clampDirection(mouseDragEvent.getX(), mouseDragEvent.getY());
+                } else {
+                    currentLine.setEndX(mouseDragEvent.getX());
+                    currentLine.setEndY(mouseDragEvent.getY());
+                }
                 circle = new Circle();
                 circle.setRadius(15);
                 circle.setFill(Color.TRANSPARENT);
                 circle.setStroke(Color.BLACK);
                 circle.setStrokeWidth(4);
-                circle.setCenterX(mouseDragEvent.getX());
-                circle.setCenterY(mouseDragEvent.getY());
+                circle.setCenterX(currentLine.getEndX());
+                circle.setCenterY(currentLine.getEndY());
                 drawingArea.getChildren().add(circle);
                 setupCircleHandlers(circle);
                 lineGraph.addCircle(circle);
             } else {
+                /*
+                A circle is at the location, we get the top most one and connect the line to it.
+                 */
                 circle = matches.get(matches.size() - 1);
                 currentLine.setEndX(circle.getCenterX());
                 currentLine.setEndY(circle.getCenterY());
@@ -161,18 +171,23 @@ public class ControllerRoom implements Initializable {
 
             if (matches.isEmpty()) {
 
-                if(mouseDragEvent.getX() < 20){
+
+                if (mouseDragEvent.getX() < 20) {
 
                     currentLine.setEndX(20);
                     currentLine.setEndY(mouseDragEvent.getY());
 
-                }else if(mouseDragEvent.getY() < 20){
+                } else if (mouseDragEvent.getY() < 20) {
                     currentLine.setEndX(mouseDragEvent.getX());
                     currentLine.setEndY(20);
 
-                }else {
-                    currentLine.setEndX(mouseDragEvent.getX());
-                    currentLine.setEndY(mouseDragEvent.getY());
+                } else {
+                    if (!mouseDragEvent.isShiftDown()) {
+                        currentLine.setEndX(mouseDragEvent.getX());
+                        currentLine.setEndY(mouseDragEvent.getY());
+                    } else {
+                        clampDirection(mouseDragEvent.getX(), mouseDragEvent.getY());
+                    }
                 }
             } else {
                 Circle c = matches.get(matches.size() - 1);
@@ -203,5 +218,33 @@ public class ControllerRoom implements Initializable {
             }
 
         });
+    }
+
+    private void clampDirection(double x, double y) {
+
+        double startX = currentLine.getStartX();
+        double startY = currentLine.getStartY();
+
+        double xTotal = 0;
+        double yTotal = 0;
+
+        if (startX > x) {
+            xTotal = startX - x;
+        } else {
+            xTotal = x - startX;
+        }
+        if (startY > y) {
+            yTotal = startY - y;
+        } else {
+            yTotal = y - startY;
+        }
+
+        if (xTotal >= yTotal) {
+            currentLine.setEndX(x);
+            currentLine.setEndY(startY);
+        } else {
+            currentLine.setEndX(startX);
+            currentLine.setEndY(y);
+        }
     }
 }
