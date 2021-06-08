@@ -117,7 +117,6 @@ public class ControllerRoom implements Initializable {
             activeTool = TOOL_TYPE.NONE;
             Main.s.setCursor(Cursor.DEFAULT);
         }
-
         btnWand.setDisable(bool);
         btnClear.setDisable(bool);
         btnDelete.setDisable(bool);
