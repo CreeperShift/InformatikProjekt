@@ -41,8 +41,8 @@
             </Text>
             <TextField fx:id="guiBSize" disable="true" prefHeight="26.0" prefWidth="52.0" promptText="Brush Size" text="4" />
             <Button fx:id="btnClear" disable="true" mnemonicParsing="false" onAction="#guiClearAll" text="Clear All" />
-            <ToggleButton fx:id="editMode" mnemonicParsing="false" onAction="#onEditMode" styleClass="editButton" stylesheets="@frontend.css" text="Edit Mode" />
             <CheckBox fx:id="cbGitterNetzLinien" mnemonicParsing="false" onMouseClicked="#gitterOnMouseClicked" text="Gitternetzlinien" />
+            <ToggleButton fx:id="editMode" mnemonicParsing="false" onAction="#onEditMode" styleClass="editButton" stylesheets="@frontend.css" text="Edit Mode" />
          </children>
       </HBox>
    </children>
