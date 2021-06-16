@@ -38,7 +38,7 @@ public class ControllerRoom implements Initializable {
     private boolean toggleButtonActive = false;
     public CheckBox cbGitterNetzLinien;
 
-    private List<Line> gridList = new ArrayList<>();
+    private final List<Line> gridList = new ArrayList<>();
 
 
     enum TOOL_TYPE {
@@ -54,43 +54,24 @@ public class ControllerRoom implements Initializable {
 
     }
 
-    void GitterNetzLinien() {
-        for (int i = 0; i < drawingArea.getWidth(); i += 25) {
+    private void GitterNetzLinien(int increase, Color color) {
+        for (int i = 0; i < drawingArea.getWidth(); i += increase) {
             Line linie1 = new Line(i, 0, i, drawingArea.getHeight());
-            linie1.setStroke(Color.LIGHTGREY);
+            linie1.setStroke(color);
             linie1.setStrokeWidth(1);
             gridList.add(linie1);
-            drawingArea.getChildren().add(linie1);
         }
 
-        for (int i = 0; i < drawingArea.getHeight(); i += 25) {
+        for (int i = 0; i < drawingArea.getHeight(); i += increase) {
             Line line = new Line();
             line.setStartX(0);
             line.setEndX(drawingArea.getWidth());
             line.setStartY(i);
             line.setEndY(i);
-            line.setStroke(Color.LIGHTGREY);
+            line.setStroke(color);
             line.setStrokeWidth(1);
             gridList.add(line);
-            drawingArea.getChildren().add(line);
         }
-
-
-
-    }
-
-    void OrientierungsLinien() {
-/*        for (int i = 0; i < 1100; i += 100) {
-            Line linie1 = new Line(i, 0, i, 1100);
-            linie1.setStroke(Color.LIGHTPINK);
-            linie1.setStrokeWidth(1);
-            Line linie2 = new Line(0, i, 1100, i);
-            linie2.setStroke(Color.LIGHTPINK);
-            linie2.setStrokeWidth(1);
-            gridList.add(linie1);
-            gridList.add(linie2);
-            drawingArea.getChildren().addAll(linie1, linie2);
-        }*/
     }
 
 
@@ -156,12 +137,8 @@ public class ControllerRoom implements Initializable {
     public void guiClearAll(ActionEvent actionEvent) {
 
         drawingArea.getChildren().clear();
+        drawingArea.getChildren().addAll(gridList);
         lineGraph = new LineGraph();
-
-        if (cbGitterNetzLinien.isSelected()) {
-            GitterNetzLinien();
-            OrientierungsLinien();
-        }
 
     }
 
@@ -169,8 +146,11 @@ public class ControllerRoom implements Initializable {
     public void gitterOnMouseClicked(MouseEvent event) {
         if (activeTool == TOOL_TYPE.NONE) {
             if (cbGitterNetzLinien.isSelected()) {
-                GitterNetzLinien();
-                OrientierungsLinien();
+                if (gridList.isEmpty()) {
+                    GitterNetzLinien(25, Color.LIGHTGRAY);
+                    GitterNetzLinien(100, Color.LIGHTPINK);
+                }
+                drawingArea.getChildren().addAll(0, gridList);
             } else {
                 drawingArea.getChildren().removeAll(gridList);
             }
