@@ -17,6 +17,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -37,6 +38,8 @@ public class ControllerRoom implements Initializable {
     private boolean toggleButtonActive = false;
     public CheckBox cbGitterNetzLinien;
 
+    private List<Line> gridList = new ArrayList<>();
+
 
     enum TOOL_TYPE {
         NONE, WAND, DEVICE, DELETE
@@ -50,28 +53,33 @@ public class ControllerRoom implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
     }
+
     void GitterNetzLinien() {
-        for(int i = 0; i < 1300; i += 25) {
-            Line linie1 = new Line(i, 0, i, 1300);
+        for (int i = 0; i < 1100; i += 25) {
+            Line linie1 = new Line(i, 0, i, 1100);
             linie1.setStroke(Color.LIGHTGREY);
             linie1.setStrokeWidth(1);
-            Line linie2 = new Line(0, i, 1300, i);
+            Line linie2 = new Line(0, i, 1100, i);
             linie2.setStroke(Color.LIGHTGREY);
             linie2.setStrokeWidth(1);
+            gridList.add(linie1);
+            gridList.add(linie2);
             drawingArea.getChildren().addAll(linie1, linie2);
 
         }
     }
 
     void OrientierungsLinien() {
-        for(int i = 0; i < 1300; i += 100) {
-            Line linie1 = new Line(i, 0, i, 1300);
+        for (int i = 0; i < 1100; i += 100) {
+            Line linie1 = new Line(i, 0, i, 1100);
             linie1.setStroke(Color.LIGHTPINK);
             linie1.setStrokeWidth(1);
-            Line linie2 = new Line(0, i, 1300, i);
+            Line linie2 = new Line(0, i, 1100, i);
             linie2.setStroke(Color.LIGHTPINK);
             linie2.setStrokeWidth(1);
-            drawingArea.getChildren().addAll(linie1,linie2);
+            gridList.add(linie1);
+            gridList.add(linie2);
+            drawingArea.getChildren().addAll(linie1, linie2);
         }
     }
 
@@ -140,7 +148,7 @@ public class ControllerRoom implements Initializable {
         drawingArea.getChildren().clear();
         lineGraph = new LineGraph();
 
-        if(cbGitterNetzLinien.isSelected()){
+        if (cbGitterNetzLinien.isSelected()) {
             GitterNetzLinien();
             OrientierungsLinien();
         }
@@ -154,7 +162,7 @@ public class ControllerRoom implements Initializable {
                 GitterNetzLinien();
                 OrientierungsLinien();
             } else {
-                drawingArea.getChildren().clear();
+                drawingArea.getChildren().removeAll(gridList);
             }
         }
     }
