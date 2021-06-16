@@ -91,7 +91,6 @@ public class UartReader extends Thread {
 
         switch (Integer.parseInt(dataSplit[0])) {
             case 0:
-
                 //0;1;086
                 SensorData s = new SensorData(Integer.parseInt(dataSplit[1]), 1, 0, Float.parseFloat(dataSplit[2]));
                 sensorDataQueue.add(s);

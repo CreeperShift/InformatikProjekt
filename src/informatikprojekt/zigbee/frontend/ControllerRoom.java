@@ -246,6 +246,14 @@ public class ControllerRoom implements Initializable {
 
     public void onMouseDragOver(MouseDragEvent mouseDragEvent) {
 
+        System.out.println(mouseDragEvent.getSource());
+
+        if (activeTool == TOOL_TYPE.NONE && currentLine == null && mouseDragEvent.getSource() instanceof Circle c) {
+            c.setCenterX(mouseDragEvent.getX());
+            c.setCenterY(mouseDragEvent.getY());
+        }
+
+
         if (activeTool == TOOL_TYPE.WAND && currentLine != null) {
 
 
@@ -293,11 +301,12 @@ public class ControllerRoom implements Initializable {
         });
         c.addEventFilter(MouseDragEvent.MOUSE_DRAG_ENTERED, event ->
         {
+            Circle source = (Circle) event.getSource();
             if (activeTool == TOOL_TYPE.WAND && currentLine == null) {
                 currentLine = new Line();
                 currentLine.setStrokeWidth(Double.parseDouble(guiBSize.getText()));
                 currentLine.setStroke(guiColorPicker.getValue());
-                Circle source = (Circle) event.getSource();
+
                 currentLine.setStartX(source.getCenterX());
                 currentLine.setStartY(source.getCenterY());
                 drawingArea.getChildren().add(currentLine);
