@@ -7,10 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
@@ -38,6 +35,8 @@ public class ControllerRoom implements Initializable {
     private LineGraph lineGraph = new LineGraph();
     private Circle currentCircle = null;
     private boolean toggleButtonActive = false;
+    public CheckBox cbGitterNetzLinien;
+
 
     enum TOOL_TYPE {
         NONE, WAND, DEVICE, DELETE
@@ -51,6 +50,31 @@ public class ControllerRoom implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
     }
+    void GitterNetzLinien() {
+        for(int i = 0; i < 1300; i += 25) {
+            Line linie1 = new Line(i, 0, i, 1300);
+            linie1.setStroke(Color.LIGHTGREY);
+            linie1.setStrokeWidth(1);
+            Line linie2 = new Line(0, i, 1300, i);
+            linie2.setStroke(Color.LIGHTGREY);
+            linie2.setStrokeWidth(1);
+            drawingArea.getChildren().addAll(linie1, linie2);
+
+        }
+    }
+
+    void OrientierungsLinien() {
+        for(int i = 0; i < 1300; i += 100) {
+            Line linie1 = new Line(i, 0, i, 1300);
+            linie1.setStroke(Color.LIGHTPINK);
+            linie1.setStrokeWidth(1);
+            Line linie2 = new Line(0, i, 1300, i);
+            linie2.setStroke(Color.LIGHTPINK);
+            linie2.setStrokeWidth(1);
+            drawingArea.getChildren().addAll(linie1,linie2);
+        }
+    }
+
 
     public void guiWand(ActionEvent actionEvent) {
 
@@ -101,6 +125,8 @@ public class ControllerRoom implements Initializable {
         btnDevice.setDisable(bool);
         guiColorPicker.setDisable(bool);
         guiBSize.setDisable(bool);
+        cbGitterNetzLinien.setDisable(bool);
+
     }
 
     public void guiDelete(ActionEvent actionEvent) {
@@ -114,6 +140,23 @@ public class ControllerRoom implements Initializable {
         drawingArea.getChildren().clear();
         lineGraph = new LineGraph();
 
+        if(cbGitterNetzLinien.isSelected()){
+            GitterNetzLinien();
+            OrientierungsLinien();
+        }
+
+    }
+
+
+    public void gitterOnMouseClicked(MouseEvent event) {
+        if (activeTool == TOOL_TYPE.NONE) {
+            if (cbGitterNetzLinien.isSelected()) {
+                GitterNetzLinien();
+                OrientierungsLinien();
+            } else {
+                drawingArea.getChildren().clear();
+            }
+        }
     }
 
     public void onDragDetected(MouseEvent mouseEvent) {
