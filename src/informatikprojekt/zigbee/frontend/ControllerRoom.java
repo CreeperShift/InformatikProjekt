@@ -90,12 +90,12 @@ public class ControllerRoom implements Initializable {
     public void onEditMode(ActionEvent actionEvent) {
 
         if (!toggleButtonActive) {
-
             setToolbarDisabled(false);
             lineGraph.getCircles().forEach(c -> c.setStroke(Color.BLACK));
-
+            drawingArea.getChildren().addAll(0, gridList);
         } else {
             setToolbarDisabled(true);
+            drawingArea.getChildren().removeAll(gridList);
             lineGraph.getCircles().forEach(c -> c.setStroke(Color.TRANSPARENT));
         }
 
@@ -106,8 +106,8 @@ public class ControllerRoom implements Initializable {
     public void onNewRoom(ActionEvent actionEvent) {
 
         drawingArea.getChildren().clear();
+        editMode.setDisable(false);
         editMode.fire();
-
     }
 
 
