@@ -55,22 +55,32 @@ public class ControllerRoom implements Initializable {
     }
 
     void GitterNetzLinien() {
-        for (int i = 0; i < 1100; i += 25) {
-            Line linie1 = new Line(i, 0, i, 1100);
+        for (int i = 0; i < drawingArea.getWidth(); i += 25) {
+            Line linie1 = new Line(i, 0, i, drawingArea.getHeight());
             linie1.setStroke(Color.LIGHTGREY);
             linie1.setStrokeWidth(1);
-            Line linie2 = new Line(0, i, 1100, i);
-            linie2.setStroke(Color.LIGHTGREY);
-            linie2.setStrokeWidth(1);
             gridList.add(linie1);
-            gridList.add(linie2);
-            drawingArea.getChildren().addAll(linie1, linie2);
-
+            drawingArea.getChildren().add(linie1);
         }
+
+        for (int i = 0; i < drawingArea.getHeight(); i += 25) {
+            Line line = new Line();
+            line.setStartX(0);
+            line.setEndX(drawingArea.getWidth());
+            line.setStartY(i);
+            line.setEndY(i);
+            line.setStroke(Color.LIGHTGREY);
+            line.setStrokeWidth(1);
+            gridList.add(line);
+            drawingArea.getChildren().add(line);
+        }
+
+
+
     }
 
     void OrientierungsLinien() {
-        for (int i = 0; i < 1100; i += 100) {
+/*        for (int i = 0; i < 1100; i += 100) {
             Line linie1 = new Line(i, 0, i, 1100);
             linie1.setStroke(Color.LIGHTPINK);
             linie1.setStrokeWidth(1);
@@ -80,7 +90,7 @@ public class ControllerRoom implements Initializable {
             gridList.add(linie1);
             gridList.add(linie2);
             drawingArea.getChildren().addAll(linie1, linie2);
-        }
+        }*/
     }
 
 
