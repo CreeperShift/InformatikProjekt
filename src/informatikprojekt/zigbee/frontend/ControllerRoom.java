@@ -29,6 +29,7 @@ public class ControllerRoom implements Initializable {
     public Button btnDelete;
     public Button btnWand;
     public Button btnNewRoom;
+    public Button btnMove;
     private Line currentLine;
     private LineGraph lineGraph = new LineGraph();
     private Circle currentCircle = null;
@@ -41,7 +42,7 @@ public class ControllerRoom implements Initializable {
 
 
     enum TOOL_TYPE {
-        NONE, WAND, DEVICE, DELETE
+        NONE, WAND, DEVICE, DELETE, MOVE
     }
 
 
@@ -53,7 +54,7 @@ public class ControllerRoom implements Initializable {
 
     }
 
-    private void GitterNetzLinien(int increase, Color color) {
+    private void createGitterNetzLinien(int increase, Color color) {
         for (int i = 0; i < drawingArea.getWidth(); i += increase) {
             Line linie1 = new Line(i, 0, i, drawingArea.getHeight());
             linie1.setStroke(color);
@@ -81,15 +82,30 @@ public class ControllerRoom implements Initializable {
             Image image = new Image("informatikprojekt/zigbee/frontend/cursor/pen.png");
             Main.s.setCursor(new ImageCursor(image, (image.getWidth() / 2) - 512, (image.getHeight() / 2) + 512));
         } else {
-            activeTool = TOOL_TYPE.NONE;
-            Main.s.setCursor(Cursor.DEFAULT);
+            resetTool();
         }
+    }
+
+    public void onBtnMove(ActionEvent actionEvent) {
+        if (activeTool != TOOL_TYPE.MOVE) {
+            activeTool = TOOL_TYPE.MOVE;
+            Image image = new Image("informatikprojekt/zigbee/frontend/cursor/move.png");
+            Main.s.setCursor(new ImageCursor(image, (image.getWidth() / 2), (image.getHeight() / 2)));
+        } else {
+            resetTool();
+        }
+    }
+
+    private void resetTool() {
+        activeTool = TOOL_TYPE.NONE;
+        Main.s.setCursor(Cursor.DEFAULT);
     }
 
     public void onEditMode(ActionEvent actionEvent) {
 
         if (!toggleButtonActive) {
             setToolbarDisabled(false);
+            cbGitterNetzLinien.fire();
             lineGraph.getCircles().forEach(c -> c.setStroke(Color.BLACK));
             drawingArea.getChildren().addAll(0, gridList);
         } else {
@@ -106,6 +122,8 @@ public class ControllerRoom implements Initializable {
 
         drawingArea.getChildren().clear();
         editMode.setDisable(false);
+        createGitterNetzLinien(25, Color.LIGHTGRAY);
+        createGitterNetzLinien(100, Color.LIGHTPINK);
         editMode.fire();
     }
 
@@ -123,6 +141,7 @@ public class ControllerRoom implements Initializable {
         guiColorPicker.setDisable(bool);
         guiBSize.setDisable(bool);
         cbGitterNetzLinien.setDisable(bool);
+        btnMove.setDisable(bool);
 
     }
 
@@ -132,8 +151,7 @@ public class ControllerRoom implements Initializable {
             Image image = new Image("informatikprojekt/zigbee/frontend/cursor/eraser-tool.png");
             Main.s.setCursor(new ImageCursor(image, (image.getWidth() / 2) - 512, (image.getHeight() / 2) + 512));
         } else {
-            activeTool = TOOL_TYPE.NONE;
-            Main.s.setCursor(Cursor.DEFAULT);
+            resetTool();
         }
     }
 
@@ -150,16 +168,10 @@ public class ControllerRoom implements Initializable {
 
 
     public void gitterOnMouseClicked(MouseEvent event) {
-        if (activeTool == TOOL_TYPE.NONE) {
-            if (cbGitterNetzLinien.isSelected()) {
-                if (gridList.isEmpty()) {
-                    GitterNetzLinien(25, Color.LIGHTGRAY);
-                    GitterNetzLinien(100, Color.LIGHTPINK);
-                }
-                drawingArea.getChildren().addAll(0, gridList);
-            } else {
-                drawingArea.getChildren().removeAll(gridList);
-            }
+        if (cbGitterNetzLinien.isSelected()) {
+            drawingArea.getChildren().addAll(0, gridList);
+        } else {
+            drawingArea.getChildren().removeAll(gridList);
         }
     }
 
@@ -255,7 +267,7 @@ public class ControllerRoom implements Initializable {
     public void onMouseDragOver(MouseDragEvent mouseDragEvent) {
 
 
-        if (activeTool == TOOL_TYPE.NONE && currentLine == null) {
+        if (activeTool == TOOL_TYPE.MOVE && currentLine == null) {
 
             if (draggedLines.isEmpty()) {
 
@@ -267,7 +279,6 @@ public class ControllerRoom implements Initializable {
                     }
                 }
             }
-
             activeCircle.setCenterX(mouseDragEvent.getX());
             activeCircle.setCenterY(mouseDragEvent.getY());
             for (Map.Entry<Line, Boolean> l : draggedLines.entrySet()) {
@@ -327,7 +338,7 @@ public class ControllerRoom implements Initializable {
     private void setupCircleHandlers(Circle c) {
         c.addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
             c.startFullDrag();
-            if (activeTool == TOOL_TYPE.NONE && event.getSource() instanceof Circle) {
+            if (event.getSource() instanceof Circle && activeTool == TOOL_TYPE.MOVE) {
                 draggedLines.clear();
                 activeCircle = (Circle) event.getSource();
             }

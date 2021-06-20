@@ -27,6 +27,7 @@
       <HBox style="-fx-padding: 15; -fx-spacing: 15;" styleClass="drawingToolBar">
          <children>
             <Button fx:id="btnWand" disable="true" mnemonicParsing="false" onAction="#guiWand" text="Wand" />
+            <Button fx:id="btnMove" disable="true" mnemonicParsing="false" onAction="#onBtnMove" text="Bewegen" />
             <Button fx:id="btnDelete" disable="true" mnemonicParsing="false" onAction="#guiDelete" text="Löschen" />
             <Button fx:id="btnDevice" disable="true" mnemonicParsing="false" onAction="#guiDevice" text="Device" />
             <ColorPicker fx:id="guiColorPicker" disable="true">
