@@ -17,10 +17,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class ControllerRoom implements Initializable {
     public ColorPicker guiColorPicker;
@@ -37,6 +34,8 @@ public class ControllerRoom implements Initializable {
     private Circle currentCircle = null;
     private boolean toggleButtonActive = false;
     public CheckBox cbGitterNetzLinien;
+    private Circle activeCircle = null;
+    private Map<Line, Boolean> draggedLines = new HashMap<>();
 
     private final List<Line> gridList = new ArrayList<>();
 
@@ -128,6 +127,14 @@ public class ControllerRoom implements Initializable {
     }
 
     public void guiDelete(ActionEvent actionEvent) {
+        if (activeTool != TOOL_TYPE.DELETE) {
+            activeTool = TOOL_TYPE.DELETE;
+            Image image = new Image("informatikprojekt/zigbee/frontend/cursor/eraser-tool.png");
+            Main.s.setCursor(new ImageCursor(image, (image.getWidth() / 2) - 512, (image.getHeight() / 2) + 512));
+        } else {
+            activeTool = TOOL_TYPE.NONE;
+            Main.s.setCursor(Cursor.DEFAULT);
+        }
     }
 
     public void guiDevice(ActionEvent actionEvent) {
@@ -236,9 +243,10 @@ public class ControllerRoom implements Initializable {
                 currentLine.setEndY(circle.getCenterY());
             }
 
-            lineGraph.addEdge(circle, currentCircle);
+            lineGraph.addEdge(circle, currentCircle, currentLine);
             currentCircle = null;
             currentLine = null;
+            activeCircle = null;
 
         }
         mouseDragEvent.consume();
@@ -246,11 +254,33 @@ public class ControllerRoom implements Initializable {
 
     public void onMouseDragOver(MouseDragEvent mouseDragEvent) {
 
-        System.out.println(mouseDragEvent.getSource());
 
-        if (activeTool == TOOL_TYPE.NONE && currentLine == null && mouseDragEvent.getSource() instanceof Circle c) {
-            c.setCenterX(mouseDragEvent.getX());
-            c.setCenterY(mouseDragEvent.getY());
+        if (activeTool == TOOL_TYPE.NONE && currentLine == null) {
+
+            if (draggedLines.isEmpty()) {
+
+                for (Line line : lineGraph.getLine(activeCircle)) {
+                    if (line.getEndX() == activeCircle.getCenterX()) {
+                        draggedLines.put(line, true);
+                    } else {
+                        draggedLines.put(line, false);
+                    }
+                }
+            }
+
+            activeCircle.setCenterX(mouseDragEvent.getX());
+            activeCircle.setCenterY(mouseDragEvent.getY());
+            for (Map.Entry<Line, Boolean> l : draggedLines.entrySet()) {
+                if (!l.getValue()) {
+                    l.getKey().setStartX(mouseDragEvent.getX());
+                    l.getKey().setStartY(mouseDragEvent.getY());
+                } else {
+                    l.getKey().setEndX(mouseDragEvent.getX());
+                    l.getKey().setEndY(mouseDragEvent.getY());
+                }
+
+            }
+
         }
 
 
@@ -297,7 +327,22 @@ public class ControllerRoom implements Initializable {
     private void setupCircleHandlers(Circle c) {
         c.addEventFilter(MouseEvent.DRAG_DETECTED, event -> {
             c.startFullDrag();
+            if (activeTool == TOOL_TYPE.NONE && event.getSource() instanceof Circle) {
+                draggedLines.clear();
+                activeCircle = (Circle) event.getSource();
+            }
             event.consume();
+        });
+
+        c.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (activeTool == TOOL_TYPE.DELETE) {
+                if (event.getSource() instanceof Circle circle) {
+                    Set<Line> linesToRemove = new HashSet<>(lineGraph.getLine(circle));
+                    drawingArea.getChildren().remove(circle);
+                    drawingArea.getChildren().removeAll(linesToRemove);
+                    lineGraph.removeCircle(circle);
+                }
+            }
         });
         c.addEventFilter(MouseDragEvent.MOUSE_DRAG_ENTERED, event ->
         {
@@ -310,7 +355,6 @@ public class ControllerRoom implements Initializable {
                 currentLine.setStartX(source.getCenterX());
                 currentLine.setStartY(source.getCenterY());
                 drawingArea.getChildren().add(currentLine);
-
                 currentCircle = source;
             }
 
