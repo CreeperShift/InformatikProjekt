@@ -141,11 +141,14 @@ public class ControllerRoom implements Initializable {
 
         if (!toggleButtonActive) {
             setToolbarDisabled(false);
-            cbGitterNetzLinien.fire();
             lineGraph.getCircles().forEach(c -> c.setStroke(Color.BLACK));
-            drawingArea.getChildren().addAll(0, gridList);
-            drawingArea.getChildren().addAll(0, lineList);
-            drawingArea.getChildren().addAll(0, textList);
+            if(cbGitterNetzLinien.isSelected()) {
+                drawingArea.getChildren().addAll(0, gridList);
+            }
+            if(cbLineal.isSelected()) {
+                drawingArea.getChildren().addAll(0, lineList);
+                drawingArea.getChildren().addAll(0, textList);
+            }
         } else {
             setToolbarDisabled(true);
             drawingArea.getChildren().removeAll(gridList);
@@ -211,7 +214,7 @@ public class ControllerRoom implements Initializable {
 
 
     public void gitterOnMouseClicked(MouseEvent event) {
-        if (cbGitterNetzLinien.isSelected()) {
+        if (cbGitterNetzLinien.isSelected() && !drawingArea.getChildren().containsAll(gridList)) {
             drawingArea.getChildren().addAll(0, gridList);
         } else {
             drawingArea.getChildren().removeAll(gridList);
