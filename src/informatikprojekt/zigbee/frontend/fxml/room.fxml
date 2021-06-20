@@ -15,14 +15,15 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="informatikprojekt.zigbee.frontend.ControllerRoom">
    <children>
-      <AnchorPane fx:id="drawingArea" minHeight="750.0" onDragDetected="#onDragDetected" onMouseDragEntered="#onMouseDragEntered" onMouseDragExited="#onMouseDragExited" onMouseDragOver="#onMouseDragOver" onMouseDragReleased="#onMouseDragReleased" prefHeight="750.0" stylesheets="@frontend.css">
+      <AnchorPane fx:id="drawingArea" maxWidth="1130.0" minHeight="750.0" onDragDetected="#onDragDetected" onMouseDragEntered="#onMouseDragEntered" onMouseDragExited="#onMouseDragExited" onMouseDragOver="#onMouseDragOver" onMouseDragReleased="#onMouseDragReleased" prefHeight="750.0" stylesheets="@frontend.css">
          <children>
             <Button fx:id="btnNewRoom" layoutX="165.0" layoutY="325.0" mnemonicParsing="false" onAction="#onNewRoom" prefHeight="750.0" prefWidth="630.0" style="-fx-font-size: 31;" text="New Room" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <font>
                   <Font size="34.0" />
                </font>
             </Button>
-         </children></AnchorPane>
+         </children>
+      </AnchorPane>
       <Separator />
       <HBox style="-fx-padding: 15; -fx-spacing: 15;" styleClass="drawingToolBar">
          <children>
@@ -42,7 +43,7 @@
             </Text>
             <TextField fx:id="guiBSize" disable="true" prefHeight="26.0" prefWidth="52.0" promptText="Brush Size" text="4" />
             <Button fx:id="btnClear" disable="true" mnemonicParsing="false" onAction="#guiClearAll" text="Clear All" />
-            <CheckBox fx:id="cbGitterNetzLinien" disable="true" mnemonicParsing="false" onMouseClicked="#gitterOnMouseClicked" text="Gitternetzlinien" />
+            <CheckBox fx:id="cbGitterNetzLinien" disable="true" mnemonicParsing="false" onMouseClicked="#gitterOnMouseClicked" selected="true" text="Gitternetzlinien" />
             <CheckBox fx:id="cbLineal" disable="true" mnemonicParsing="false" onMouseClicked="#linealOnMouseClicked" text="Lineal" />
             <ToggleButton fx:id="editMode" disable="true" mnemonicParsing="false" onAction="#onEditMode" styleClass="editButton" stylesheets="@frontend.css" text="Edit Mode" />
          </children>

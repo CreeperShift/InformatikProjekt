@@ -55,21 +55,20 @@ public class ControllerRoom implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
     }
 
     private void GitterNetzLinien(int increase, Color color) {
-        for (int i = 25; i <= drawingArea.getWidth()-5; i += increase) {
-            Line linie1 = new Line(i, 25, i, drawingArea.getHeight()-25);
+        for (int i = 25; i <= drawingArea.getWidth() - 5; i += increase) {
+            Line linie1 = new Line(i, 25, i, drawingArea.getHeight() - 25);
             linie1.setStroke(color);
             linie1.setStrokeWidth(1);
             gridList.add(linie1);
         }
 
-        for (int i = 25; i <= drawingArea.getHeight()-4; i += increase) {
+        for (int i = 25; i <= drawingArea.getHeight() - 4; i += increase) {
             Line line = new Line();
             line.setStartX(25);
-            line.setEndX(drawingArea.getWidth()-5);
+            line.setEndX(drawingArea.getWidth() - 5);
             line.setStartY(i);
             line.setEndY(i);
             line.setStroke(color);
@@ -99,8 +98,8 @@ public class ControllerRoom implements Initializable {
     }
 
     private void Koordinaten() {
-        for (int i = 100; i < drawingArea.getWidth()-25; i += 100) {
-            Text text1 = new Text(i-5, 20, "" + i);
+        for (int i = 100; i < drawingArea.getWidth() - 25; i += 100) {
+            Text text1 = new Text(i - 5, 20, "" + i);
             textList.add(text1);
         }
 
@@ -142,10 +141,10 @@ public class ControllerRoom implements Initializable {
         if (!toggleButtonActive) {
             setToolbarDisabled(false);
             lineGraph.getCircles().forEach(c -> c.setStroke(Color.BLACK));
-            if(cbGitterNetzLinien.isSelected()) {
+            if (cbGitterNetzLinien.isSelected()) {
                 drawingArea.getChildren().addAll(0, gridList);
             }
-            if(cbLineal.isSelected()) {
+            if (cbLineal.isSelected()) {
                 drawingArea.getChildren().addAll(0, lineList);
                 drawingArea.getChildren().addAll(0, textList);
             }
@@ -271,7 +270,6 @@ public class ControllerRoom implements Initializable {
                 drawingArea.getChildren().add(currentLine);
                 lineGraph.addCircle(currentCircle);
                 setupCircleHandlers(currentCircle);
-
             }
         }
     }
@@ -280,125 +278,139 @@ public class ControllerRoom implements Initializable {
     }
 
     public void onMouseDragReleased(MouseDragEvent mouseDragEvent) {
+        double x = mouseDragEvent.getX();
+        if (mouseDragEvent.getX() > 1114) {
+            x = drawingArea.getWidth() - 10;
+        }
 
-        if (activeTool == TOOL_TYPE.WAND && currentLine != null) {
+            if (activeTool == TOOL_TYPE.WAND && currentLine != null) {
 
-            List<Circle> matches = new LinkedList<>();
+                List<Circle> matches = new LinkedList<>();
 
-            drawingArea.getChildren().forEach(e ->
-            {
-                if (e instanceof Circle && e.contains(mouseDragEvent.getX(), mouseDragEvent.getY()))
-                    matches.add((Circle) e);
-            });
+                double finalX = x;
+                drawingArea.getChildren().forEach(e ->
+                {
+                    if (e instanceof Circle && e.contains(finalX, mouseDragEvent.getY()))
+                        matches.add((Circle) e);
+                });
 
-            Circle circle;
+                Circle circle;
 
             /*
             There is no circle where we release the mouse
              */
-            if (matches.isEmpty()) {
-                if (mouseDragEvent.isShiftDown()) {
-                    clampDirection(mouseDragEvent.getX(), mouseDragEvent.getY());
+                if (matches.isEmpty()) {
+                    if (mouseDragEvent.isShiftDown()) {
+                        clampDirection(x, mouseDragEvent.getY());
+                    } else {
+                        currentLine.setEndX(x);
+                        currentLine.setEndY(mouseDragEvent.getY());
+                    }
+                    circle = new Circle();
+                    circle.setRadius(15);
+                    circle.setFill(Color.TRANSPARENT);
+                    circle.setStroke(Color.BLACK);
+                    circle.setStrokeWidth(4);
+                    circle.setCenterX(currentLine.getEndX());
+                    circle.setCenterY(currentLine.getEndY());
+                    drawingArea.getChildren().add(circle);
+                    setupCircleHandlers(circle);
+                    lineGraph.addCircle(circle);
+                    lineGraph.addEdge(circle, currentCircle, currentLine);
                 } else {
-                    currentLine.setEndX(mouseDragEvent.getX());
-                    currentLine.setEndY(mouseDragEvent.getY());
-                }
-                circle = new Circle();
-                circle.setRadius(15);
-                circle.setFill(Color.TRANSPARENT);
-                circle.setStroke(Color.BLACK);
-                circle.setStrokeWidth(4);
-                circle.setCenterX(currentLine.getEndX());
-                circle.setCenterY(currentLine.getEndY());
-                drawingArea.getChildren().add(circle);
-                setupCircleHandlers(circle);
-                lineGraph.addCircle(circle);
-            } else {
                 /*
                 A circle is at the location, we get the top most one and connect the line to it.
                  */
-                circle = matches.get(matches.size() - 1);
-                currentLine.setEndX(circle.getCenterX());
-                currentLine.setEndY(circle.getCenterY());
+                    circle = matches.get(matches.size() - 1);
+                    if (currentCircle == circle) {
+                        drawingArea.getChildren().remove(currentLine);
+                    } else {
+                        currentLine.setEndX(circle.getCenterX());
+                        currentLine.setEndY(circle.getCenterY());
+                        lineGraph.addEdge(circle, currentCircle, currentLine);
+                    }
+                }
+
+
+                currentCircle = null;
+                currentLine = null;
+                activeCircle = null;
+
             }
-
-            lineGraph.addEdge(circle, currentCircle, currentLine);
-            currentCircle = null;
-            currentLine = null;
-            activeCircle = null;
-
+            mouseDragEvent.consume();
         }
-        mouseDragEvent.consume();
-    }
+
 
     public void onMouseDragOver(MouseDragEvent mouseDragEvent) {
 
+        if (mouseDragEvent.getX() < 1114) {
 
-        if (activeTool == TOOL_TYPE.MOVE && currentLine == null) {
+            if (activeTool == TOOL_TYPE.MOVE && currentLine == null) {
 
-            if (draggedLines.isEmpty()) {
+                if (draggedLines.isEmpty()) {
 
-                for (Line line : lineGraph.getLine(activeCircle)) {
-                    if (line.getEndX() == activeCircle.getCenterX()) {
-                        draggedLines.put(line, true);
-                    } else {
-                        draggedLines.put(line, false);
+                    for (Line line : lineGraph.getLine(activeCircle)) {
+                        if (line.getEndX() == activeCircle.getCenterX()) {
+                            draggedLines.put(line, true);
+                        } else {
+                            draggedLines.put(line, false);
+                        }
                     }
                 }
-            }
-            activeCircle.setCenterX(mouseDragEvent.getX());
-            activeCircle.setCenterY(mouseDragEvent.getY());
-            for (Map.Entry<Line, Boolean> l : draggedLines.entrySet()) {
-                if (!l.getValue()) {
-                    l.getKey().setStartX(mouseDragEvent.getX());
-                    l.getKey().setStartY(mouseDragEvent.getY());
-                } else {
-                    l.getKey().setEndX(mouseDragEvent.getX());
-                    l.getKey().setEndY(mouseDragEvent.getY());
+                activeCircle.setCenterX(mouseDragEvent.getX());
+                activeCircle.setCenterY(mouseDragEvent.getY());
+                for (Map.Entry<Line, Boolean> l : draggedLines.entrySet()) {
+                    if (!l.getValue()) {
+                        l.getKey().setStartX(mouseDragEvent.getX());
+                        l.getKey().setStartY(mouseDragEvent.getY());
+                    } else {
+                        l.getKey().setEndX(mouseDragEvent.getX());
+                        l.getKey().setEndY(mouseDragEvent.getY());
+                    }
+
                 }
 
             }
 
-        }
+
+            if (activeTool == TOOL_TYPE.WAND && currentLine != null) {
 
 
-        if (activeTool == TOOL_TYPE.WAND && currentLine != null) {
+                List<Circle> matches = new LinkedList<>();
+
+                drawingArea.getChildren().forEach(e ->
+                {
+                    if (e instanceof Circle && e.contains(mouseDragEvent.getX(), mouseDragEvent.getY()))
+                        matches.add((Circle) e);
+                });
+
+                if (matches.isEmpty()) {
 
 
-            List<Circle> matches = new LinkedList<>();
+                    if (mouseDragEvent.getX() < 20) {
 
-            drawingArea.getChildren().forEach(e ->
-            {
-                if (e instanceof Circle && e.contains(mouseDragEvent.getX(), mouseDragEvent.getY()))
-                    matches.add((Circle) e);
-            });
-
-            if (matches.isEmpty()) {
-
-
-                if (mouseDragEvent.getX() < 20) {
-
-                    currentLine.setEndX(20);
-                    currentLine.setEndY(mouseDragEvent.getY());
-
-                } else if (mouseDragEvent.getY() < 20) {
-                    currentLine.setEndX(mouseDragEvent.getX());
-                    currentLine.setEndY(20);
-
-                } else {
-                    if (!mouseDragEvent.isShiftDown()) {
-                        currentLine.setEndX(mouseDragEvent.getX());
+                        currentLine.setEndX(20);
                         currentLine.setEndY(mouseDragEvent.getY());
-                    } else {
-                        clampDirection(mouseDragEvent.getX(), mouseDragEvent.getY());
-                    }
-                }
-            } else {
-                Circle c = matches.get(matches.size() - 1);
-                currentLine.setEndX(c.getCenterX());
-                currentLine.setEndY(c.getCenterY());
-            }
 
+                    } else if (mouseDragEvent.getY() < 20) {
+                        currentLine.setEndX(mouseDragEvent.getX());
+                        currentLine.setEndY(20);
+
+                    } else {
+                        if (!mouseDragEvent.isShiftDown()) {
+                            currentLine.setEndX(mouseDragEvent.getX());
+                            currentLine.setEndY(mouseDragEvent.getY());
+                        } else {
+                            clampDirection(mouseDragEvent.getX(), mouseDragEvent.getY());
+                        }
+                    }
+                } else {
+                    Circle c = matches.get(matches.size() - 1);
+                    currentLine.setEndX(c.getCenterX());
+                    currentLine.setEndY(c.getCenterY());
+                }
+
+            }
         }
     }
 
