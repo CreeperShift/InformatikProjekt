@@ -283,62 +283,62 @@ public class ControllerRoom implements Initializable {
             x = drawingArea.getWidth() - 10;
         }
 
-            if (activeTool == TOOL_TYPE.WAND && currentLine != null) {
+        if (activeTool == TOOL_TYPE.WAND && currentLine != null) {
 
-                List<Circle> matches = new LinkedList<>();
+            List<Circle> matches = new LinkedList<>();
 
-                double finalX = x;
-                drawingArea.getChildren().forEach(e ->
-                {
-                    if (e instanceof Circle && e.contains(finalX, mouseDragEvent.getY()))
-                        matches.add((Circle) e);
-                });
+            double finalX = x;
+            drawingArea.getChildren().forEach(e ->
+            {
+                if (e instanceof Circle && e.contains(finalX, mouseDragEvent.getY()))
+                    matches.add((Circle) e);
+            });
 
-                Circle circle;
+            Circle circle;
 
             /*
             There is no circle where we release the mouse
              */
-                if (matches.isEmpty()) {
-                    if (mouseDragEvent.isShiftDown()) {
-                        clampDirection(x, mouseDragEvent.getY());
-                    } else {
-                        currentLine.setEndX(x);
-                        currentLine.setEndY(mouseDragEvent.getY());
-                    }
-                    circle = new Circle();
-                    circle.setRadius(15);
-                    circle.setFill(Color.TRANSPARENT);
-                    circle.setStroke(Color.BLACK);
-                    circle.setStrokeWidth(4);
-                    circle.setCenterX(currentLine.getEndX());
-                    circle.setCenterY(currentLine.getEndY());
-                    drawingArea.getChildren().add(circle);
-                    setupCircleHandlers(circle);
-                    lineGraph.addCircle(circle);
-                    lineGraph.addEdge(circle, currentCircle, currentLine);
+            if (matches.isEmpty()) {
+                if (mouseDragEvent.isShiftDown()) {
+                    clampDirection(x, mouseDragEvent.getY());
                 } else {
+                    currentLine.setEndX(x);
+                    currentLine.setEndY(mouseDragEvent.getY());
+                }
+                circle = new Circle();
+                circle.setRadius(15);
+                circle.setFill(Color.TRANSPARENT);
+                circle.setStroke(Color.BLACK);
+                circle.setStrokeWidth(4);
+                circle.setCenterX(currentLine.getEndX());
+                circle.setCenterY(currentLine.getEndY());
+                drawingArea.getChildren().add(circle);
+                setupCircleHandlers(circle);
+                lineGraph.addCircle(circle);
+                lineGraph.addEdge(circle, currentCircle, currentLine);
+            } else {
                 /*
                 A circle is at the location, we get the top most one and connect the line to it.
                  */
-                    circle = matches.get(matches.size() - 1);
-                    if (currentCircle == circle) {
-                        drawingArea.getChildren().remove(currentLine);
-                    } else {
-                        currentLine.setEndX(circle.getCenterX());
-                        currentLine.setEndY(circle.getCenterY());
-                        lineGraph.addEdge(circle, currentCircle, currentLine);
-                    }
+                circle = matches.get(matches.size() - 1);
+                if (currentCircle == circle) {
+                    drawingArea.getChildren().remove(currentLine);
+                } else {
+                    currentLine.setEndX(circle.getCenterX());
+                    currentLine.setEndY(circle.getCenterY());
+                    lineGraph.addEdge(circle, currentCircle, currentLine);
                 }
-
-
-                currentCircle = null;
-                currentLine = null;
-                activeCircle = null;
-
             }
-            mouseDragEvent.consume();
+
+
+            currentCircle = null;
+            currentLine = null;
+            activeCircle = null;
+
         }
+        mouseDragEvent.consume();
+    }
 
 
     public void onMouseDragOver(MouseDragEvent mouseDragEvent) {
@@ -347,29 +347,7 @@ public class ControllerRoom implements Initializable {
 
             if (activeTool == TOOL_TYPE.MOVE && currentLine == null) {
 
-                if (draggedLines.isEmpty()) {
-
-                    for (Line line : lineGraph.getLine(activeCircle)) {
-                        if (line.getEndX() == activeCircle.getCenterX()) {
-                            draggedLines.put(line, true);
-                        } else {
-                            draggedLines.put(line, false);
-                        }
-                    }
-                }
-                activeCircle.setCenterX(mouseDragEvent.getX());
-                activeCircle.setCenterY(mouseDragEvent.getY());
-                for (Map.Entry<Line, Boolean> l : draggedLines.entrySet()) {
-                    if (!l.getValue()) {
-                        l.getKey().setStartX(mouseDragEvent.getX());
-                        l.getKey().setStartY(mouseDragEvent.getY());
-                    } else {
-                        l.getKey().setEndX(mouseDragEvent.getX());
-                        l.getKey().setEndY(mouseDragEvent.getY());
-                    }
-
-                }
-
+                moveCircle(mouseDragEvent.getX(), mouseDragEvent.getY());
             }
 
 
@@ -411,6 +389,31 @@ public class ControllerRoom implements Initializable {
                 }
 
             }
+        }
+    }
+
+    private void moveCircle(double x, double y) {
+        if (draggedLines.isEmpty()) {
+
+            for (Line line : lineGraph.getLine(activeCircle)) {
+                if (line.getEndX() == activeCircle.getCenterX()) {
+                    draggedLines.put(line, true);
+                } else {
+                    draggedLines.put(line, false);
+                }
+            }
+        }
+        activeCircle.setCenterX(x);
+        activeCircle.setCenterY(y);
+        for (Map.Entry<Line, Boolean> l : draggedLines.entrySet()) {
+            if (!l.getValue()) {
+                l.getKey().setStartX(x);
+                l.getKey().setStartY(y);
+            } else {
+                l.getKey().setEndX(x);
+                l.getKey().setEndY(y);
+            }
+
         }
     }
 
