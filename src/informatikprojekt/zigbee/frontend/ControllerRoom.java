@@ -17,7 +17,6 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 
-import javax.swing.*;
 import java.net.URL;
 import java.util.*;
 
@@ -59,21 +58,18 @@ public class ControllerRoom implements Initializable {
 
     }
 
-    private void createGitterNetzLinien(int increase, Color color) {
-        for (int i = 0; i < drawingArea.getWidth(); i += increase) {
-            Line linie1 = new Line(i, 0, i, drawingArea.getHeight());
-    private void GitterNetzLinien(int increase,int startX, int startY, Color color) {
-        for (int i = 25; i < drawingArea.getWidth(); i += increase) {
-            Line linie1 = new Line(i, startY, i, drawingArea.getHeight());
+    private void GitterNetzLinien(int increase, Color color) {
+        for (int i = 25; i <= drawingArea.getWidth()-5; i += increase) {
+            Line linie1 = new Line(i, 25, i, drawingArea.getHeight()-25);
             linie1.setStroke(color);
             linie1.setStrokeWidth(1);
             gridList.add(linie1);
         }
 
-        for (int i = 25; i < drawingArea.getHeight(); i += increase) {
+        for (int i = 25; i <= drawingArea.getHeight()-4; i += increase) {
             Line line = new Line();
-            line.setStartX(startX);
-            line.setEndX(drawingArea.getWidth());
+            line.setStartX(25);
+            line.setEndX(drawingArea.getWidth()-5);
             line.setStartY(i);
             line.setEndY(i);
             line.setStroke(color);
@@ -82,10 +78,10 @@ public class ControllerRoom implements Initializable {
         }
     }
 
-    private void Lineal(int increase,int startX, int startY, int endX, int endY, int sW, Color color) {
+    private void Lineal(int increase, int startX, int startY, int sW) {
         for (int i = 25; i < drawingArea.getWidth(); i += increase) {
-            Line linie1 = new Line(i, startY, i, endY);
-            linie1.setStroke(color);
+            Line linie1 = new Line(i, startY, i, 25);
+            linie1.setStroke(Color.DARKGRAY);
             linie1.setStrokeWidth(sW);
             lineList.add(linie1);
         }
@@ -93,24 +89,23 @@ public class ControllerRoom implements Initializable {
         for (int i = 25; i < drawingArea.getHeight(); i += increase) {
             Line line = new Line();
             line.setStartX(startX);
-            line.setEndX(endX);
+            line.setEndX(25);
             line.setStartY(i);
             line.setEndY(i);
-            line.setStroke(color);
+            line.setStroke(Color.DARKGRAY);
             line.setStrokeWidth(sW);
             lineList.add(line);
         }
     }
 
     private void Koordinaten() {
-        for (int i = 100; i < drawingArea.getWidth(); i += 100) {
-            Text text1 = new Text(i, 20, ""+i);
+        for (int i = 100; i < drawingArea.getWidth()-25; i += 100) {
+            Text text1 = new Text(i-5, 20, "" + i);
             textList.add(text1);
-
         }
 
         for (int i = 100; i < drawingArea.getHeight(); i += 100) {
-            Text text2 = new Text(0, i+25, ""+i);
+            Text text2 = new Text(0, i + 25, "" + i);
             textList.add(text2);
         }
     }
@@ -149,8 +144,8 @@ public class ControllerRoom implements Initializable {
             cbGitterNetzLinien.fire();
             lineGraph.getCircles().forEach(c -> c.setStroke(Color.BLACK));
             drawingArea.getChildren().addAll(0, gridList);
-            drawingArea.getChildren().addAll(0,lineList);
-            drawingArea.getChildren().addAll(0,textList);
+            drawingArea.getChildren().addAll(0, lineList);
+            drawingArea.getChildren().addAll(0, textList);
         } else {
             setToolbarDisabled(true);
             drawingArea.getChildren().removeAll(gridList);
@@ -227,10 +222,10 @@ public class ControllerRoom implements Initializable {
         if (activeTool == TOOL_TYPE.NONE) {
             if (cbLineal.isSelected()) {
                 if (lineList.isEmpty()) {
-                    Lineal(25, 20,20, 25,25,1, Color.DARKGRAY);
-                    Lineal(100, 0, 0, 25, 25,2,Color.DARKGRAY);
+                    Lineal(25, 20, 20, 1);
+                    Lineal(100, 0, 0, 2);
                 }
-                if(textList.isEmpty()){
+                if (textList.isEmpty()) {
                     Koordinaten();
                     Koordinaten();
                 }
@@ -446,8 +441,7 @@ public class ControllerRoom implements Initializable {
         double startX = currentLine.getStartX();
         double startY = currentLine.getStartY();
 
-        double xTotal = 0;
-        double yTotal = 0;
+        double xTotal, yTotal;
 
         if (startX > x) {
             xTotal = startX - x;

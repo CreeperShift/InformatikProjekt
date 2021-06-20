@@ -20,7 +20,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("frontend/fxml/baseLayout.fxml")));
         primaryStage.setTitle("Luftqualität in Innenräumen");
-        s = new Scene(root, 1280, 800);
+        s = new Scene(root, 1290, 800);
         s.getStylesheets().add("informatikprojekt/zigbee/frontend/fxml/frontend.css");
         JMetro jMetro = new JMetro(Style.LIGHT);
         jMetro.setScene(s);
