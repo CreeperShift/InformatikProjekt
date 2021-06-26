@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
+import jfxtras.styles.jmetro.JMetroStyleClass;
 
 import java.net.URL;
 import java.util.*;
@@ -55,6 +56,7 @@ public class ControllerRoom implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        drawingArea.getStyleClass().add(JMetroStyleClass.BACKGROUND);
     }
 
     private void GitterNetzLinien(int increase, Color color) {
@@ -138,26 +140,27 @@ public class ControllerRoom implements Initializable {
 
     public void onEditMode(ActionEvent actionEvent) {
 
-        if (!toggleButtonActive) {
-            setToolbarDisabled(false);
-            lineGraph.getCircles().forEach(c -> c.setStroke(Color.BLACK));
-            if (cbGitterNetzLinien.isSelected()) {
-                drawingArea.getChildren().addAll(0, gridList);
+        if(!Main.isConnected) {
+            if (!toggleButtonActive) {
+                setToolbarDisabled(false);
+                lineGraph.getCircles().forEach(c -> c.setStroke(Color.BLACK));
+                if (cbGitterNetzLinien.isSelected()) {
+                    drawingArea.getChildren().addAll(0, gridList);
+                }
+                if (cbLineal.isSelected()) {
+                    drawingArea.getChildren().addAll(0, lineList);
+                    drawingArea.getChildren().addAll(0, textList);
+                }
+            } else {
+                setToolbarDisabled(true);
+                drawingArea.getChildren().removeAll(gridList);
+                drawingArea.getChildren().removeAll(lineList);
+                drawingArea.getChildren().removeAll(textList);
+                lineGraph.getCircles().forEach(c -> c.setStroke(Color.TRANSPARENT));
             }
-            if (cbLineal.isSelected()) {
-                drawingArea.getChildren().addAll(0, lineList);
-                drawingArea.getChildren().addAll(0, textList);
-            }
-        } else {
-            setToolbarDisabled(true);
-            drawingArea.getChildren().removeAll(gridList);
-            drawingArea.getChildren().removeAll(lineList);
-            drawingArea.getChildren().removeAll(textList);
-            lineGraph.getCircles().forEach(c -> c.setStroke(Color.TRANSPARENT));
+
+            toggleButtonActive = !toggleButtonActive;
         }
-
-        toggleButtonActive = !toggleButtonActive;
-
     }
 
     public void onNewRoom(ActionEvent actionEvent) {

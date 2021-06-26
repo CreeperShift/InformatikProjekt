@@ -10,7 +10,8 @@ public class DataManager implements IData {
 
     private LinkedList<DataSet> dataSets = new LinkedList<>();
     private UartReader uartReader;
-    Timer timer1;
+    private Timer timer1;
+    private String port = "COM1";
 
     private static DataManager INSTANCE = null;
 
@@ -24,13 +25,19 @@ public class DataManager implements IData {
         return INSTANCE;
     }
 
+    public void setPort(String port) {
+        this.port = port;
+    }
+
     public void startReader() {
 
-        if (uartReader == null) {
+        if (uartReader == null || isStopped() || isFailed()) {
+            if (timer1 != null) {
+                timer1.cancel();
+            }
 
-            uartReader = new UartReader();
-            uartReader.setActive(true);
-            uartReader.start();
+            uartReader = new MockUartReader(port);
+            uartReader.startReader();
 
             timer1 = new Timer();
             timer1.schedule(new TimerTask() {
@@ -49,22 +56,14 @@ public class DataManager implements IData {
                         dataSets.add(dataSet);
 
                         if (!dataSets.isEmpty()) {
-                            for (DataSet s : dataSets) {
-                                System.out.println(s.toString());
-                            }
+                            System.out.println(dataSets.get(dataSets.size()-1));
                         }
                     }
                 }
             }, 500, 500);
 
-            uartReader.setReaderActive(true);
         }
     }
-
-    public boolean isConnected() {
-        return uartReader.isConnected();
-    }
-
 
     @Override
     public List<DataSet> getDataForTime(LocalDateTime from, LocalDateTime to) {
@@ -88,14 +87,22 @@ public class DataManager implements IData {
     public void stopReader() {
         if (timer1 != null) {
             timer1.cancel();
-
         }
         if (uartReader != null) {
-            uartReader.setActive(false);
+            uartReader.setReaderState(UartReader.State.ENDED);
         }
     }
 
-    public void stopReaderActive() {
-        uartReader.setReaderActive(false);
+    public boolean isConnected() {
+        return uartReader.getReaderState() == UartReader.State.CONNECTED;
+    }
+
+
+    public boolean isFailed() {
+        return uartReader.getReaderState() == UartReader.State.FAILED;
+    }
+
+    public boolean isStopped() {
+        return uartReader.getReaderState() == UartReader.State.ENDED;
     }
 }
