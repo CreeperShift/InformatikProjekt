@@ -38,7 +38,7 @@ public class ControllerRoom implements Initializable {
     public CheckBox cbGitterNetzLinien;
     public CheckBox cbLineal;
     private Circle activeCircle = null;
-    private Map<Line, Boolean> draggedLines = new HashMap<>();
+    private final Map<Line, Boolean> draggedLines = new HashMap<>();
 
     private final List<Line> gridList = new ArrayList<>();
     private final List<Line> lineList = new ArrayList<>();
@@ -270,6 +270,7 @@ public class ControllerRoom implements Initializable {
                 drawingArea.getChildren().add(currentLine);
                 lineGraph.addCircle(currentCircle);
                 setupCircleHandlers(currentCircle);
+                activeCircle = currentCircle;
             }
         }
     }
@@ -396,7 +397,7 @@ public class ControllerRoom implements Initializable {
         if (draggedLines.isEmpty()) {
 
             for (Line line : lineGraph.getLine(activeCircle)) {
-                if (line.getEndX() == activeCircle.getCenterX()) {
+                if (line.getEndX() == activeCircle.getCenterX() && line.getEndY() == activeCircle.getCenterY()) {
                     draggedLines.put(line, true);
                 } else {
                     draggedLines.put(line, false);
