@@ -221,24 +221,24 @@ public class ControllerRoom implements Initializable {
     }
 
     public void linealOnMouseClicked(MouseEvent event) {
-        if (activeTool == TOOL_TYPE.NONE) {
-            if (cbLineal.isSelected()) {
-                if (lineList.isEmpty()) {
-                    Lineal(25, 20, 20, 1);
-                    Lineal(100, 0, 0, 2);
-                }
-                if (textList.isEmpty()) {
-                    Koordinaten();
-                    Koordinaten();
-                }
 
-                drawingArea.getChildren().addAll(0, textList);
-                drawingArea.getChildren().addAll(0, lineList);
-            } else {
-                drawingArea.getChildren().removeAll(lineList);
-                drawingArea.getChildren().removeAll(textList);
+        if (cbLineal.isSelected()) {
+            if (lineList.isEmpty()) {
+                Lineal(25, 20, 20, 1);
+                Lineal(100, 0, 0, 2);
             }
+            if (textList.isEmpty()) {
+                Koordinaten();
+                Koordinaten();
+            }
+
+            drawingArea.getChildren().addAll(0, textList);
+            drawingArea.getChildren().addAll(0, lineList);
+        } else {
+            drawingArea.getChildren().removeAll(lineList);
+            drawingArea.getChildren().removeAll(textList);
         }
+
     }
 
     public void onDragDetected(MouseEvent mouseEvent) {
