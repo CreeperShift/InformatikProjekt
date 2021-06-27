@@ -2,14 +2,15 @@ package informatikprojekt.zigbee.backend;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class DataSet {
 
-    private static int ID_COUNTER = 0;
+    private static int ID_COUNTER = 1;
 
-    private final int id;
-    private final List<SensorData> sensorData = new ArrayList<>();
+    private int id;
+    private final ArrayList<SensorData> sensorData = new ArrayList<>();
     private final LocalDateTime time;
 
 
@@ -22,8 +23,8 @@ public class DataSet {
         this.id = ID_COUNTER++;
     }
 
-    public final List<SensorData> getSensorData() {
-        return Collections.unmodifiableList(sensorData);
+    public ArrayList<SensorData> getSensorData() {
+        return sensorData;
     }
 
     public void addSensorData(SensorData data) {

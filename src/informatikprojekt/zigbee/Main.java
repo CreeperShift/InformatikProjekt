@@ -15,7 +15,6 @@ public class Main extends Application {
 
     public static Scene s;
     public static BorderPane root;
-    public static boolean isConnected = false;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
