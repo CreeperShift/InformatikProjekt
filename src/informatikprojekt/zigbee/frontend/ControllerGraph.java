@@ -29,10 +29,14 @@ public class ControllerGraph implements Initializable {
     public RadioButton radioVOC;
     public RadioButton radioCO2;
     public RadioButton radioPartikel;
+    private NumberAxis dataAxis;
     private boolean setupDone = false;
     public static ControllerGraph INSTANCE;
     private RadioButton[] buttons;
     private XYChart.Series<NumberAxis, NumberAxis> tempSeries;
+    private XYChart.Series<NumberAxis, NumberAxis> humidSeries;
+    private XYChart.Series<NumberAxis, NumberAxis> co2Series;
+    private XYChart.Series<NumberAxis, NumberAxis> vocSeries;
     private LineChart<NumberAxis, NumberAxis> lineChart;
     private LocalDateTime start;
 
@@ -41,16 +45,18 @@ public class ControllerGraph implements Initializable {
         INSTANCE = this;
         buttons = new RadioButton[]{radioTmp, radioCO2, radioHum, radioVOC, radioPartikel};
         box.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-        NumberAxis dataAxis = new NumberAxis(0, 70, 5);
-/*        NumberAxis humDataAxis = new NumberAxis(0, 100, 5);
-        NumberAxis co2DataAxis = new NumberAxis(300, 1000, 25);
-        NumberAxis vocDataAxis = new NumberAxis(0, 400, 25);
-        NumberAxis particleDataAxis = new NumberAxis(0, 400, 25);*/
+        dataAxis = new NumberAxis(0, 70, 5);
         NumberAxis timeAxis = new NumberAxis(0, 60, 2);
         lineChart = new LineChart(timeAxis, dataAxis);
 
         tempSeries = new XYChart.Series();
+        humidSeries = new XYChart.Series();
+        co2Series = new XYChart.Series();
+        vocSeries = new XYChart.Series();
         tempSeries.setName("Temperatur");
+        humidSeries.setName("Feuchtigkeit");
+        co2Series.setName("CO2");
+        vocSeries.setName("VoC");
         lineChart.getData().add(tempSeries);
         box.getChildren().add(1, lineChart);
 
@@ -69,6 +75,23 @@ public class ControllerGraph implements Initializable {
                 }
             }
         }
+
+        lineChart.getData().clear();
+        for (RadioButton b : buttons) {
+            if (b.isSelected()) {
+                if (b.getText().equalsIgnoreCase("Temperatur")) {
+                    lineChart.getData().add(tempSeries);
+                } else if (b.getText().equalsIgnoreCase("Feuchtigkeit")) {
+                    lineChart.getData().add(humidSeries);
+
+                } else if (b.getText().equalsIgnoreCase("VoC")) {
+                    lineChart.getData().add(vocSeries);
+                } else if (b.getText().equalsIgnoreCase("CO2")) {
+                    lineChart.getData().add(co2Series);
+                }
+            }
+        }
+
     }
 
     public void setupData() {

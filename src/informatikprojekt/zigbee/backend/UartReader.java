@@ -44,10 +44,9 @@ public class UartReader extends Thread {
         serial.connect();
 
         while (serial != null && serial.isConnected() && activeState != State.ENDED) {
-            System.out.println("Connected");
             activeState = State.CONNECTED;
 
-            try (DataInputStream ins = new DataInputStream(serial.getInputStream());){
+            try (DataInputStream ins = new DataInputStream(serial.getInputStream());) {
                 String data = "";
                 while (ins.available() > 0) {// read all bytes
                     char b = (char) ins.read();
@@ -98,8 +97,7 @@ public class UartReader extends Thread {
         switch (Integer.parseInt(dataSplit[0])) {
             case 0:
                 //0;1;086
-                SensorData s = new SensorData("",Integer.parseInt(dataSplit[1]), 1, CommonUtils.TEMPERATURE, Float.parseFloat(dataSplit[2]));
-                sensorDataQueue.add(s);
+                handleData(dataSplit);
                 break;
             case 1:
                 //TODO: Battery level?
@@ -107,6 +105,40 @@ public class UartReader extends Thread {
             case 2:
                 //TODO: Error code of some sort?
                 break;
+        }
+    }
+
+    private void handleData(String[] dataSplit) {
+
+        switch (Integer.parseInt(dataSplit[2])) {
+            case 1 -> {
+                SensorData s1 = new SensorData("", Integer.parseInt(dataSplit[1]), 1, CommonUtils.TEMPERATURE, Float.parseFloat(dataSplit[2]));
+                SensorData s2 = new SensorData("", Integer.parseInt(dataSplit[1]), 1, CommonUtils.HUMIDITY, Float.parseFloat(dataSplit[3]));
+                sensorDataQueue.add(s1);
+                sensorDataQueue.add(s2);
+            }
+            case 2 -> {
+                SensorData s3 = new SensorData("", Integer.parseInt(dataSplit[1]), 2, CommonUtils.CO2, Float.parseFloat(dataSplit[2]));
+                SensorData s4 = new SensorData("", Integer.parseInt(dataSplit[1]), 2, CommonUtils.VOC, Float.parseFloat(dataSplit[3]));
+                sensorDataQueue.add(s3);
+                sensorDataQueue.add(s4);
+            }
+            case 3 -> {
+                SensorData s5 = new SensorData("", Integer.parseInt(dataSplit[1]), 3, CommonUtils.CO2, Float.parseFloat(dataSplit[2]));
+                SensorData s6 = new SensorData("", Integer.parseInt(dataSplit[1]), 3, CommonUtils.TEMPERATURE, Float.parseFloat(dataSplit[3]));
+                SensorData s7 = new SensorData("", Integer.parseInt(dataSplit[1]), 3, CommonUtils.HUMIDITY, Float.parseFloat(dataSplit[4]));
+                sensorDataQueue.add(s5);
+                sensorDataQueue.add(s6);
+                sensorDataQueue.add(s7);
+            }
+            case 4 -> {
+                SensorData s8 = new SensorData("", Integer.parseInt(dataSplit[1]), 4, CommonUtils.CO2, Float.parseFloat(dataSplit[2]));
+                SensorData s9 = new SensorData("", Integer.parseInt(dataSplit[1]), 4, CommonUtils.TEMPERATURE, Float.parseFloat(dataSplit[3]));
+                SensorData s10 = new SensorData("", Integer.parseInt(dataSplit[1]), 4, CommonUtils.HUMIDITY, Float.parseFloat(dataSplit[4]));
+                sensorDataQueue.add(s8);
+                sensorDataQueue.add(s9);
+                sensorDataQueue.add(s10);
+            }
         }
     }
 

@@ -35,8 +35,6 @@ public class ControllerBase implements Initializable {
 
     private static Window activeWindow = Window.START;
 
-    private List<Button> dataButtonList;
-
     private Button[] allButtons;
 
     public AnchorPane contentPanel;
@@ -142,7 +140,7 @@ public class ControllerBase implements Initializable {
 
         if (btnConnect.getText().equalsIgnoreCase("Verbinden")) {
 
-            DataManager.get().setPort("COM5");
+            DataManager.get().setPort(fieldPort.getText());
             DataManager.get().startReader();
             Timer t1 = new Timer();
             t1.schedule(new TimerTask() {

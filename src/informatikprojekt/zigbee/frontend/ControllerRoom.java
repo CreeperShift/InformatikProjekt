@@ -214,7 +214,6 @@ public class ControllerRoom implements Initializable {
 
     }
 
-
     public void gitterOnMouseClicked(MouseEvent event) {
         if (cbGitterNetzLinien.isSelected() && !drawingArea.getChildren().containsAll(gridList)) {
             drawingArea.getChildren().addAll(0, gridList);
@@ -433,7 +432,8 @@ public class ControllerRoom implements Initializable {
 
         c.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (activeTool == TOOL_TYPE.DELETE) {
-                if (event.getSource() instanceof Circle circle) {
+                if (event.getSource() instanceof Circle) {
+                    Circle circle = (Circle) event.getSource();
                     Set<Line> linesToRemove = new HashSet<>(lineGraph.getLine(circle));
                     drawingArea.getChildren().remove(circle);
                     drawingArea.getChildren().removeAll(linesToRemove);

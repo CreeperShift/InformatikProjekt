@@ -43,7 +43,7 @@ public class DataManager implements IData {
                 timer1.cancel();
             }
 
-            uartReader = new MockUartReader(port);
+            uartReader = new UartReader(port);
             uartReader.startReader();
 
             timer1 = new Timer();
