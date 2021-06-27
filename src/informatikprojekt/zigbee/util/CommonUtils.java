@@ -11,7 +11,6 @@ public class CommonUtils {
     public static final String TEMPERATURE = "Temperatur";
     public static final String HUMIDITY = "Feuchtigkeit";
     public static final String CO2 = "CO2";
-    public static final String PARTICLES = "Partikel";
     public static final String VOC = "VoC";
 
     public static final Map<Integer, String> sensors = new HashMap<>() {{
