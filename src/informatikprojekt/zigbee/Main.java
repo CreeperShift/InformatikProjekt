@@ -1,6 +1,7 @@
 package informatikprojekt.zigbee;
 
 import informatikprojekt.zigbee.backend.DataManager;
+import informatikprojekt.zigbee.util.CommonUtils;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -33,6 +34,8 @@ public class Main extends Application {
     @Override
     public void stop() {
         DataManager.get().stopReader();
+        CommonUtils.stopAllTimers();
+        DataManager.stop();
     }
 
 
