@@ -10,7 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.RadioButton;
+import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 
@@ -24,26 +24,27 @@ import java.util.TimerTask;
 
 public class ControllerGraph implements Initializable {
     public VBox box;
-    public RadioButton radioTmp;
-    public RadioButton radioHum;
-    public RadioButton radioVOC;
-    public RadioButton radioCO2;
-    public RadioButton radioPartikel;
+    public Button btnTemp;
+    public Button btnFeucht;
+    public Button btnCO2;
+    public Button btnVoC;
     private NumberAxis dataAxis;
     private boolean setupDone = false;
     public static ControllerGraph INSTANCE;
-    private RadioButton[] buttons;
+    private Button[] buttons;
     private XYChart.Series<NumberAxis, NumberAxis> tempSeries;
     private XYChart.Series<NumberAxis, NumberAxis> humidSeries;
     private XYChart.Series<NumberAxis, NumberAxis> co2Series;
     private XYChart.Series<NumberAxis, NumberAxis> vocSeries;
     private LineChart<NumberAxis, NumberAxis> lineChart;
     private LocalDateTime start;
+    private Button activeButton;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         INSTANCE = this;
-        buttons = new RadioButton[]{radioTmp, radioCO2, radioHum, radioVOC, radioPartikel};
+        activeButton = btnTemp;
+        buttons = new Button[]{btnCO2, btnTemp, btnFeucht, btnVoC};
         box.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         dataAxis = new NumberAxis(0, 70, 5);
         NumberAxis timeAxis = new NumberAxis(0, 60, 2);
@@ -59,40 +60,10 @@ public class ControllerGraph implements Initializable {
         vocSeries.setName("VoC");
         lineChart.getData().add(tempSeries);
         box.getChildren().add(1, lineChart);
+        lineChart.setAnimated(false);
 
     }
 
-    public void onRadio(ActionEvent actionEvent) {
-
-        RadioButton source = ((RadioButton) actionEvent.getSource());
-        if (!source.isSelected()) {
-            source.setSelected(true);
-        } else {
-
-            for (RadioButton b : buttons) {
-                if (actionEvent.getSource() != b) {
-                    b.setSelected(false);
-                }
-            }
-        }
-
-        lineChart.getData().clear();
-        for (RadioButton b : buttons) {
-            if (b.isSelected()) {
-                if (b.getText().equalsIgnoreCase("Temperatur")) {
-                    lineChart.getData().add(tempSeries);
-                } else if (b.getText().equalsIgnoreCase("Feuchtigkeit")) {
-                    lineChart.getData().add(humidSeries);
-
-                } else if (b.getText().equalsIgnoreCase("VoC")) {
-                    lineChart.getData().add(vocSeries);
-                } else if (b.getText().equalsIgnoreCase("CO2")) {
-                    lineChart.getData().add(co2Series);
-                }
-            }
-        }
-
-    }
 
     public void setupData() {
 
@@ -107,12 +78,31 @@ public class ControllerGraph implements Initializable {
                                 List<DataSet> data = DataManager.get().getDataForTime(LocalDateTime.now().minusSeconds(4));
                                 for (DataSet d : data) {
                                     float temp = 0;
-                                    int readings = 0;
+                                    float co2 = 0;
+                                    float voc = 0;
+                                    float hum = 0;
+                                    int readingsT = 0;
+                                    int readingsC = 0;
+                                    int readingsV = 0;
+                                    int readingsH = 0;
                                     for (SensorData sensorData : d.getSensorData()) {
                                         if (sensorData.getDataType().equalsIgnoreCase(CommonUtils.TEMPERATURE)) {
                                             temp = temp + sensorData.getData();
-                                            readings++;
+                                            readingsT++;
                                         }
+                                        if (sensorData.getDataType().equalsIgnoreCase(CommonUtils.HUMIDITY)) {
+                                            hum = hum + sensorData.getData();
+                                            readingsH++;
+                                        }
+                                        if (sensorData.getDataType().equalsIgnoreCase(CommonUtils.CO2)) {
+                                            co2 = co2 + sensorData.getData();
+                                            readingsC++;
+                                        }
+                                        if (sensorData.getDataType().equalsIgnoreCase(CommonUtils.VOC)) {
+                                            voc = voc + sensorData.getData();
+                                            readingsV++;
+                                        }
+
                                     }
                                     if (start == null) {
                                         start = d.getTime();
@@ -123,7 +113,19 @@ public class ControllerGraph implements Initializable {
                                         sec = 0;
                                     }
 
-                                    tempSeries.getData().add(new XYChart.Data(sec, temp / readings));
+                                    if (readingsT > 0) {
+                                        tempSeries.getData().add(new XYChart.Data(sec, temp / readingsT));
+                                    }
+                                    if (readingsH > 0) {
+                                        humidSeries.getData().add(new XYChart.Data(sec, hum / readingsH));
+                                    }
+                                    if (readingsC > 0) {
+                                        co2Series.getData().add(new XYChart.Data(sec, co2 / readingsC));
+                                        System.out.println("CO2");
+                                    }
+                                    if (readingsV > 0) {
+                                        vocSeries.getData().add(new XYChart.Data(sec, voc / readingsV));
+                                    }
                                 }
 
                             }
@@ -134,6 +136,76 @@ public class ControllerGraph implements Initializable {
             }, 500, 3000);
 
             setupDone = true;
+        }
+    }
+
+    private void onBtnDelay() {
+        for (Button b : buttons) {
+            b.setDisable(true);
+
+            Timer timer = new Timer();
+            CommonUtils.registerTimer(timer);
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+
+                    Platform.runLater(() -> {
+                        for (Button b : buttons) {
+                            b.setDisable(false);
+                        }
+                        timer.cancel();
+                    });
+                }
+            }, 100, 500);
+        }
+    }
+
+
+    public void onBtnTemp(ActionEvent actionEvent) {
+        if (activeButton != btnTemp) {
+            lineChart.getData().clear();
+            onBtnDelay();
+            lineChart.getData().add(tempSeries);
+            dataAxis.setLowerBound(0);
+            dataAxis.setUpperBound(70);
+            dataAxis.setTickUnit(5);
+            activeButton = btnTemp;
+        }
+    }
+
+    public void onBtnFeucht(ActionEvent actionEvent) {
+        if (activeButton != btnFeucht) {
+            lineChart.getData().clear();
+            onBtnDelay();
+            lineChart.getData().add(humidSeries);
+            dataAxis.setLowerBound(0);
+            dataAxis.setUpperBound(100);
+            dataAxis.setTickUnit(10);
+            activeButton = btnFeucht;
+        }
+    }
+
+    public void onBtnCO2(ActionEvent actionEvent) {
+        if (activeButton != btnCO2) {
+            lineChart.getData().clear();
+            onBtnDelay();
+            lineChart.getData().add(co2Series);
+            dataAxis.setLowerBound(350);
+            dataAxis.setUpperBound(900);
+            dataAxis.setTickUnit(50);
+            activeButton = btnCO2;
+        }
+    }
+
+    public void onBtnVoC(ActionEvent actionEvent) {
+        if (activeButton != btnVoC) {
+            lineChart.getData().clear();
+            onBtnDelay();
+            lineChart.getData().add(vocSeries);
+            dataAxis.setLowerBound(0);
+            dataAxis.setUpperBound(1000);
+            dataAxis.setTickUnit(100);
+            activeButton = btnVoC;
         }
     }
 }

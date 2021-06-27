@@ -122,7 +122,7 @@
                   <HBox alignment="CENTER" spacing="5.0">
                      <children>
                         <Label text="COM Port:" />
-                        <TextField fx:id="fieldPort" prefHeight="25.0" prefWidth="62.0" promptText="COM" text="COM1" />
+                        <TextField fx:id="fieldPort" prefHeight="25.0" prefWidth="103.0" promptText="COM" text="COM1" />
                      </children>
                      <VBox.margin>
                         <Insets bottom="15.0" />

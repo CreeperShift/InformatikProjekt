@@ -1,5 +1,7 @@
 package informatikprojekt.zigbee.backend;
 
+import informatikprojekt.zigbee.util.CommonUtils;
+
 import java.util.Random;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -33,7 +35,7 @@ public class MockUartReader extends UartReader {
                         SensorData data = new SensorData("", i, 1, "Temperatur", rand.nextInt(100));
                         sensorDataQueue.add(data);
                     }
-                    SensorData data = new SensorData("", i, f, "Temperatur", rand.nextInt(100));
+                    SensorData data = new SensorData("", i, f, CommonUtils.CO2, rand.nextInt(300)+350);
                     sensorDataQueue.add(data);
                 }
             }
