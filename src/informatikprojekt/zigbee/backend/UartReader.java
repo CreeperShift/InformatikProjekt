@@ -1,7 +1,6 @@
 package informatikprojekt.zigbee.backend;
 
 import gnu.io.NRSerialPort;
-import informatikprojekt.zigbee.util.CommonUtils;
 
 import java.io.DataInputStream;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -98,7 +97,7 @@ public class UartReader extends Thread {
         switch (Integer.parseInt(dataSplit[0])) {
             case 0:
                 //0;1;086
-                SensorData s = new SensorData("",Integer.parseInt(dataSplit[1]), 1, CommonUtils.TEMPERATURE, Float.parseFloat(dataSplit[2]));
+                SensorData s = new SensorData("",Integer.parseInt(dataSplit[1]), 1, 0, Float.parseFloat(dataSplit[2]));
                 sensorDataQueue.add(s);
                 break;
             case 1:

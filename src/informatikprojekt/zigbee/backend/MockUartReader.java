@@ -26,20 +26,20 @@ public class MockUartReader extends UartReader {
     @Override
     public void run() {
         while (activeState == State.CONNECTED) {
-            for (int i = 1; i < 5; i++) {
-                for (int f = 2; f < 4; f++) {
+            for (int i = 0; i < 4; i++) {
+                for (int f = 0; f < 2; f++) {
                     Random rand = new Random();
                     if (i > 1) {
-                        SensorData data = new SensorData("", i, 1, "Temperatur", rand.nextInt(100));
+                        SensorData data = new SensorData("", i, 0, 0, rand.nextInt(100));
                         sensorDataQueue.add(data);
                     }
-                    SensorData data = new SensorData("", i, f, "Temperatur", rand.nextInt(100));
+                    SensorData data = new SensorData("", i, f, f, rand.nextInt(100));
                     sensorDataQueue.add(data);
                 }
             }
 
             try {
-                Thread.sleep(1000 * 7);
+                Thread.sleep(60000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

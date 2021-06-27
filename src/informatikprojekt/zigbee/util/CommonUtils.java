@@ -4,48 +4,9 @@ import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
-import java.util.*;
+import java.util.List;
 
 public class CommonUtils {
-
-    public static final String TEMPERATURE = "Temperatur";
-    public static final String HUMIDITY = "Feuchtigkeit";
-    public static final String CO2 = "CO2";
-    public static final String PARTICLES = "Partikel";
-    public static final String VOC = "VoC";
-
-    public static final Map<Integer, String> sensors = new HashMap<>() {{
-        put(1, "SHT21");
-        put(2, "CCS");
-        put(3, "SCD30");
-        put(4, "SCD41");
-    }};
-
-    private static final List<Timer> timers = new ArrayList<>();
-
-    public static String getSensorName(int id) {
-        return sensors.getOrDefault(id, "Unknown Sensor");
-
-    }
-
-    public static int getSensorID(String id) {
-        for (Map.Entry<Integer, String> s : sensors.entrySet()) {
-            if (s.getValue().equalsIgnoreCase(id)) {
-                return s.getKey();
-            }
-        }
-        return 0;
-    }
-
-    public static void stopAllTimers() {
-        for (Timer t : timers) {
-            t.cancel();
-        }
-    }
-
-    public static void registerTimer(Timer t) {
-        timers.add(t);
-    }
 
     public static Node pick(Node node, double sceneX, double sceneY) {
         Point2D p = new Point2D(sceneX, sceneY);
@@ -62,11 +23,11 @@ public class CommonUtils {
             // z-order, and are therefore the better match, compared to children that
             // might also intersect (but that would be underneath the element).
             Node bestMatchingChild = null;
-            List<Node> children = ((Parent) node).getChildrenUnmodifiable();
+            List<Node> children = ((Parent)node).getChildrenUnmodifiable();
             for (int i = children.size() - 1; i >= 0; i--) {
                 Node child = children.get(i);
                 p = child.sceneToLocal(sceneX, sceneY, true /* rootScene */);
-                if (child.isVisible() && child.contains(p)) {
+                if (child.isVisible()  && child.contains(p)) {
                     bestMatchingChild = child;
                     break;
                 }
