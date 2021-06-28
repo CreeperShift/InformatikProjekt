@@ -190,7 +190,7 @@ public class ControllerGraph implements Initializable {
             onBtnDelay();
             lineChart.getData().add(co2Series);
             dataAxis.setLowerBound(350);
-            dataAxis.setUpperBound(900);
+            dataAxis.setUpperBound(3500);
             dataAxis.setTickUnit(50);
             activeButton = btnCO2;
         }
