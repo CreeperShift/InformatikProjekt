@@ -257,7 +257,7 @@ public class ControllerData implements Initializable {
                     dataList.add(dataString);
                 }
                 writer.writeAll(dataList);
-                System.out.println("Written data");
+                CommonUtils.consoleString("Written data");
 
             } catch (IOException e) {
                 e.printStackTrace();
