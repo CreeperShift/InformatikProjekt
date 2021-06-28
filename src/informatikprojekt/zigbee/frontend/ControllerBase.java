@@ -6,11 +6,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 
@@ -41,7 +41,7 @@ public class ControllerBase implements Initializable {
 
     public AnchorPane contentPanel;
     public AnchorPane graphPanel;
-    public TableView dataPanel;
+    public BorderPane dataPanel;
     public VBox contentStart;
     VBox content;
 
@@ -59,13 +59,12 @@ public class ControllerBase implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        ledStatus.fillProperty().bindBidirectional(ledStatusNavbar.fillProperty());
 
         INSTANCE = this;
         allButtons = new Button[]{btnRoom, btnStart, btnData, btnGraph};
         contentPanel.getStyleClass().add(JMetroStyleClass.BACKGROUND);
 
-
-        addDataButtons();
 
         setButtonActive(btnStart);
 
@@ -73,28 +72,13 @@ public class ControllerBase implements Initializable {
 
             content = (VBox) FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/room.fxml")));
             graphPanel = (AnchorPane) FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/graph.fxml")));
-            dataPanel = (TableView) FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/data.fxml")));
+            dataPanel = (BorderPane) FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/data.fxml")));
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void addDataButtons() {
-        dataButtonList = new LinkedList<>();
-        dataButtonList.add(new Button("Temperatur"));
-        dataButtonList.add(new Button("Feuchtigkeit"));
-        dataButtonList.add(new Button("CO2"));
-        dataButtonList.add(new Button("VoC"));
-
-        dataButtonList.forEach(b -> {
-            b.getStylesheets().add("informatikprojekt/zigbee/frontend/fxml/frontend.css");
-            b.getStyleClass().add("navbarButton");
-            b.setPrefWidth(167);
-            b.setPrefHeight(42);
-        });
-
-    }
 
     private void setActiveWindow(Window window) {
         activeWindow = window;
@@ -104,7 +88,6 @@ public class ControllerBase implements Initializable {
     public void onButtonRoom(ActionEvent actionEvent) {
         setActiveWindow(Window.ROOM);
         setButtonActive(btnRoom);
-        clearDataButtons();
         contentPanel.getChildren().clear();
         content.setPrefHeight(contentPanel.getPrefHeight());
         content.setPrefWidth(contentPanel.getPrefWidth());
@@ -115,7 +98,6 @@ public class ControllerBase implements Initializable {
     public void onButtonStart(ActionEvent actionEvent) {
         setActiveWindow(Window.START);
         setButtonActive(btnStart);
-        clearDataButtons();
         contentPanel.getChildren().clear();
         contentPanel.getChildren().add(contentStart);
     }
@@ -130,8 +112,8 @@ public class ControllerBase implements Initializable {
 
     public void onButtonGraph(ActionEvent actionEvent) {
         setActiveWindow(Window.GRAPH);
+
         setButtonActive(btnGraph);
-        clearDataButtons();
         graphPanel.setPrefHeight(contentPanel.getPrefHeight());
         graphPanel.setPrefWidth(contentPanel.getPrefWidth());
         graphPanel.setMinWidth(contentPanel.getWidth());
@@ -142,13 +124,9 @@ public class ControllerBase implements Initializable {
 
     public void onButtonData(ActionEvent actionEvent) {
         setActiveWindow(Window.DATA);
-        ControllerData.INSTANCE.setupData();
-        setButtonActive(btnData);
-        clearDataButtons();
 
-        if (!sidePanel.getChildren().contains(dataButtonList.get(0))) {
-            sidePanel.getChildren().addAll(dataButtonList);
-        }
+        setButtonActive(btnData);
+
         dataPanel.setPrefHeight(contentPanel.getPrefHeight());
         dataPanel.setPrefWidth(contentPanel.getPrefWidth());
         dataPanel.setMinWidth(contentPanel.getWidth());
@@ -159,12 +137,6 @@ public class ControllerBase implements Initializable {
 
     }
 
-    private void clearDataButtons() {
-        sidePanel.getChildren().removeAll(dataButtonList);
-    }
-
-    public void onDataHover(MouseEvent mouseEvent) {
-    }
 
     public void onBtnConnect(ActionEvent actionEvent) {
 
@@ -180,10 +152,14 @@ public class ControllerBase implements Initializable {
                         Platform.runLater(() -> {
                             btnConnect.setText("Stop");
                             isConnected = true;
+                            ledStatusNavbar.setFill(Color.GREEN);
+                            ControllerGraph.INSTANCE.setupData();
+                            ControllerData.INSTANCE.setupData();
                         });
                         t1.cancel();
                     } else if (DataManager.get().isFailed()) {
                         System.out.println("Cancelled");
+                        ledStatusNavbar.setFill(Color.RED);
                         t1.cancel();
                     }
                 }
@@ -198,6 +174,7 @@ public class ControllerBase implements Initializable {
                     if (DataManager.get().isStopped()) {
                         Platform.runLater(() -> {
                             btnConnect.setText("Verbinden");
+                            ledStatusNavbar.setFill(Color.RED);
                             isConnected = false;
                         });
                         t1.cancel();

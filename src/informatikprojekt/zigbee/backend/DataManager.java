@@ -1,6 +1,7 @@
 package informatikprojekt.zigbee.backend;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
@@ -8,8 +9,8 @@ import java.util.TimerTask;
 
 public class DataManager implements IData {
 
-    private LinkedList<DataSet> dataSets = new LinkedList<>();
-    private UartReader uartReader;
+    private final LinkedList<DataSet> dataSets = new LinkedList<>();
+    private static UartReader uartReader;
     private Timer timer1;
     private String port = "COM1";
 
@@ -23,6 +24,12 @@ public class DataManager implements IData {
             INSTANCE = new DataManager();
         }
         return INSTANCE;
+    }
+
+    public static void stop() {
+        if (uartReader != null) {
+            uartReader.stop();
+        }
     }
 
     public void setPort(String port) {
@@ -48,19 +55,19 @@ public class DataManager implements IData {
 
                         while (!uartReader.getQueue().isEmpty()) {
                             try {
-                                dataSet.addSensorData(uartReader.getQueue().take());
+                                SensorData data = uartReader.getQueue().take();
+                                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+                                data.setFormattedTime(dataSet.getTime().format(formatter));
+                                dataSet.addSensorData(data);
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
                             }
                         }
                         dataSets.add(dataSet);
 
-                        if (!dataSets.isEmpty()) {
-                            System.out.println(dataSets.get(dataSets.size()-1));
-                        }
                     }
                 }
-            }, 500, 500);
+            }, 200, 500);
 
         }
     }
@@ -91,6 +98,10 @@ public class DataManager implements IData {
         if (uartReader != null) {
             uartReader.setReaderState(UartReader.State.ENDED);
         }
+    }
+
+    public final List<DataSet> getDataAll() {
+        return dataSets;
     }
 
     public boolean isConnected() {
