@@ -17,6 +17,7 @@ public class Main extends Application {
     public static Scene s;
     public static BorderPane root;
     public static boolean isConnected = false;
+    public static Stage mainStage;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -26,6 +27,7 @@ public class Main extends Application {
         s.getStylesheets().add("informatikprojekt/zigbee/frontend/fxml/frontend.css");
         JMetro jMetro = new JMetro(Style.LIGHT);
         jMetro.setScene(s);
+        mainStage = primaryStage;
         primaryStage.setScene(s);
         primaryStage.setResizable(false);
         primaryStage.show();

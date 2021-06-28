@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.RadioMenuItem?>
@@ -9,7 +10,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-
 
 <BorderPane xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="informatikprojekt.zigbee.frontend.ControllerData">
    <center>
@@ -20,46 +20,54 @@
       </TableView>
    </center>
    <bottom>
-      <HBox fx:id="menubar" alignment="CENTER" prefHeight="33.0" prefWidth="600.0" spacing="15.0" BorderPane.alignment="CENTER">
-         <children>
-            <Label alignment="CENTER" text="Filter:">
-               <font>
-                  <Font size="17.0" />
-               </font>
-            </Label>
-            <MenuButton fx:id="btnDevice" mnemonicParsing="false" onAction="#onBtnFilter" text="Device">
-               <items>
-                  <RadioMenuItem mnemonicParsing="false" onAction="#onDevice1" selected="true" text="Device 1" />
-                  <RadioMenuItem mnemonicParsing="false" onAction="#onDevice2" selected="true" text="Device 2" />
-                  <RadioMenuItem mnemonicParsing="false" onAction="#onDevice3" selected="true" text="Device 3" />
-                  <RadioMenuItem mnemonicParsing="false" onAction="#onDevice4" selected="true" text="Device 4" />
-               </items>
-            </MenuButton>
-            <MenuButton fx:id="btnSensor" mnemonicParsing="false" onAction="#onBtnFilter" text="Sensor">
-               <items>
-                  <RadioMenuItem mnemonicParsing="false" onAction="#onSensorSHT21" selected="true" text="SHT21" />
-                  <RadioMenuItem mnemonicParsing="false" onAction="#onSensorCCS" selected="true" text="CCS" />
-                  <RadioMenuItem mnemonicParsing="false" onAction="#onSensorSCD30" selected="true" text="SCD30" />
-                  <RadioMenuItem mnemonicParsing="false" onAction="#onSensorSCD41" selected="true" text="SCD41" />
-               </items>
-            </MenuButton>
-            <MenuButton fx:id="btnType" mnemonicParsing="false" onAction="#onBtnFilter" text="Datentyp">
-               <items>
-                  <RadioMenuItem mnemonicParsing="false" onAction="#onTypeTemp" selected="true" text="Temperatur" />
-                  <RadioMenuItem mnemonicParsing="false" onAction="#onTypeHum" selected="true" text="Feuchtigkeit" />
-                  <RadioMenuItem mnemonicParsing="false" onAction="#onTypeCO2" selected="true" text="CO2" />
-                  <RadioMenuItem mnemonicParsing="false" onAction="#onTypeVOC" selected="true" text="VoC" />
-                  <RadioMenuItem mnemonicParsing="false" onAction="#onTypeParticle" selected="true" text="Partikel" />
-               </items>
-            </MenuButton>
-         </children>
+      <VBox alignment="TOP_CENTER" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets top="10.0" />
          </BorderPane.margin>
-         <padding>
-            <Insets bottom="50.0" left="20.0" />
-         </padding>
-      </HBox>
+         <children>
+            <HBox fx:id="menubar" alignment="CENTER" prefHeight="5.0" prefWidth="600.0" spacing="15.0">
+               <children>
+                  <Label alignment="CENTER" text="Filter:">
+                     <font>
+                        <Font size="17.0" />
+                     </font>
+                  </Label>
+                  <MenuButton fx:id="btnDevice" mnemonicParsing="false" onAction="#onBtnFilter" text="Device">
+                     <items>
+                        <RadioMenuItem mnemonicParsing="false" onAction="#onDevice1" selected="true" text="Device 1" />
+                        <RadioMenuItem mnemonicParsing="false" onAction="#onDevice2" selected="true" text="Device 2" />
+                        <RadioMenuItem mnemonicParsing="false" onAction="#onDevice3" selected="true" text="Device 3" />
+                        <RadioMenuItem mnemonicParsing="false" onAction="#onDevice4" selected="true" text="Device 4" />
+                     </items>
+                  </MenuButton>
+                  <MenuButton fx:id="btnSensor" mnemonicParsing="false" onAction="#onBtnFilter" text="Sensor">
+                     <items>
+                        <RadioMenuItem mnemonicParsing="false" onAction="#onSensorSHT21" selected="true" text="SHT21" />
+                        <RadioMenuItem mnemonicParsing="false" onAction="#onSensorCCS" selected="true" text="CCS" />
+                        <RadioMenuItem mnemonicParsing="false" onAction="#onSensorSCD30" selected="true" text="SCD30" />
+                        <RadioMenuItem mnemonicParsing="false" onAction="#onSensorSCD41" selected="true" text="SCD41" />
+                     </items>
+                  </MenuButton>
+                  <MenuButton fx:id="btnType" mnemonicParsing="false" onAction="#onBtnFilter" text="Datentyp">
+                     <items>
+                        <RadioMenuItem mnemonicParsing="false" onAction="#onTypeTemp" selected="true" text="Temperatur" />
+                        <RadioMenuItem mnemonicParsing="false" onAction="#onTypeHum" selected="true" text="Feuchtigkeit" />
+                        <RadioMenuItem mnemonicParsing="false" onAction="#onTypeCO2" selected="true" text="CO2" />
+                        <RadioMenuItem mnemonicParsing="false" onAction="#onTypeVOC" selected="true" text="VoC" />
+                     </items>
+                  </MenuButton>
+               </children>
+               <padding>
+                  <Insets bottom="50.0" left="20.0" />
+               </padding>
+            </HBox>
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#btnExport" text="Exportieren als CSV" textAlignment="CENTER">
+               <VBox.margin>
+                  <Insets bottom="35.0" top="-15.0" />
+               </VBox.margin>
+            </Button>
+         </children>
+      </VBox>
    </bottom>
    <top>
       <VBox alignment="TOP_CENTER" prefHeight="106.0" prefWidth="600.0" BorderPane.alignment="TOP_CENTER">

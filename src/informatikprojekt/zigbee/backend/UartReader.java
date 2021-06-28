@@ -2,6 +2,7 @@ package informatikprojekt.zigbee.backend;
 
 import gnu.io.NRSerialPort;
 import informatikprojekt.zigbee.util.CommonUtils;
+import javafx.application.Platform;
 
 import java.io.DataInputStream;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -55,6 +56,9 @@ public class UartReader extends Thread {
                 if (!data.isBlank()) {
                     data = data.substring(0, data.length() - 1);
                     String finalData = data;
+                    Platform.runLater(() -> {
+                        CommonUtils.consoleString(finalData);
+                    });
                     String[] dataSplit = data.split(";");
 
                     processData(dataSplit);
@@ -112,29 +116,29 @@ public class UartReader extends Thread {
 
         switch (Integer.parseInt(dataSplit[2])) {
             case 1 -> {
-                SensorData s1 = new SensorData("", Integer.parseInt(dataSplit[1]), 1, CommonUtils.TEMPERATURE, Float.parseFloat(dataSplit[2]));
-                SensorData s2 = new SensorData("", Integer.parseInt(dataSplit[1]), 1, CommonUtils.HUMIDITY, Float.parseFloat(dataSplit[3]));
+                SensorData s1 = new SensorData("", Integer.parseInt(dataSplit[1]), 1, CommonUtils.TEMPERATURE, Float.parseFloat(dataSplit[3]));
+                SensorData s2 = new SensorData("", Integer.parseInt(dataSplit[1]), 1, CommonUtils.HUMIDITY, Float.parseFloat(dataSplit[4]));
                 sensorDataQueue.add(s1);
                 sensorDataQueue.add(s2);
             }
             case 2 -> {
-                SensorData s3 = new SensorData("", Integer.parseInt(dataSplit[1]), 2, CommonUtils.CO2, Float.parseFloat(dataSplit[2]));
-                SensorData s4 = new SensorData("", Integer.parseInt(dataSplit[1]), 2, CommonUtils.VOC, Float.parseFloat(dataSplit[3]));
+                SensorData s3 = new SensorData("", Integer.parseInt(dataSplit[1]), 2, CommonUtils.CO2, Float.parseFloat(dataSplit[3]));
+                SensorData s4 = new SensorData("", Integer.parseInt(dataSplit[1]), 2, CommonUtils.VOC, Float.parseFloat(dataSplit[4]));
                 sensorDataQueue.add(s3);
                 sensorDataQueue.add(s4);
             }
             case 3 -> {
-                SensorData s5 = new SensorData("", Integer.parseInt(dataSplit[1]), 3, CommonUtils.CO2, Float.parseFloat(dataSplit[2]));
-                SensorData s6 = new SensorData("", Integer.parseInt(dataSplit[1]), 3, CommonUtils.TEMPERATURE, Float.parseFloat(dataSplit[3]));
-                SensorData s7 = new SensorData("", Integer.parseInt(dataSplit[1]), 3, CommonUtils.HUMIDITY, Float.parseFloat(dataSplit[4]));
+                SensorData s5 = new SensorData("", Integer.parseInt(dataSplit[1]), 3, CommonUtils.CO2, Float.parseFloat(dataSplit[3]));
+                SensorData s6 = new SensorData("", Integer.parseInt(dataSplit[1]), 3, CommonUtils.TEMPERATURE, Float.parseFloat(dataSplit[4]));
+                SensorData s7 = new SensorData("", Integer.parseInt(dataSplit[1]), 3, CommonUtils.HUMIDITY, Float.parseFloat(dataSplit[5]));
                 sensorDataQueue.add(s5);
                 sensorDataQueue.add(s6);
                 sensorDataQueue.add(s7);
             }
             case 4 -> {
-                SensorData s8 = new SensorData("", Integer.parseInt(dataSplit[1]), 4, CommonUtils.CO2, Float.parseFloat(dataSplit[2]));
-                SensorData s9 = new SensorData("", Integer.parseInt(dataSplit[1]), 4, CommonUtils.TEMPERATURE, Float.parseFloat(dataSplit[3]));
-                SensorData s10 = new SensorData("", Integer.parseInt(dataSplit[1]), 4, CommonUtils.HUMIDITY, Float.parseFloat(dataSplit[4]));
+                SensorData s8 = new SensorData("", Integer.parseInt(dataSplit[1]), 4, CommonUtils.CO2, Float.parseFloat(dataSplit[3]));
+                SensorData s9 = new SensorData("", Integer.parseInt(dataSplit[1]), 4, CommonUtils.TEMPERATURE, Float.parseFloat(dataSplit[4]));
+                SensorData s10 = new SensorData("", Integer.parseInt(dataSplit[1]), 4, CommonUtils.HUMIDITY, Float.parseFloat(dataSplit[5]));
                 sensorDataQueue.add(s8);
                 sensorDataQueue.add(s9);
                 sensorDataQueue.add(s10);

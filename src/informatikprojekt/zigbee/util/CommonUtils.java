@@ -1,9 +1,12 @@
 package informatikprojekt.zigbee.util;
 
+import informatikprojekt.zigbee.frontend.ControllerBase;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class CommonUtils {
@@ -40,6 +43,24 @@ public class CommonUtils {
         for (Timer t : timers) {
             t.cancel();
         }
+    }
+
+    public static void consoleString(String s) {
+
+        StringBuilder builder = new StringBuilder("[");
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("HH:mm:ss");
+        builder.append(LocalDateTime.now().format(pattern)).append("] : ").append(s);
+        builder.append("\n");
+
+        double scroll = ControllerBase.textConsole.getScrollTop();
+
+        if (ControllerBase.checkStayConsole.isSelected()) {
+            ControllerBase.textConsole.appendText(builder.toString());
+        } else {
+            ControllerBase.textConsole.setText(ControllerBase.textConsole.getText() + builder);
+            ControllerBase.textConsole.setScrollTop(scroll);
+        }
+
     }
 
     public static void registerTimer(Timer t) {

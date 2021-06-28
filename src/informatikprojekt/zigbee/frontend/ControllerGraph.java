@@ -121,7 +121,6 @@ public class ControllerGraph implements Initializable {
                                     }
                                     if (readingsC > 0) {
                                         co2Series.getData().add(new XYChart.Data(sec, co2 / readingsC));
-                                        System.out.println("CO2");
                                     }
                                     if (readingsV > 0) {
                                         vocSeries.getData().add(new XYChart.Data(sec, voc / readingsV));

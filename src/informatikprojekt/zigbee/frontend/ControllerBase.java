@@ -1,11 +1,14 @@
 package informatikprojekt.zigbee.frontend;
 
 import informatikprojekt.zigbee.backend.DataManager;
+import informatikprojekt.zigbee.util.CommonUtils;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -30,6 +33,8 @@ public class ControllerBase implements Initializable {
     public Circle ledStatus;
     public TextField fieldPort;
     public Button btnConnect;
+    public TextArea consoleOut;
+    public CheckBox autoScroll;
     private boolean isConnected = false;
     public static ControllerBase INSTANCE;
 
@@ -41,10 +46,15 @@ public class ControllerBase implements Initializable {
     public AnchorPane graphPanel;
     public BorderPane dataPanel;
     public VBox contentStart;
-    VBox content;
+    public VBox content;
+    public static TextArea textConsole;
+    public static CheckBox checkStayConsole;
 
     public boolean isConnected() {
         return isConnected;
+    }
+
+    public void onAutoScroll(ActionEvent actionEvent) {
     }
 
     public enum Window {
@@ -57,6 +67,8 @@ public class ControllerBase implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        textConsole = consoleOut;
+        checkStayConsole = autoScroll;
         ledStatus.fillProperty().bindBidirectional(ledStatusNavbar.fillProperty());
 
         INSTANCE = this;
@@ -68,9 +80,9 @@ public class ControllerBase implements Initializable {
 
         try {
 
-            content = (VBox) FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/room.fxml")));
-            graphPanel = (AnchorPane) FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/graph.fxml")));
-            dataPanel = (BorderPane) FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/data.fxml")));
+            content = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/room.fxml")));
+            graphPanel = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/graph.fxml")));
+            dataPanel = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/data.fxml")));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -153,11 +165,12 @@ public class ControllerBase implements Initializable {
                             ledStatusNavbar.setFill(Color.GREEN);
                             ControllerGraph.INSTANCE.setupData();
                             ControllerData.INSTANCE.setupData();
+                            CommonUtils.consoleString("Connected.");
                         });
                         t1.cancel();
                     } else if (DataManager.get().isFailed()) {
-                        System.out.println("Cancelled");
                         ledStatusNavbar.setFill(Color.RED);
+                        CommonUtils.consoleString("Error while connecting. See terminal for more info.");
                         t1.cancel();
                     }
                 }
@@ -174,6 +187,7 @@ public class ControllerBase implements Initializable {
                             btnConnect.setText("Verbinden");
                             ledStatusNavbar.setFill(Color.RED);
                             isConnected = false;
+                            CommonUtils.consoleString("Disconnected.");
                         });
                         t1.cancel();
                     }
