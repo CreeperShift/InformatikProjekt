@@ -172,7 +172,6 @@ public class ControllerRoom implements Initializable {
         editMode.fire();
     }
 
-
     private void setToolbarDisabled(boolean bool) {
 
         if (bool) {
@@ -188,10 +187,10 @@ public class ControllerRoom implements Initializable {
         cbGitterNetzLinien.setDisable(bool);
         cbLineal.setDisable(bool);
         btnMove.setDisable(bool);
-
     }
 
     public void guiDelete(ActionEvent actionEvent) {
+
         if (activeTool != TOOL_TYPE.DELETE) {
             activeTool = TOOL_TYPE.DELETE;
             Image image = new Image("informatikprojekt/zigbee/frontend/cursor/eraser-tool.png");
@@ -211,7 +210,6 @@ public class ControllerRoom implements Initializable {
         drawingArea.getChildren().addAll(lineList);
         drawingArea.getChildren().addAll(textList);
         lineGraph = new LineGraph();
-
     }
 
     public void gitterOnMouseClicked(MouseEvent event) {
