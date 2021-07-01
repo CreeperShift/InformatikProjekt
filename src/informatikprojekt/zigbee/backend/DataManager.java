@@ -10,7 +10,7 @@ import java.util.TimerTask;
 public class DataManager implements IData {
 
     private final LinkedList<DataSet> dataSets = new LinkedList<>();
-    private static UartReader uartReader;
+    private static MockUartReader uartReader;
     private Timer timer1;
     private String port = "COM1";
 
@@ -43,7 +43,7 @@ public class DataManager implements IData {
                 timer1.cancel();
             }
 
-            uartReader = new UartReader(port);
+            uartReader = new MockUartReader(port);
             uartReader.startReader();
 
             timer1 = new Timer();
