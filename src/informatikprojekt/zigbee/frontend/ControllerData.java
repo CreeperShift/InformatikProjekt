@@ -111,6 +111,8 @@ public class ControllerData implements Initializable {
 
         for (int id : deviceIDFilterList) {
             if (data.getDeviceID() == id) {
+
+
                 return true;
             }
         }

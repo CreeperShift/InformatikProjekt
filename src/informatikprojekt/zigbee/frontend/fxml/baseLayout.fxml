@@ -73,7 +73,7 @@
                               <Font size="19.0" />
                            </font>
                         </Label>
-                        <Circle fill="#ff1f1f" radius="16.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0">
+                        <Circle fx:id="ledStatusModulEins" fill="#ff1f1f" radius="16.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0">
                            <HBox.margin>
                               <Insets right="15.0" top="10.0" />
                            </HBox.margin></Circle>
@@ -86,7 +86,7 @@
                               <Font size="19.0" />
                            </font>
                         </Label>
-                        <Circle fill="#ff1f1f" radius="16.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0">
+                        <Circle fx:id="ledStatusModulZwei" fill="#ff1f1f" radius="16.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0">
                            <HBox.margin>
                               <Insets right="15.0" top="10.0" />
                            </HBox.margin></Circle>
@@ -99,7 +99,7 @@
                               <Font size="19.0" />
                            </font>
                         </Label>
-                        <Circle fill="#ff1f1f" radius="16.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0">
+                        <Circle fx:id="ledStatusModulDrei" fill="#ff1f1f" radius="16.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0">
                            <HBox.margin>
                               <Insets right="15.0" top="10.0" />
                            </HBox.margin></Circle>
@@ -112,7 +112,7 @@
                               <Font size="19.0" />
                            </font>
                         </Label>
-                        <Circle fill="#ff1f1f" radius="16.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0">
+                        <Circle fx:id="ledStatusModulVier" fill="#ff1f1f" radius="16.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0">
                            <HBox.margin>
                               <Insets right="15.0" top="10.0" />
                            </HBox.margin></Circle>

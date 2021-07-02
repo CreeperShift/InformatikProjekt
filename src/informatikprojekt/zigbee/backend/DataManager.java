@@ -56,6 +56,15 @@ public class DataManager implements IData {
                         while (!uartReader.getQueue().isEmpty()) {
                             try {
                                 SensorData data = uartReader.getQueue().take();
+
+
+
+                                     //   System.out.println(data.getSensorID());
+                                System.out.println( data.getDeviceID() );
+
+
+
+
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
                                 data.setFormattedTime(dataSet.getTime().format(formatter));
                                 dataSet.addSensorData(data);
@@ -71,6 +80,8 @@ public class DataManager implements IData {
 
         }
     }
+
+
 
     @Override
     public List<DataSet> getDataForTime(LocalDateTime from, LocalDateTime to) {
@@ -107,6 +118,7 @@ public class DataManager implements IData {
     public boolean isConnected() {
         return uartReader.getReaderState() == UartReader.State.CONNECTED;
     }
+
 
 
     public boolean isFailed() {

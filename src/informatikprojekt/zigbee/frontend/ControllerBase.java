@@ -30,6 +30,10 @@ public class ControllerBase implements Initializable {
     public Button btnData;
     public VBox sidePanel;
     public Circle ledStatusNavbar;
+    public Circle ledStatusModulEins;
+    public Circle ledStatusModulZwei;
+    public Circle ledStatusModulDrei;
+    public Circle ledStatusModulVier;
     public Circle ledStatus;
     public TextField fieldPort;
     public Button btnConnect;
@@ -110,6 +114,8 @@ public class ControllerBase implements Initializable {
         setButtonActive(btnStart);
         contentPanel.getChildren().clear();
         contentPanel.getChildren().add(contentStart);
+
+
     }
 
 
@@ -151,6 +157,7 @@ public class ControllerBase implements Initializable {
     public void onBtnConnect(ActionEvent actionEvent) {
 
         if (btnConnect.getText().equalsIgnoreCase("Verbinden")) {
+
 
             DataManager.get().setPort(fieldPort.getText());
             DataManager.get().startReader();
