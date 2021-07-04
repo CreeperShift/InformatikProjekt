@@ -1,5 +1,6 @@
 package informatikprojekt.zigbee.frontend;
 
+import informatikprojekt.zigbee.backend.AmpelLed;
 import informatikprojekt.zigbee.backend.DataManager;
 import informatikprojekt.zigbee.util.CommonUtils;
 import javafx.application.Platform;
@@ -41,7 +42,7 @@ public class ControllerBase implements Initializable {
     public CheckBox autoScroll;
     private boolean isConnected = false;
     public static ControllerBase INSTANCE;
-
+    private boolean setupDone = false;
     private static Window activeWindow = Window.START;
 
     private Button[] allButtons;
@@ -53,7 +54,9 @@ public class ControllerBase implements Initializable {
     public VBox content;
     public static TextArea textConsole;
     public static CheckBox checkStayConsole;
-
+    private boolean ModEinsStop =false;
+    private boolean ModZweiStop =false;
+    private boolean ModDreiStop =false;
     public boolean isConnected() {
         return isConnected;
     }
@@ -64,6 +67,7 @@ public class ControllerBase implements Initializable {
     public enum Window {
         START, ROOM, GRAPH, DATA;
     }
+
 
     public static Window getActiveWindow() {
         return activeWindow;
@@ -97,6 +101,9 @@ public class ControllerBase implements Initializable {
     private void setActiveWindow(Window window) {
         activeWindow = window;
     }
+
+
+
 
 
     public void onButtonRoom(ActionEvent actionEvent) {
@@ -162,6 +169,8 @@ public class ControllerBase implements Initializable {
             DataManager.get().setPort(fieldPort.getText());
             DataManager.get().startReader();
             Timer t1 = new Timer();
+            AmpelLed amp = new AmpelLed();
+
             t1.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -173,13 +182,31 @@ public class ControllerBase implements Initializable {
                             ControllerGraph.INSTANCE.setupData();
                             ControllerData.INSTANCE.setupData();
                             CommonUtils.consoleString("Connected.");
+
+                           modulEins();
+                           modulZwei();
+                           modulDrei();
+
+
                         });
                         t1.cancel();
                     } else if (DataManager.get().isFailed()) {
                         ledStatusNavbar.setFill(Color.RED);
+                        ledStatusModulEins.setFill(Color.RED);
+                        ledStatusModulDrei.setFill(Color.RED);
+                        ledStatusModulZwei.setFill(Color.RED);
                         CommonUtils.consoleString("Error while connecting. See terminal for more info.");
                         t1.cancel();
+                        ModEinsStop=true;
+                        ModZweiStop=true;
+                        ModDreiStop=true;
+
                     }
+
+
+
+
+
                 }
             }, 100, 100);
 
@@ -193,14 +220,113 @@ public class ControllerBase implements Initializable {
                         Platform.runLater(() -> {
                             btnConnect.setText("Verbinden");
                             ledStatusNavbar.setFill(Color.RED);
+                            ledStatusModulEins.setFill(Color.RED);
+                            ledStatusModulDrei.setFill(Color.RED);
+                            ledStatusModulZwei.setFill(Color.RED);
                             isConnected = false;
                             CommonUtils.consoleString("Disconnected.");
                         });
                         t1.cancel();
+
+                        ModEinsStop=true;
+                        ModZweiStop=true;
+                        ModDreiStop=true;
                     }
                 }
             }, 100, 100);
         }
+
+
+
+
+
+
+
+
+
     }
+
+
+public void modulEins() {
+    Timer t2 = new Timer();
+
+
+    t2.scheduleAtFixedRate(new TimerTask() {
+        @Override
+        public void run() {
+
+            if (ModEinsStop==false){
+                //System.out.println(DataManager.get().getModulEins() + " TEST");
+
+                ledStatusModulEins.setFill(Color.GREEN);
+
+            }else {
+                t2.cancel();
+
+                ledStatusModulEins.setFill(Color.RED);
+
+
+            }
+            ModEinsStop=false;
+
+        }
+    },500,2000);
+
+}
+
+    public void modulZwei() {
+        Timer t2 = new Timer();
+
+
+        t2.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+
+                if (ModZweiStop==false){
+                    //System.out.println(DataManager.get().getModulEins() + " TEST");
+
+                    ledStatusModulZwei.setFill(Color.GREEN);
+
+                }else {
+                    t2.cancel();
+
+                    ledStatusModulZwei.setFill(Color.RED);
+
+
+                }
+                ModZweiStop=false;
+
+            }
+        },500,2000);
+
+    }
+
+    public void modulDrei() {
+        Timer t4 = new Timer();
+
+
+        t4.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+
+                if (ModDreiStop==false){
+                    //System.out.println(DataManager.get().getModulEins() + " TEST");
+
+                    ledStatusModulDrei.setFill(Color.GREEN);
+
+                }else {
+                    t4.cancel();
+
+                    ledStatusModulDrei.setFill(Color.RED);
+
+
+                }
+                ModDreiStop=false;
+
+            }
+        },500,2000);
+
+    }
+
 
 }

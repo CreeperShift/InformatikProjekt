@@ -13,6 +13,10 @@ public class DataManager implements IData {
     private static MockUartReader uartReader;
     private Timer timer1;
     private String port = "COM1";
+    private AmpelLed ampelLed;
+    private boolean modulEins=false;
+    private boolean ModulZwei=false;
+    private boolean modulDrei=false;
 
     private static DataManager INSTANCE = null;
 
@@ -60,9 +64,19 @@ public class DataManager implements IData {
 
 
                                      //   System.out.println(data.getSensorID());
-                                System.out.println( data.getDeviceID() );
+                                //System.out.println( data.getDeviceID() );
 
 
+                               // System.out.println(data.getSensorID());
+
+                               // System.out.println(ModulStatusEins(data.getSensorID()));
+
+                                System.out.println( data.getSensorID());
+
+                                if (1==data.getSensorID()){
+                                    //setModulStatusEins(1);
+                                }
+                                //System.out.println(getModulEins()+"MODUL1 DATAMGR KLASSE");
 
 
                                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -81,6 +95,33 @@ public class DataManager implements IData {
         }
     }
 
+    public void  setModulStatusEins(int x){
+        boolean tmp = false;
+        if(x == 1){
+
+            this.modulEins =true;
+        }
+
+        System.out.println(this.modulEins);
+    }
+    public void setModulStatusZwei(int x){
+        boolean tmp = false;
+        if(x == 2){
+
+        }
+
+    }
+    public void setModulStatusDrei(int x){
+        boolean tmp = false;
+        if(x == 3){
+
+        }
+
+    }
+
+ public boolean getModulEins(){return this.modulEins;}
+    public boolean getModulZwei(){return this.modulEins;}
+    public boolean getModulDrei(){return this.modulEins;}
 
 
     @Override

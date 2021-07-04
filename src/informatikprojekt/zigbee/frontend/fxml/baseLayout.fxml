@@ -68,7 +68,7 @@
                   <Separator prefWidth="200.0" />
                   <HBox prefHeight="51.0" prefWidth="155.0">
                      <children>
-                        <Label alignment="CENTER" prefHeight="51.0" prefWidth="167.0" text="Modul1">
+                        <Label alignment="CENTER" prefHeight="51.0" prefWidth="167.0" text="Zigbee1">
                            <font>
                               <Font size="19.0" />
                            </font>
@@ -81,7 +81,7 @@
                   </HBox>
                   <HBox prefHeight="51.0" prefWidth="155.0">
                      <children>
-                        <Label alignment="CENTER" prefHeight="51.0" prefWidth="167.0" text="Modul2">
+                        <Label alignment="CENTER" prefHeight="51.0" prefWidth="167.0" text="Zigbee2">
                            <font>
                               <Font size="19.0" />
                            </font>
@@ -94,7 +94,7 @@
                   </HBox>
                   <HBox prefHeight="51.0" prefWidth="155.0">
                      <children>
-                        <Label alignment="CENTER" prefHeight="51.0" prefWidth="167.0" text="Modul3">
+                        <Label alignment="CENTER" prefHeight="51.0" prefWidth="167.0" text="Zigbee3">
                            <font>
                               <Font size="19.0" />
                            </font>
@@ -107,7 +107,7 @@
                   </HBox>
                   <HBox prefHeight="51.0" prefWidth="155.0">
                      <children>
-                        <Label alignment="CENTER" prefHeight="51.0" prefWidth="167.0" text="Modul4">
+                        <Label alignment="CENTER" prefHeight="51.0" prefWidth="167.0" text="Koordi.4">
                            <font>
                               <Font size="19.0" />
                            </font>
