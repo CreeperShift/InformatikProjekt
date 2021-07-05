@@ -32,7 +32,7 @@ public class MockUartReader extends UartReader {
                 for (int f = 2; f < 4; f++) {
                     Random rand = new Random();
                     if (i > 1) {
-                        SensorData data = new SensorData("", i, 1, "Temperatur", rand.nextInt(100));
+                        SensorData data = new SensorData("", i, 1, "Temperatur", rand.nextInt(60));
                         sensorDataQueue.add(data);
                     }
                     SensorData data = new SensorData("", i, f, CommonUtils.CO2, rand.nextInt(300)+350);

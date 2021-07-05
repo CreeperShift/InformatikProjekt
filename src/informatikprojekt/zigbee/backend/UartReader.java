@@ -5,12 +5,20 @@ import informatikprojekt.zigbee.util.CommonUtils;
 import javafx.application.Platform;
 
 import java.io.DataInputStream;
+import java.sql.*;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class UartReader extends Thread {
 
     private final ArrayBlockingQueue<SensorData> sensorDataQueue = new ArrayBlockingQueue<>(100);
+    private final List<Data> dataSet = new LinkedList<>();
+    private boolean isReading = false;
+    private Connection connection;
 
     State activeState = State.NONE;
 
@@ -35,7 +43,13 @@ public class UartReader extends Thread {
     }
 
     public void startReader() {
-        this.start();
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/luftqualitaet", "root", "progex");
+            this.start();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            System.err.println("COULD NOT CONNECT TO DATABASE");
+        }
     }
 
     @Override
@@ -47,7 +61,7 @@ public class UartReader extends Thread {
         while (serial != null && serial.isConnected() && activeState != State.ENDED) {
             activeState = State.CONNECTED;
 
-            try (DataInputStream ins = new DataInputStream(serial.getInputStream());) {
+            try (DataInputStream ins = new DataInputStream(serial.getInputStream())) {
                 String data = "";
                 while (ins.available() > 0) {// read all bytes
                     char b = (char) ins.read();
@@ -101,7 +115,11 @@ public class UartReader extends Thread {
         switch (Integer.parseInt(dataSplit[0])) {
             case 0:
                 //0;1;086
-                handleData(dataSplit);
+                try {
+                    handleData(dataSplit);
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
                 break;
             case 1:
                 //TODO: Battery level?
@@ -112,36 +130,75 @@ public class UartReader extends Thread {
         }
     }
 
-    private void handleData(String[] dataSplit) {
+    public void testUart() throws SQLException {
+        String[] testData = new String[10];
 
-        switch (Integer.parseInt(dataSplit[2])) {
-            case 1 -> {
-                SensorData s1 = new SensorData("", Integer.parseInt(dataSplit[1]), 1, CommonUtils.TEMPERATURE, Float.parseFloat(dataSplit[3]));
-                SensorData s2 = new SensorData("", Integer.parseInt(dataSplit[1]), 1, CommonUtils.HUMIDITY, Float.parseFloat(dataSplit[4]));
-                sensorDataQueue.add(s1);
-                sensorDataQueue.add(s2);
-            }
-            case 2 -> {
-                SensorData s3 = new SensorData("", Integer.parseInt(dataSplit[1]), 2, CommonUtils.CO2, Float.parseFloat(dataSplit[3]));
-                SensorData s4 = new SensorData("", Integer.parseInt(dataSplit[1]), 2, CommonUtils.VOC, Float.parseFloat(dataSplit[4]));
-                sensorDataQueue.add(s3);
-                sensorDataQueue.add(s4);
-            }
-            case 3 -> {
-                SensorData s5 = new SensorData("", Integer.parseInt(dataSplit[1]), 3, CommonUtils.CO2, Float.parseFloat(dataSplit[3]));
-                SensorData s6 = new SensorData("", Integer.parseInt(dataSplit[1]), 3, CommonUtils.TEMPERATURE, Float.parseFloat(dataSplit[4]));
-                SensorData s7 = new SensorData("", Integer.parseInt(dataSplit[1]), 3, CommonUtils.HUMIDITY, Float.parseFloat(dataSplit[5]));
-                sensorDataQueue.add(s5);
-                sensorDataQueue.add(s6);
-                sensorDataQueue.add(s7);
-            }
-            case 4 -> {
-                SensorData s8 = new SensorData("", Integer.parseInt(dataSplit[1]), 4, CommonUtils.CO2, Float.parseFloat(dataSplit[3]));
-                SensorData s9 = new SensorData("", Integer.parseInt(dataSplit[1]), 4, CommonUtils.TEMPERATURE, Float.parseFloat(dataSplit[4]));
-                SensorData s10 = new SensorData("", Integer.parseInt(dataSplit[1]), 4, CommonUtils.HUMIDITY, Float.parseFloat(dataSplit[5]));
-                sensorDataQueue.add(s8);
-                sensorDataQueue.add(s9);
-                sensorDataQueue.add(s10);
+        //String: 0;1;SCD30;3;CO2;350;Temperatur;30.5;Feuchtigkeit;40
+
+        testData[0] = "0"; //Type: Data
+        testData[1] = "1"; // DEVICE: 1
+        testData[2] = "SCD30"; //SENSOR name
+        testData[3] = "3"; //Databits
+        testData[4] = "CO2"; //1. typ
+        testData[5] = "350"; //1. data
+        testData[6] = "Temperatur"; // 2. typ
+        testData[7] = "30.5"; // 2. data
+        testData[8] = "Feuchtigkeit"; // 3. typ
+        testData[9] = "40"; // 3. data
+        handleData(testData);
+    }
+
+    private void handleData(String[] dataSplit) throws SQLException {
+
+        if (!isReading) {
+            isReading = true;
+            addDataToList(dataSplit);
+            Timer writeTimer = new Timer();
+            CommonUtils.registerTimer(writeTimer);
+            writeTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    isReading = false;
+                    String createDataSet = "INSERT INTO dataset (recordedAt) value (?);";
+                    String createDataPoint = "INSERT INTO data (dataSetID, sensor, dataType, dataValue, device) values ((select id from dataset where recordedAt = ?), ?, ?, ?, ?);";
+                    try {
+                        PreparedStatement statement = connection.prepareStatement(createDataSet);
+                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                        statement.setTimestamp(1, timestamp);
+                        statement.executeUpdate();
+                        statement.close();
+                        PreparedStatement createData = connection.prepareStatement(createDataPoint);
+                        for (Data d : dataSet) {
+                            createData.setTimestamp(1, timestamp);
+                            createData.setString(2, d.SensorName());
+                            createData.setString(3, d.dataType());
+                            createData.setFloat(4, d.value());
+                            createData.setInt(5, d.Device());
+                            createData.executeUpdate();
+                        }
+                        createData.close();
+
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                        System.err.println("Could not write into Database!");
+                    }
+                    writeTimer.cancel();
+                }
+            }, 1000, 1000);
+        } else {
+            addDataToList(dataSplit);
+        }
+
+    }
+
+    private void addDataToList(String[] dataSplit) {
+
+        if (dataSplit[0].equals("0")) {
+
+            for (int i = 4; i < Integer.parseInt(dataSplit[3]) + 4; i = i + 2) {
+
+                Data data = new Data(Integer.parseInt(dataSplit[1]), dataSplit[2], dataSplit[i], Float.parseFloat(dataSplit[i + 1]));
+                dataSet.add(data);
             }
         }
     }
