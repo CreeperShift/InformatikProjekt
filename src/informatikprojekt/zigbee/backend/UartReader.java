@@ -153,42 +153,46 @@ public class UartReader extends Thread {
         if (!isReading) {
             isReading = true;
             addDataToList(dataSplit);
-            Timer writeTimer = new Timer();
-            CommonUtils.registerTimer(writeTimer);
-            writeTimer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    isReading = false;
-                    String createDataSet = "INSERT INTO dataset (recordedAt) value (?);";
-                    String createDataPoint = "INSERT INTO data (dataSetID, sensor, dataType, dataValue, device) values ((select id from dataset where recordedAt = ?), ?, ?, ?, ?);";
-                    try {
-                        PreparedStatement statement = connection.prepareStatement(createDataSet);
-                        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                        statement.setTimestamp(1, timestamp);
-                        statement.executeUpdate();
-                        statement.close();
-                        PreparedStatement createData = connection.prepareStatement(createDataPoint);
-                        for (Data d : dataSet) {
-                            createData.setTimestamp(1, timestamp);
-                            createData.setString(2, d.SensorName());
-                            createData.setString(3, d.dataType());
-                            createData.setFloat(4, d.value());
-                            createData.setInt(5, d.Device());
-                            createData.executeUpdate();
-                        }
-                        createData.close();
-
-                    } catch (SQLException throwables) {
-                        throwables.printStackTrace();
-                        System.err.println("Could not write into Database!");
-                    }
-                    writeTimer.cancel();
-                }
-            }, 1000, 1000);
+            createDatabaseTimer();
         } else {
             addDataToList(dataSplit);
         }
 
+    }
+
+    private void createDatabaseTimer() {
+        Timer writeTimer = new Timer();
+        CommonUtils.registerTimer(writeTimer);
+        writeTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                isReading = false;
+                String createDataSet = "INSERT INTO dataset (recordedAt) value (?);";
+                String createDataPoint = "INSERT INTO data (dataSetID, sensor, dataType, dataValue, device) values ((select id from dataset where recordedAt = ?), ?, ?, ?, ?);";
+                try {
+                    PreparedStatement statement = connection.prepareStatement(createDataSet);
+                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                    statement.setTimestamp(1, timestamp);
+                    statement.executeUpdate();
+                    statement.close();
+                    PreparedStatement createData = connection.prepareStatement(createDataPoint);
+                    for (Data d : dataSet) {
+                        createData.setTimestamp(1, timestamp);
+                        createData.setString(2, d.SensorName());
+                        createData.setString(3, d.dataType());
+                        createData.setFloat(4, d.value());
+                        createData.setInt(5, d.Device());
+                        createData.executeUpdate();
+                    }
+                    createData.close();
+
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                    System.err.println("Could not write into Database!");
+                }
+                writeTimer.cancel();
+            }
+        }, 1000, 1000);
     }
 
     private void addDataToList(String[] dataSplit) {
