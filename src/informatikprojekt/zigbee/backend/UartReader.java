@@ -6,6 +6,8 @@ import javafx.application.Platform;
 
 import java.io.DataInputStream;
 import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
@@ -39,19 +41,16 @@ public class UartReader extends Thread {
         activeState = state;
     }
 
+    private synchronized List<Data> getDataSet(){
+        return dataSet;
+    }
+
     public void startReader() {
-        try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/luftqualitaet", "root", "progex");
-            this.start();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            System.err.println("COULD NOT CONNECT TO DATABASE");
-        }
+        this.start();
     }
 
     @Override
     public void run() {
-
         serial = new NRSerialPort(port, baudRate);
         serial.connect();
 
@@ -141,18 +140,28 @@ public class UartReader extends Thread {
         writeTimer.schedule(new TimerTask() {
             @Override
             public void run() {
+                try {
+                    connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/luftqualitaet", "root", "progex");
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
                 isReading = false;
                 String createDataSet = "INSERT INTO dataset (recordedAt) value (?);";
                 String createDataPoint = "INSERT INTO data (dataSetID, sensor, dataType, dataValue, device) values ((select id from dataset where recordedAt = ?), ?, ?, ?, ?);";
                 try {
                     PreparedStatement statement = connection.prepareStatement(createDataSet);
-                    Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-                    statement.setTimestamp(1, timestamp);
+                    LocalDateTime loc = LocalDateTime.now();
+                    DateTimeFormatter format = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
+                    Timestamp timestamp = Timestamp.valueOf(loc.format(format));
+
+                    statement.setString(1,timestamp.toString());
                     statement.executeUpdate();
                     statement.close();
                     PreparedStatement createData = connection.prepareStatement(createDataPoint);
-                    for (Data d : dataSet) {
-                        createData.setTimestamp(1, timestamp);
+
+
+                    for (Data d : getDataSet()) {
+                        createData.setString(1, timestamp.toString());
                         createData.setString(2, d.SensorName());
                         createData.setString(3, d.dataType());
                         createData.setFloat(4, d.value());
@@ -166,15 +175,20 @@ public class UartReader extends Thread {
                     System.err.println("Could not write into Database!");
                 }
                 writeTimer.cancel();
+                try {
+                    connection.close();
+                } catch (SQLException throwables) {
+                    throwables.printStackTrace();
+                }
             }
-        }, 1000, 1000);
+        }, 5000, 1000);
     }
 
     private void addDataToList(String[] dataSplit) {
 
         if (dataSplit[0].equals("0")) {
 
-            for (int i = 4; i < Integer.parseInt(dataSplit[3]) + 4; i = i + 2) {
+            for (int i = 4; i <= Integer.parseInt(dataSplit[3]) + 4; i = i + 2) {
 
                 Data data = new Data(Integer.parseInt(dataSplit[1]), dataSplit[2], dataSplit[i], Float.parseFloat(dataSplit[i + 1]));
                 dataSet.add(data);
