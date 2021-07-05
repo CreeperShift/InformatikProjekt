@@ -3,11 +3,14 @@ package informatikprojekt.zigbee.frontend;
 import informatikprojekt.zigbee.Main;
 import informatikprojekt.zigbee.util.LineGraph;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
@@ -18,8 +21,10 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 
+import java.awt.*;
 import java.net.URL;
 import java.util.*;
+import java.util.List;
 
 public class ControllerRoom implements Initializable {
     public ColorPicker guiColorPicker;
@@ -44,6 +49,9 @@ public class ControllerRoom implements Initializable {
     private final List<Line> gridList = new ArrayList<>();
     private final List<Line> lineList = new ArrayList<>();
     private final List<Text> textList = new ArrayList<>();
+
+    private final Line lineX = new Line(0, 25, 0, 0);
+    private final Line lineY = new Line(25, 0, 0, 0);
 
 
     enum TOOL_TYPE {
@@ -229,7 +237,6 @@ public class ControllerRoom implements Initializable {
             }
             if (textList.isEmpty()) {
                 Koordinaten();
-                Koordinaten();
             }
 
             drawingArea.getChildren().addAll(0, textList);
@@ -238,7 +245,25 @@ public class ControllerRoom implements Initializable {
             drawingArea.getChildren().removeAll(lineList);
             drawingArea.getChildren().removeAll(textList);
         }
+    }
 
+    public void keinLinealOnMouseExited(MouseEvent event) {
+        drawingArea.getChildren().remove(lineX);
+        drawingArea.getChildren().remove(lineY);
+    }
+
+    public void linealOnMouseMoved(MouseEvent event) {
+        if (cbLineal.isSelected()) {
+                lineX.setStroke(Color.RED);
+                lineY.setStroke(Color.RED);
+                lineX.setStrokeWidth(2);
+                lineY.setStrokeWidth(2);
+                lineX.setStartX(event.getX());
+                lineX.setEndX(event.getX());
+                lineY.setStartY(event.getY());
+                lineY.setEndY(event.getY());
+                drawingArea.getChildren().addAll(lineX, lineY);
+        }
     }
 
     public void onDragDetected(MouseEvent mouseEvent) {

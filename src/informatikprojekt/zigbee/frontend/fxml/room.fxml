@@ -15,7 +15,7 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="informatikprojekt.zigbee.frontend.ControllerRoom">
    <children>
-      <AnchorPane fx:id="drawingArea" maxWidth="1130.0" minHeight="750.0" onDragDetected="#onDragDetected" onMouseDragEntered="#onMouseDragEntered" onMouseDragExited="#onMouseDragExited" onMouseDragOver="#onMouseDragOver" onMouseDragReleased="#onMouseDragReleased" prefHeight="750.0" stylesheets="@frontend.css">
+      <AnchorPane fx:id="drawingArea" maxWidth="1130.0" minHeight="750.0" onDragDetected="#onDragDetected" onMouseDragEntered="#onMouseDragEntered" onMouseDragExited="#onMouseDragExited" onMouseDragOver="#onMouseDragOver" onMouseDragReleased="#onMouseDragReleased" onMouseExited="#keinLinealOnMouseExited" onMouseMoved="#linealOnMouseMoved" prefHeight="750.0" stylesheets="@frontend.css">
          <children>
             <Button fx:id="btnNewRoom" layoutX="165.0" layoutY="325.0" mnemonicParsing="false" onAction="#onNewRoom" prefHeight="750.0" prefWidth="630.0" style="-fx-font-size: 31;" text="New Room" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <font>
