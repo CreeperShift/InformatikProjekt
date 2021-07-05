@@ -10,12 +10,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 
 public class UartReader extends Thread {
 
-    private final ArrayBlockingQueue<SensorData> sensorDataQueue = new ArrayBlockingQueue<>(100);
     private final List<Data> dataSet = new LinkedList<>();
     private boolean isReading = false;
     private Connection connection;
@@ -105,10 +102,6 @@ public class UartReader extends Thread {
     }
 
 
-    public BlockingQueue<SensorData> getQueue() {
-        return sensorDataQueue;
-    }
-
     private void processData(String[] dataSplit) {
 
 
@@ -130,25 +123,7 @@ public class UartReader extends Thread {
         }
     }
 
-    public void testUart() throws SQLException {
-        String[] testData = new String[10];
-
-        //String: 0;1;SCD30;3;CO2;350;Temperatur;30.5;Feuchtigkeit;40
-
-        testData[0] = "0"; //Type: Data
-        testData[1] = "1"; // DEVICE: 1
-        testData[2] = "SCD30"; //SENSOR name
-        testData[3] = "3"; //Databits
-        testData[4] = "CO2"; //1. typ
-        testData[5] = "350"; //1. data
-        testData[6] = "Temperatur"; // 2. typ
-        testData[7] = "30.5"; // 2. data
-        testData[8] = "Feuchtigkeit"; // 3. typ
-        testData[9] = "40"; // 3. data
-        handleData(testData);
-    }
-
-    private void handleData(String[] dataSplit) throws SQLException {
+    void handleData(String[] dataSplit) throws SQLException {
 
         if (!isReading) {
             isReading = true;

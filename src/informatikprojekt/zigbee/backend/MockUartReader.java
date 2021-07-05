@@ -1,18 +1,12 @@
 package informatikprojekt.zigbee.backend;
 
-import informatikprojekt.zigbee.util.CommonUtils;
-
-import java.util.Random;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.sql.SQLException;
 
 public class MockUartReader extends UartReader {
 
     public MockUartReader(String port) {
         super(port);
     }
-
-    private final ArrayBlockingQueue<SensorData> sensorDataQueue = new ArrayBlockingQueue<>(100);
 
     @Override
     public void startReader() {
@@ -21,23 +15,27 @@ public class MockUartReader extends UartReader {
     }
 
     @Override
-    public BlockingQueue<SensorData> getQueue() {
-        return sensorDataQueue;
-    }
-
-    @Override
     public void run() {
         while (activeState == State.CONNECTED) {
-            for (int i = 1; i < 5; i++) {
-                for (int f = 2; f < 4; f++) {
-                    Random rand = new Random();
-                    if (i > 1) {
-                        SensorData data = new SensorData("", i, 1, "Temperatur", rand.nextInt(60));
-                        sensorDataQueue.add(data);
-                    }
-                    SensorData data = new SensorData("", i, f, CommonUtils.CO2, rand.nextInt(300)+350);
-                    sensorDataQueue.add(data);
-                }
+
+            String[] testData = new String[10];
+
+            //String: 0;1;SCD30;3;CO2;350;Temperatur;30.5;Feuchtigkeit;40
+
+            testData[0] = "0"; //Type: Data
+            testData[1] = "1"; // DEVICE: 1
+            testData[2] = "SCD30"; //SENSOR name
+            testData[3] = "3"; //Databits
+            testData[4] = "CO2"; //1. typ
+            testData[5] = "350"; //1. data
+            testData[6] = "Temperatur"; // 2. typ
+            testData[7] = "30.5"; // 2. data
+            testData[8] = "Feuchtigkeit"; // 3. typ
+            testData[9] = "40"; // 3. data
+            try {
+                handleData(testData);
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
             }
 
             try {
