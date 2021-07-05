@@ -3,14 +3,11 @@ package informatikprojekt.zigbee.frontend;
 import informatikprojekt.zigbee.Main;
 import informatikprojekt.zigbee.util.LineGraph;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
@@ -21,10 +18,8 @@ import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 
-import java.awt.*;
 import java.net.URL;
 import java.util.*;
-import java.util.List;
 
 public class ControllerRoom implements Initializable {
     public ColorPicker guiColorPicker;
@@ -262,7 +257,8 @@ public class ControllerRoom implements Initializable {
                 lineX.setEndX(event.getX());
                 lineY.setStartY(event.getY());
                 lineY.setEndY(event.getY());
-                drawingArea.getChildren().addAll(lineX, lineY);
+                if(!drawingArea.getChildren().contains(lineX) && !drawingArea.getChildren().contains(lineY)){
+                drawingArea.getChildren().addAll(lineX, lineY);}
         }
     }
 
@@ -368,6 +364,11 @@ public class ControllerRoom implements Initializable {
 
 
     public void onMouseDragOver(MouseDragEvent mouseDragEvent) {
+
+        lineX.setStartX(mouseDragEvent.getX());
+        lineX.setEndX(mouseDragEvent.getX());
+        lineY.setStartY(mouseDragEvent.getY());
+        lineY.setEndY(mouseDragEvent.getY());
 
         if (mouseDragEvent.getX() < 1114) {
 
