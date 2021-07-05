@@ -23,7 +23,6 @@ import java.util.*;
 
 public class ControllerBase implements Initializable {
 
-
     public Button btnRoom;
     public Button btnStart;
     public Button btnGraph;

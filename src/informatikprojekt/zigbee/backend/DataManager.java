@@ -59,6 +59,41 @@ public class DataManager implements IData {
         return getDataForTime(from, LocalDateTime.now());
     }
 
+    @Override
+    public List<SQLData> getDailyMeanForType(String type, LocalDateTime from, LocalDateTime to) {
+        return null;
+    }
+
+    @Override
+    public List<SQLData> getDailyMinForType(String type, LocalDateTime from, LocalDateTime to) {
+        return null;
+    }
+
+    @Override
+    public List<SQLData> getDailyMaxForType(String type, LocalDateTime from, LocalDateTime to) {
+        return null;
+    }
+
+    @Override
+    public List<SQLData> getStandardDeviationForType(String type) {
+        return null;
+    }
+
+    @Override
+    public List<String> getAllDataTypes() {
+        return null;
+    }
+
+    @Override
+    public List<Integer> getAllDevices() {
+        return null;
+    }
+
+    @Override
+    public List<String> getAllSensors() {
+        return null;
+    }
+
     public void stopReader() {
         if (uartReader != null) {
             uartReader.setReaderState(UartReader.State.ENDED);
