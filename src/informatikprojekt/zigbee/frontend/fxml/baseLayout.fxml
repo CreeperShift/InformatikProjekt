@@ -35,7 +35,7 @@
                         <Font size="19.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnRoom" mnemonicParsing="false" onAction="#onButtonRoom" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Raum">
+                  <Button fx:id="btnRoom" mnemonicParsing="false" onAction="#onButtonRoom" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Raumansicht">
                      <font>
                         <Font size="19.0" />
                      </font>
@@ -77,14 +77,9 @@
          <children>
             <VBox id="JMetroStyleClass.BACKGROUND" fx:id="contentStart" alignment="TOP_CENTER" prefHeight="800.0" prefWidth="1120.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="122.0" prefWidth="1129.0" text="Luftqualität in Innenräumen">
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="122.0" prefWidth="1129.0" text="Luftqualität in Innenräumen Übersicht">
                      <font>
                         <Font size="43.0" />
-                     </font>
-                  </Label>
-                  <Label alignment="CENTER" prefHeight="52.0" prefWidth="610.0" text="Applikation zum Überwachen der Luftqualität in Innenräumen mithilfe von 4 Zigbee Modulen" textAlignment="CENTER" wrapText="true">
-                     <font>
-                        <Font size="17.0" />
                      </font>
                   </Label>
                   <Separator prefWidth="200.0">
@@ -92,48 +87,53 @@
                         <Insets bottom="15.0" top="15.0" />
                      </VBox.margin>
                   </Separator>
-                  <Label alignment="CENTER" prefHeight="35.0" prefWidth="610.0" text="1. Raum einzeichnen" textAlignment="CENTER" wrapText="true">
-                     <font>
-                        <Font size="17.0" />
-                     </font>
-                  </Label>
-                  <Label alignment="CENTER" prefHeight="35.0" prefWidth="610.0" text="2. Zigbee Koordinator per USB verbinden" textAlignment="CENTER" wrapText="true">
-                     <font>
-                        <Font size="17.0" />
-                     </font>
-                  </Label>
-                  <Label alignment="CENTER" prefHeight="35.0" prefWidth="610.0" text="3. Verbindung herstellen" textAlignment="CENTER" wrapText="true">
-                     <font>
-                        <Font size="17.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets bottom="15.0" />
-                     </VBox.margin>
-                  </Label>
-                  <Separator prefWidth="200.0" />
-                  <HBox alignment="CENTER" prefHeight="66.0" prefWidth="1120.0" spacing="15.0">
+                  <HBox>
                      <children>
-                        <Label text="Aktueller Status:">
-                           <font>
-                              <Font size="24.0" />
-                           </font>
-                        </Label>
-                        <Circle fx:id="ledStatus" fill="#ff1f1f" radius="19.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                        <VBox prefHeight="200.0" prefWidth="875.0">
+                           <children>
+                              <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="465.0" text="Aktueller Datensatz: Keiner" textAlignment="CENTER">
+                                 <font>
+                                    <Font size="24.0" />
+                                 </font>
+                              </Label>
+                              <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                 <children>
+                                    <Button fx:id="btnNewRoom" alignment="CENTER" contentDisplay="CENTER" layoutX="193.0" layoutY="70.0" mnemonicParsing="false" onAction="#onBtnNewRoom" prefHeight="58.0" prefWidth="138.0" text="Raum erstellen" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="15.0">
+                                       <font>
+                                          <Font size="17.0" />
+                                       </font>
+                                    </Button>
+                                 </children>
+                              </AnchorPane>
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER">
+                           <children>
+                              <HBox alignment="CENTER" prefHeight="66.0" prefWidth="1120.0" spacing="15.0">
+                                 <children>
+                                    <Label text="Aktueller Status:">
+                                       <font>
+                                          <Font size="24.0" />
+                                       </font>
+                                    </Label>
+                                    <Circle fx:id="ledStatus" fill="#ff1f1f" radius="19.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER" spacing="5.0">
+                                 <children>
+                                    <Label text="COM Port:" />
+                                    <TextField fx:id="fieldPort" prefHeight="25.0" prefWidth="103.0" promptText="COM" text="COM1" />
+                                 </children>
+                              </HBox>
+                              <Button fx:id="btnConnect" mnemonicParsing="false" onAction="#onBtnConnect" prefHeight="69.0" prefWidth="159.0" text="Verbinden">
+                                 <font>
+                                    <Font size="21.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                        </VBox>
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER" spacing="5.0">
-                     <children>
-                        <Label text="COM Port:" />
-                        <TextField fx:id="fieldPort" prefHeight="25.0" prefWidth="103.0" promptText="COM" text="COM1" />
-                     </children>
-                     <VBox.margin>
-                        <Insets bottom="15.0" />
-                     </VBox.margin>
-                  </HBox>
-                  <Button fx:id="btnConnect" mnemonicParsing="false" onAction="#onBtnConnect" prefHeight="69.0" prefWidth="159.0" text="Verbinden">
-                     <font>
-                        <Font size="21.0" />
-                     </font></Button>
                   <TextArea fx:id="consoleOut" editable="false" prefHeight="200.0" prefWidth="200.0">
                      <VBox.margin>
                         <Insets left="1.0" right="5.0" top="25.0" />

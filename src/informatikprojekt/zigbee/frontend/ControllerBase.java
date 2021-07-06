@@ -34,6 +34,7 @@ public class ControllerBase implements Initializable {
     public Button btnConnect;
     public TextArea consoleOut;
     public CheckBox autoScroll;
+    public Button btnNewRoom;
     private boolean isConnected = false;
     public static ControllerBase INSTANCE;
 
@@ -44,6 +45,7 @@ public class ControllerBase implements Initializable {
     public AnchorPane contentPanel;
     public AnchorPane graphPanel;
     public BorderPane dataPanel;
+    public VBox createRoom;
     public VBox contentStart;
     public VBox content;
     public static TextArea textConsole;
@@ -56,8 +58,17 @@ public class ControllerBase implements Initializable {
     public void onAutoScroll(ActionEvent actionEvent) {
     }
 
+    public void onBtnNewRoom(ActionEvent actionEvent) {
+        setActiveWindow(Window.CREATEROOM);
+        contentPanel.getChildren().clear();
+        createRoom.setPrefHeight(contentPanel.getPrefHeight());
+        createRoom.setPrefWidth(contentPanel.getPrefWidth());
+        createRoom.setMinWidth(contentPanel.getWidth());
+        contentPanel.getChildren().add(createRoom);
+    }
+
     public enum Window {
-        START, ROOM, GRAPH, DATA;
+        START, ROOM, GRAPH, DATA, CREATEROOM;
     }
 
     public static Window getActiveWindow() {
@@ -79,7 +90,8 @@ public class ControllerBase implements Initializable {
 
         try {
 
-            content = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/room.fxml")));
+            content = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/roomDataView.fxml")));
+            createRoom = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/room.fxml")));
             graphPanel = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/graph.fxml")));
             dataPanel = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/data.fxml")));
 
