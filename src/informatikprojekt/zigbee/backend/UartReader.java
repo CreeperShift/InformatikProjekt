@@ -81,7 +81,7 @@ public class UartReader extends Thread {
                 }
             }
             try {
-                Thread.sleep(500);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -142,7 +142,6 @@ public class UartReader extends Thread {
                 try {
                     Class.forName("org.sqlite.JDBC");
                     connection = DriverManager.getConnection("jdbc:sqlite:zigbee.sqlite");
-                    connection.setSchema("Zigbee");
 
                     isReading = false;
                     String createDataSet = "INSERT INTO dataset (id, recordedAt) VALUES ( NULL, ?)";
