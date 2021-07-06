@@ -56,7 +56,7 @@ public class Main extends Application {
                 "    constraint data_dataset_id_fk\n" +
                 "        foreign key (dataSetID) references dataset (id)\n" +
                 ");\n";
-        Connection connection = DriverManager.getConnection("jdbc:sqlite:G:\\Code\\Uni\\zigbeeeeeeeee\\zigbee.sqlite");
+        Connection connection = DriverManager.getConnection("jdbc:sqlite:zigbee.sqlite");
         connection.setSchema("Zigbee");
 
         Statement statement = connection.createStatement();

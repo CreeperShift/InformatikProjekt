@@ -141,12 +141,12 @@ public class UartReader extends Thread {
                 Connection connection = null;
                 try {
                     Class.forName("org.sqlite.JDBC");
-                    connection = DriverManager.getConnection("jdbc:sqlite:G:\\Code\\Uni\\zigbeeeeeeeee\\zigbee.sqlite");
+                    connection = DriverManager.getConnection("jdbc:sqlite:zigbee.sqlite");
                     connection.setSchema("Zigbee");
 
                 isReading = false;
                 String createDataSet = "INSERT INTO dataset (id, recordedAt) VALUES ( NULL, ?)";
-                String createDataPoint = "INSERT INTO data (dataID, dataSetID, sensor, dataType, dataValue, device) values (NULL, (select id from dataset where recordedAt = ?), ?, ?, ?, ?);";
+                String createDataPoint = "INSERT INTO data (dataID, dataSetID, sensor, dataType, dataValue, device_FK) values (NULL, (select id from dataset where recordedAt = ?), ?, ?, ?, ?);";
                 try {
                     PreparedStatement statement = connection.prepareStatement(createDataSet);
                     LocalDateTime loc = LocalDateTime.now();
