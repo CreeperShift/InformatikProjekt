@@ -90,7 +90,7 @@ public class ControllerBase implements Initializable {
 
         try {
 
-            content = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/roomDataView.fxml")));
+            content = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/view.fxml")));
             createRoom = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/room.fxml")));
             graphPanel = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/graph.fxml")));
             dataPanel = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/data.fxml")));

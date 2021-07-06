@@ -32,6 +32,8 @@ public class ControllerRoom implements Initializable {
     public Button btnWand;
     public Button btnNewRoom;
     public Button btnMove;
+    public Button btnCancel;
+    public Button btnSave;
     private Line currentLine;
     private LineGraph lineGraph = new LineGraph();
     private Circle currentCircle = null;
@@ -47,6 +49,12 @@ public class ControllerRoom implements Initializable {
 
     private final Line lineX = new Line(0, 25, 0, 0);
     private final Line lineY = new Line(25, 0, 0, 0);
+
+    public void onBtnCancel(ActionEvent actionEvent) {
+    }
+
+    public void onBtnSave(ActionEvent actionEvent) {
+    }
 
 
     enum TOOL_TYPE {

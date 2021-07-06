@@ -1,51 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.paint.Color?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="informatikprojekt.zigbee.frontend.ControllerRoom">
    <children>
-      <AnchorPane fx:id="drawingArea" maxWidth="1130.0" minHeight="750.0" onDragDetected="#onDragDetected" onMouseDragEntered="#onMouseDragEntered" onMouseDragExited="#onMouseDragExited" onMouseDragOver="#onMouseDragOver" onMouseDragReleased="#onMouseDragReleased" onMouseExited="#keinLinealOnMouseExited" onMouseMoved="#linealOnMouseMoved" prefHeight="750.0" stylesheets="@frontend.css">
-         <children>
-            <Button fx:id="btnNewRoom" layoutX="165.0" layoutY="325.0" mnemonicParsing="false" onAction="#onNewRoom" prefHeight="750.0" prefWidth="630.0" style="-fx-font-size: 31;" text="New Room" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <font>
-                  <Font size="34.0" />
-               </font>
-            </Button>
-         </children>
-      </AnchorPane>
+      <AnchorPane fx:id="drawingArea" maxWidth="1130.0" minHeight="750.0" onDragDetected="#onDragDetected" onMouseDragEntered="#onMouseDragEntered" onMouseDragExited="#onMouseDragExited" onMouseDragOver="#onMouseDragOver" onMouseDragReleased="#onMouseDragReleased" onMouseExited="#keinLinealOnMouseExited" onMouseMoved="#linealOnMouseMoved" prefHeight="750.0" stylesheets="@frontend.css" />
       <Separator />
-      <HBox style="-fx-padding: 15; -fx-spacing: 15;" styleClass="drawingToolBar">
+      <HBox alignment="TOP_CENTER" style="-fx-padding: 15; -fx-spacing: 15;" styleClass="drawingToolBar">
          <children>
-            <Button fx:id="btnWand" disable="true" mnemonicParsing="false" onAction="#guiWand" text="Wand" />
-            <Button fx:id="btnMove" disable="true" mnemonicParsing="false" onAction="#onBtnMove" text="Bewegen" />
-            <Button fx:id="btnDelete" disable="true" mnemonicParsing="false" onAction="#guiDelete" text="Löschen" />
-            <Button fx:id="btnDevice" disable="true" mnemonicParsing="false" onAction="#guiDevice" text="Device" />
-            <ColorPicker fx:id="guiColorPicker" disable="true">
-               <value>
-                  <Color />
-               </value>
-            </ColorPicker>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Size" wrappingWidth="26.982421875">
-               <font>
-                  <Font size="15.0" />
-               </font>
-            </Text>
-            <TextField fx:id="guiBSize" disable="true" prefHeight="26.0" prefWidth="52.0" promptText="Brush Size" text="4" />
-            <Button fx:id="btnClear" disable="true" mnemonicParsing="false" onAction="#guiClearAll" text="Clear All" />
-            <CheckBox fx:id="cbGitterNetzLinien" disable="true" mnemonicParsing="false" onMouseClicked="#gitterOnMouseClicked" selected="true" text="Gitternetzlinien" />
-            <CheckBox fx:id="cbLineal" disable="true" mnemonicParsing="false" onMouseClicked="#linealOnMouseClicked" text="Lineal" />
-            <ToggleButton fx:id="editMode" disable="true" mnemonicParsing="false" onAction="#onEditMode" styleClass="editButton" stylesheets="@frontend.css" text="Edit Mode" />
+            <Button fx:id="btnWand" mnemonicParsing="false" onAction="#guiWand" text="Wand" />
+            <Button fx:id="btnMove" mnemonicParsing="false" onAction="#onBtnMove" text="Bewegen" />
+            <Button fx:id="btnDelete" mnemonicParsing="false" onAction="#guiDelete" text="Löschen" />
+            <Button fx:id="btnDevice" mnemonicParsing="false" onAction="#guiDevice" text="Device" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="1.0" HBox.hgrow="NEVER" />
+            <Button fx:id="btnClear" mnemonicParsing="false" onAction="#guiClearAll" text="Clear All" />
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="1.0" />
+            <CheckBox fx:id="cbGitterNetzLinien" mnemonicParsing="false" onMouseClicked="#gitterOnMouseClicked" selected="true" text="Gitternetzlinien">
+               <HBox.margin>
+                  <Insets top="4.0" />
+               </HBox.margin>
+            </CheckBox>
+            <CheckBox fx:id="cbLineal" mnemonicParsing="false" onMouseClicked="#linealOnMouseClicked" text="Lineal">
+               <HBox.margin>
+                  <Insets top="4.0" />
+               </HBox.margin>
+            </CheckBox>
+            <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="1.0" />
+            <Button fx:id="btnCancel" cancelButton="true" mnemonicParsing="false" onAction="#onBtnCancel" style="-fx-background-color: INDIANRED;" text="Abbrechen" />
+            <Button fx:id="btnSave" defaultButton="true" mnemonicParsing="false" onAction="#onBtnSave" text="Speichern" />
          </children>
       </HBox>
    </children>

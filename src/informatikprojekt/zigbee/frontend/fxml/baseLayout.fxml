@@ -107,6 +107,7 @@
                               </AnchorPane>
                            </children>
                         </VBox>
+                        <Separator orientation="VERTICAL" prefHeight="200.0" />
                         <VBox alignment="CENTER">
                            <children>
                               <HBox alignment="CENTER" prefHeight="66.0" prefWidth="1120.0" spacing="15.0">
