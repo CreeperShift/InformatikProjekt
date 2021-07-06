@@ -22,7 +22,6 @@
         </plugins>
     </build>
 
-
     <properties>
         <maven.compiler.source>16</maven.compiler.source>
         <maven.compiler.target>16</maven.compiler.target>
@@ -73,9 +72,6 @@
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.36.0.1</version>
         </dependency>
-
-
-
     </dependencies>
 
 </project>
