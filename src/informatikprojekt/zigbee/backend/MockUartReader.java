@@ -39,7 +39,7 @@ public class MockUartReader extends UartReader {
             }
 
             try {
-                Thread.sleep(1000 * 7);
+                Thread.sleep(1000 );
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

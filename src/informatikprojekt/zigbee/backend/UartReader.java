@@ -8,16 +8,14 @@ import java.io.DataInputStream;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class UartReader extends Thread {
 
-    private final List<Data> dataSet = new LinkedList<>();
+    private final ArrayBlockingQueue<Data> dataSet = new ArrayBlockingQueue<>(100);
     private boolean isReading = false;
-    private Connection connection;
 
     State activeState = State.NONE;
 
@@ -41,7 +39,7 @@ public class UartReader extends Thread {
         activeState = state;
     }
 
-    private synchronized List<Data> getDataSet(){
+    private synchronized ArrayBlockingQueue<Data> getDataSet() {
         return dataSet;
     }
 
@@ -140,27 +138,29 @@ public class UartReader extends Thread {
         writeTimer.schedule(new TimerTask() {
             @Override
             public void run() {
+                Connection connection = null;
                 try {
-                    connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/luftqualitaet", "root", "progex");
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                }
+                    Class.forName("org.sqlite.JDBC");
+                    connection = DriverManager.getConnection("jdbc:sqlite:G:\\Code\\Uni\\zigbeeeeeeeee\\zigbee.sqlite");
+                    connection.setSchema("Zigbee");
+
                 isReading = false;
-                String createDataSet = "INSERT INTO dataset (recordedAt) value (?);";
-                String createDataPoint = "INSERT INTO data (dataSetID, sensor, dataType, dataValue, device) values ((select id from dataset where recordedAt = ?), ?, ?, ?, ?);";
+                String createDataSet = "INSERT INTO dataset (id, recordedAt) VALUES ( NULL, ?)";
+                String createDataPoint = "INSERT INTO data (dataID, dataSetID, sensor, dataType, dataValue, device) values (NULL, (select id from dataset where recordedAt = ?), ?, ?, ?, ?);";
                 try {
                     PreparedStatement statement = connection.prepareStatement(createDataSet);
                     LocalDateTime loc = LocalDateTime.now();
                     DateTimeFormatter format = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
                     Timestamp timestamp = Timestamp.valueOf(loc.format(format));
 
-                    statement.setString(1,timestamp.toString());
+                    statement.setString(1, timestamp.toString());
                     statement.executeUpdate();
                     statement.close();
                     PreparedStatement createData = connection.prepareStatement(createDataPoint);
 
 
-                    for (Data d : getDataSet()) {
+                    while(!getDataSet().isEmpty()){
+                        Data d = getDataSet().take();
                         createData.setString(1, timestamp.toString());
                         createData.setString(2, d.SensorName());
                         createData.setString(3, d.dataType());
@@ -170,12 +170,19 @@ public class UartReader extends Thread {
                     }
                     createData.close();
 
+
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
                     System.err.println("Could not write into Database!");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                } catch (SQLException | ClassNotFoundException throwables) {
+                    throwables.printStackTrace();
                 }
                 writeTimer.cancel();
                 try {
+                    assert connection != null;
                     connection.close();
                 } catch (SQLException throwables) {
                     throwables.printStackTrace();
