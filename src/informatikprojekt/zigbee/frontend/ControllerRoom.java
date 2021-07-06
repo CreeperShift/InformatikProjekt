@@ -174,6 +174,7 @@ public class ControllerRoom implements Initializable {
         }
     }
 
+    //TODO:
     public void onNewRoom(ActionEvent actionEvent) {
 
         drawingArea.getChildren().clear();
