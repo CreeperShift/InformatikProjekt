@@ -144,39 +144,42 @@ public class UartReader extends Thread {
                     connection = DriverManager.getConnection("jdbc:sqlite:zigbee.sqlite");
                     connection.setSchema("Zigbee");
 
-                isReading = false;
-                String createDataSet = "INSERT INTO dataset (id, recordedAt) VALUES ( NULL, ?)";
-                String createDataPoint = "INSERT INTO data (dataID, dataSetID, sensor, dataType, dataValue, device_FK) values (NULL, (select id from dataset where recordedAt = ?), ?, ?, ?, ?);";
-                try {
-                    PreparedStatement statement = connection.prepareStatement(createDataSet);
-                    LocalDateTime loc = LocalDateTime.now();
-                    DateTimeFormatter format = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
-                    Timestamp timestamp = Timestamp.valueOf(loc.format(format));
+                    isReading = false;
+                    String createDataSet = "INSERT INTO dataset (id, recordedAt) VALUES ( NULL, ?)";
+                    String createDataPoint = "INSERT INTO data (dataID, dataSetID, sensor, dataType, dataValue, device_FK) values (NULL, (select id from dataset where recordedAt = ?), ?, ?, ?, ?);";
+                    try {
+                        PreparedStatement statement = connection.prepareStatement(createDataSet);
+                        LocalDateTime loc = LocalDateTime.now();
+                        DateTimeFormatter format = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
+                        Timestamp timestamp = Timestamp.valueOf(loc.format(format));
 
-                    statement.setString(1, timestamp.toString());
-                    statement.executeUpdate();
-                    statement.close();
-                    PreparedStatement createData = connection.prepareStatement(createDataPoint);
+                        statement.setString(1, timestamp.toString());
+                        statement.executeUpdate();
+                        statement.close();
+                        PreparedStatement createData = connection.prepareStatement(createDataPoint);
 
 
-                    while(!getDataSet().isEmpty()){
-                        Data d = getDataSet().take();
-                        createData.setString(1, timestamp.toString());
-                        createData.setString(2, d.SensorName());
-                        createData.setString(3, d.dataType());
-                        createData.setFloat(4, d.value());
-                        createData.setInt(5, d.Device());
-                        createData.executeUpdate();
+                        while (!getDataSet().isEmpty()) {
+                            Data d = getDataSet().take();
+                            createData.setString(1, timestamp.toString());
+                            createData.setString(2, d.SensorName());
+                            createData.setString(3, d.dataType());
+                            createData.setFloat(4, d.value());
+                            createData.setInt(5, d.Device());
+                            Platform.runLater(() -> {
+                                CommonUtils.consoleString("REC> " + "Device " + d.Device() + " " + d.SensorName() + " " + d.dataType() + " " + d.value());
+                            });
+                            createData.executeUpdate();
+                        }
+                        createData.close();
+
+
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                        System.err.println("Could not write into Database!");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    createData.close();
-
-
-                } catch (SQLException throwables) {
-                    throwables.printStackTrace();
-                    System.err.println("Could not write into Database!");
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 } catch (SQLException | ClassNotFoundException throwables) {
                     throwables.printStackTrace();
                 }
