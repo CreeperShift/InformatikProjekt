@@ -28,4 +28,6 @@ public interface IData {
 
     void writeRoom(Room room) throws SQLException;
 
+    Room readRoom(String name) throws SQLException;
+
 }

@@ -27,7 +27,7 @@ public class ConnectionManager {
 
                     create table if not exists room
                     (
-                    \tid int
+                    \tid integer
                     \t\tconstraint room_pk
                     \t\t\tprimary key,
                     \troomName varchar(50) not null,
@@ -63,7 +63,7 @@ public class ConnectionManager {
 
                     create table if not exists roomPoints
                     (
-                    \tid int
+                    \tid integer
                     \t\tconstraint roomPoints_pk
                     \t\t\tprimary key,
                     \tx double(30),

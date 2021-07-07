@@ -9,7 +9,7 @@ public class Room {
 
     private LineGraph roomGraph;
     private String name;
-    private final LocalDateTime created;
+    private LocalDateTime created;
 
     public Room(String name) {
         created = LocalDateTime.now();
@@ -23,6 +23,18 @@ public class Room {
 
     public String getName() {
         return name;
+    }
+
+    public void setRoomGraph(LineGraph roomGraph) {
+        this.roomGraph = roomGraph;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCreated(LocalDateTime created) {
+        this.created = created;
     }
 
     public LocalDateTime getCreated() {

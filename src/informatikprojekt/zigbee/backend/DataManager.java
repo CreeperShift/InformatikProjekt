@@ -1,13 +1,18 @@
 package informatikprojekt.zigbee.backend;
 
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class DataManager implements IData {
 
@@ -108,22 +113,96 @@ public class DataManager implements IData {
     public void writeRoom(Room room) throws SQLException {
 
         String queryCreateRoom = "INSERT INTO room (id, roomName, created) VALUES (NULL, ?, ?)";
-        String queryCreatePoints = "INSERT INTO roomPoints (id, x, y, roomID_FK) VALUES (NULL, ?, ?, (SELECT id from room where created = ? & room.roomName = ?))";
+        String queryRoomID = "SELECT id from room where created = ?";
+        String queryCreatePoints = "INSERT INTO roomPoints (id, x, y, roomID_FK) VALUES (NULL, ?, ?, ?)";
+        String createConnections = "INSERT INTO graph (roomPoint_FK, connected_FK) VALUES ((select id from roomPoints where roomID_FK == ? AND x == ? and y == ?), (select id from roomPoints where roomID_FK == ? AND x == ? and y == ?))";
 
         PreparedStatement createRoom = connection.prepareStatement(queryCreateRoom);
         createRoom.setString(1, room.getName());
         createRoom.setString(2, room.getCreatedFormatted());
         createRoom.executeUpdate();
+        PreparedStatement getID = connection.prepareStatement(queryRoomID);
+        getID.setString(1, room.getCreatedFormatted());
+        ResultSet res = getID.executeQuery();
+        int id = 0;
+        if (res.next()) {
+            id = res.getInt("id");
+        }
 
         for (Circle c : room.getRoomGraph().getCircles()) {
             PreparedStatement createPoint = connection.prepareStatement(queryCreatePoints);
             createPoint.setDouble(1, c.getCenterX());
             createPoint.setDouble(2, c.getCenterY());
-            createPoint.setString(3, room.getCreatedFormatted());
-            createPoint.setString(4, room.getName());
+            createPoint.setInt(3, id);
             createPoint.executeUpdate();
         }
 
+        for (Circle c : room.getRoomGraph().getCircles()) {
+            for (Circle connected : room.getRoomGraph().getAdj(c).keySet()) {
+
+                PreparedStatement connections = connection.prepareStatement(createConnections);
+                connections.setInt(1, id);
+                connections.setDouble(2, c.getCenterX());
+                connections.setDouble(3, c.getCenterY());
+                connections.setInt(4, id);
+                connections.setDouble(5, connected.getCenterX());
+                connections.setDouble(6, connected.getCenterY());
+                connections.executeUpdate();
+            }
+        }
+    }
+
+    @Override
+    public Room readRoom(String name) throws SQLException {
+        Room room = new Room(name);
+        String getRoomQuery = "SELECT * from room where roomName == ?;";
+        PreparedStatement getRoom = connection.prepareStatement(getRoomQuery);
+        getRoom.setString(1, name);
+        ResultSet roomData = getRoom.executeQuery();
+        if (roomData.next()) {
+            String pointQuery = "select * from roomPoints where roomID_FK == ?;";
+            PreparedStatement pointStatement = connection.prepareStatement(pointQuery);
+            pointStatement.setInt(1, roomData.getInt("id"));
+            ResultSet points = pointStatement.executeQuery();
+            Map<Integer, Circle> allCircles = new HashMap<>();
+            while (points.next()) {
+                Circle circle = createCircle(points.getDouble("x"), points.getDouble("y"));
+                room.getRoomGraph().addCircle(circle);
+                allCircles.put(points.getInt("id"), circle);
+            }
+            pointStatement.close();
+            String pointConnectedQuery = "select * from graph where roomPoint_FK == ?;";
+
+            for (Map.Entry<Integer, Circle> entry : allCircles.entrySet()) {
+                Circle startCircle = entry.getValue();
+                PreparedStatement pointConnected = connection.prepareStatement(pointConnectedQuery);
+                pointConnected.setInt(1, entry.getKey());
+                ResultSet connectedPointsData = pointConnected.executeQuery();
+                while (connectedPointsData.next()) {
+                    Circle endCircle = allCircles.get(connectedPointsData.getInt("connected_FK"));
+                    Line connectedLine = new Line();
+                    connectedLine.setStartX(startCircle.getCenterX());
+                    connectedLine.setStartY(startCircle.getCenterY());
+                    connectedLine.setEndX(endCircle.getCenterX());
+                    connectedLine.setEndY(endCircle.getCenterY());
+                    room.getRoomGraph().addEdge(startCircle, endCircle, connectedLine);
+                }
+                connectedPointsData.close();
+            }
+        }
+        getRoom.close();
+        return room;
+    }
+
+    private Circle createCircle(double x, double y) {
+        Circle circle = new Circle();
+        circle.setCenterX(x);
+        circle.setCenterX(y);
+        circle.setRadius(15);
+        circle.setFill(Color.TRANSPARENT);
+        circle.setStroke(Color.BLACK);
+        circle.setStrokeWidth(4);
+        return circle;
     }
 
     public void stopReader() {

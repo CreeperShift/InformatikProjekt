@@ -44,6 +44,10 @@ public class LineGraph {
         return adjCircles.keySet();
     }
 
+    public Map<Circle, Line> getAdj(Circle c) {
+        return adjCircles.get(c);
+    }
+
     public List<Line> getLine(Circle c) {
         return adjCircles.get(c).values().stream().toList();
     }
