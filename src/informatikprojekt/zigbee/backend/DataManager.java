@@ -131,6 +131,7 @@ public class DataManager implements IData {
 
         for (Circle c : room.getRoomGraph().getCircles()) {
             PreparedStatement createPoint = connection.prepareStatement(queryCreatePoints);
+            System.out.println("Point written: " + c.getCenterX() + " " + c.getCenterY());
             createPoint.setDouble(1, c.getCenterX());
             createPoint.setDouble(2, c.getCenterY());
             createPoint.setInt(3, id);
@@ -181,6 +182,7 @@ public class DataManager implements IData {
                 while (connectedPointsData.next()) {
                     Circle endCircle = allCircles.get(connectedPointsData.getInt("connected_FK"));
                     Line connectedLine = new Line();
+                    connectedLine.setStrokeWidth(4);
                     connectedLine.setStartX(startCircle.getCenterX());
                     connectedLine.setStartY(startCircle.getCenterY());
                     connectedLine.setEndX(endCircle.getCenterX());
@@ -198,7 +200,7 @@ public class DataManager implements IData {
         Circle circle = new Circle();
         System.out.println("x: " + x + " y: " + y);
         circle.setCenterX(x);
-        circle.setCenterX(y);
+        circle.setCenterY(y);
         circle.setRadius(15);
         circle.setFill(Color.TRANSPARENT);
         circle.setStroke(Color.BLACK);
