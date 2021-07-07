@@ -26,4 +26,6 @@ public interface IData {
 
     List<String> getAllSensors() throws SQLException;
 
+    void writeRoom(Room room) throws SQLException;
+
 }

@@ -1,7 +1,9 @@
 package informatikprojekt.zigbee.frontend;
 
 import informatikprojekt.zigbee.Main;
+import informatikprojekt.zigbee.backend.DataManager;
 import informatikprojekt.zigbee.backend.Room;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
@@ -20,6 +22,7 @@ import javafx.scene.text.Text;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.*;
 
 public class ControllerRoom implements Initializable {
@@ -48,15 +51,40 @@ public class ControllerRoom implements Initializable {
     private final Line lineY = new Line(25, 0, 0, 0);
 
     public void onBtnCancel(ActionEvent actionEvent) {
+        ControllerBase.INSTANCE.btnStart.fire();
     }
 
     public void onBtnSave(ActionEvent actionEvent) {
+        try {
+            DataManager.get().writeRoom(room);
+            ControllerBase.INSTANCE.btnStart.fire();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
     }
 
+    /*
+    This shouldn't need a timer but JavaFX for some reason runs this first and THEN adjusts the size of drawingArea...
+     */
     public void setRoom(Room room) {
         this.room = room;
-        GitterNetzLinien(25, Color.LIGHTGRAY);
-        GitterNetzLinien(100, Color.LIGHTPINK);
+        Timer t = new Timer();
+        t.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    GitterNetzLinien(25, Color.LIGHTGRAY);
+                    GitterNetzLinien(100, Color.LIGHTPINK);
+                    if (!drawingArea.getChildren().containsAll(gridList)) {
+                        drawingArea.getChildren().addAll(0, gridList);
+                    }
+                });
+                t.cancel();
+            }
+        }, 15, 50);
+
+
     }
 
     public static ControllerRoom get() {

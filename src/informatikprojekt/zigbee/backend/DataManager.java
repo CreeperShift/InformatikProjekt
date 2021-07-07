@@ -1,5 +1,10 @@
 package informatikprojekt.zigbee.backend;
 
+import javafx.scene.shape.Circle;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,15 +14,20 @@ public class DataManager implements IData {
     private final LinkedList<DataSet> dataSets = new LinkedList<>();
     private static UartReader uartReader;
     private String port = "COM1";
+    Connection connection = ConnectionManager.getConnection();
 
     private static DataManager INSTANCE = null;
 
-    private DataManager() {
+    private DataManager() throws SQLException {
     }
 
     public static DataManager get() {
         if (INSTANCE == null) {
-            INSTANCE = new DataManager();
+            try {
+                INSTANCE = new DataManager();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
         return INSTANCE;
     }
@@ -92,6 +102,28 @@ public class DataManager implements IData {
     @Override
     public List<String> getAllSensors() {
         return null;
+    }
+
+    @Override
+    public void writeRoom(Room room) throws SQLException {
+
+        String queryCreateRoom = "INSERT INTO room (id, roomName, created) VALUES (NULL, ?, ?)";
+        String queryCreatePoints = "INSERT INTO roomPoints (id, x, y, roomID_FK) VALUES (NULL, ?, ?, (SELECT id from room where created = ? & room.roomName = ?))";
+
+        PreparedStatement createRoom = connection.prepareStatement(queryCreateRoom);
+        createRoom.setString(1, room.getName());
+        createRoom.setString(2, room.getCreatedFormatted());
+        createRoom.executeUpdate();
+
+        for (Circle c : room.getRoomGraph().getCircles()) {
+            PreparedStatement createPoint = connection.prepareStatement(queryCreatePoints);
+            createPoint.setDouble(1, c.getCenterX());
+            createPoint.setDouble(2, c.getCenterY());
+            createPoint.setString(3, room.getCreatedFormatted());
+            createPoint.setString(4, room.getName());
+            createPoint.executeUpdate();
+        }
+
     }
 
     public void stopReader() {

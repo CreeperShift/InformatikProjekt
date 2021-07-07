@@ -3,6 +3,7 @@ package informatikprojekt.zigbee.backend;
 import informatikprojekt.zigbee.util.LineGraph;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Room {
 
@@ -26,6 +27,11 @@ public class Room {
 
     public LocalDateTime getCreated() {
         return created;
+    }
+
+    public String getCreatedFormatted() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
+        return created.format(formatter);
     }
 
     public void clear() {

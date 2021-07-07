@@ -63,13 +63,12 @@ public class ControllerBase implements Initializable {
     public void onBtnNewRoom(ActionEvent actionEvent) {
         setActiveWindow(Window.CREATEROOM);
         currentRoom = new Room("testRoom");
-        ControllerRoom.get().setRoom(currentRoom);
-
         contentPanel.getChildren().clear();
         createRoom.setPrefHeight(contentPanel.getPrefHeight());
         createRoom.setPrefWidth(contentPanel.getPrefWidth());
         createRoom.setMinWidth(contentPanel.getWidth());
         contentPanel.getChildren().add(createRoom);
+        ControllerRoom.get().setRoom(currentRoom);
     }
 
     public enum Window {
