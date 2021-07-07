@@ -195,9 +195,13 @@ public class UartReader extends Thread {
 
     private void addDataToList(String[] dataSplit) {
 
+        for (String s : dataSplit) {
+            System.out.println(s);
+        }
+
         if (dataSplit[0].equals("0")) {
 
-            for (int i = 4; i <= Integer.parseInt(dataSplit[3]) + 4; i = i + 2) {
+            for (int i = 4; i < (Integer.parseInt(dataSplit[3]) * 2) + 4; i = i + 2) {
 
                 Data data = new Data(Integer.parseInt(dataSplit[1]), dataSplit[2], dataSplit[i], Float.parseFloat(dataSplit[i + 1]));
                 dataSet.add(data);

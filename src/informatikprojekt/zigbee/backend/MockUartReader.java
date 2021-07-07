@@ -32,8 +32,15 @@ public class MockUartReader extends UartReader {
             testData[7] = "30.5"; // 2. data
             testData[8] = "Feuchtigkeit"; // 3. typ
             testData[9] = "40"; // 3. data
+
+            String data = "0;1;SCD30;3;CO2;350;Temperatur;250;Feuchtigkeit;100;";
+
+            String[] dataSplit = data.split(";");
+
+
             try {
-                handleData(testData);
+                //handleData(testData);
+                handleData(dataSplit);
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
