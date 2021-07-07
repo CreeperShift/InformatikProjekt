@@ -4,15 +4,32 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConnectionManager {
+    private static List<Connection> connectionList = new ArrayList<>();
 
     private ConnectionManager() {
 
     }
 
+    public static void stopConnections(){
+        for(Connection con : connectionList){
+            try {
+                if(!con.isClosed()) {
+                    con.close();
+                }
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+        }
+    }
+
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection("jdbc:sqlite:zigbee.sqlite");
+        Connection con = DriverManager.getConnection("jdbc:sqlite:zigbee.sqlite");
+        connectionList.add(con);
+        return con;
     }
 
     public static void firstRun() {

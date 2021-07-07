@@ -131,7 +131,6 @@ public class DataManager implements IData {
 
         for (Circle c : room.getRoomGraph().getCircles()) {
             PreparedStatement createPoint = connection.prepareStatement(queryCreatePoints);
-            System.out.println("Point written: " + c.getCenterX() + " " + c.getCenterY());
             createPoint.setDouble(1, c.getCenterX());
             createPoint.setDouble(2, c.getCenterY());
             createPoint.setInt(3, id);
@@ -198,7 +197,6 @@ public class DataManager implements IData {
 
     private Circle createCircle(double x, double y) {
         Circle circle = new Circle();
-        System.out.println("x: " + x + " y: " + y);
         circle.setCenterX(x);
         circle.setCenterY(y);
         circle.setRadius(15);

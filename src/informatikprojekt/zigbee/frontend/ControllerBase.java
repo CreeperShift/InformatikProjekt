@@ -144,6 +144,9 @@ public class ControllerBase implements Initializable {
         content.setPrefWidth(contentPanel.getPrefWidth());
         content.setMinWidth(contentPanel.getWidth());
         contentPanel.getChildren().add(content);
+        if(currentRoom != null) {
+            ControllerRoomView.INSTANCE.addRoom(currentRoom);
+        }
     }
 
     public void onButtonStart(ActionEvent actionEvent) {

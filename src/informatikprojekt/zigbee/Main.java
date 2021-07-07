@@ -41,6 +41,7 @@ public class Main extends Application {
         DataManager.get().stopReader();
         CommonUtils.stopAllTimers();
         DataManager.stop();
+        ConnectionManager.stopConnections();
     }
 
 

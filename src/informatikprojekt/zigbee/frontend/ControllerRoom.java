@@ -245,8 +245,6 @@ public class ControllerRoom implements Initializable {
 
     public void linealOnMouseClicked(MouseEvent event) {
 
-        room.getRoomGraph().getCircles().forEach(System.out::println);
-
         if (cbLineal.isSelected()) {
             if (lineList.isEmpty()) {
                 Lineal(25, 20, 20, 1);

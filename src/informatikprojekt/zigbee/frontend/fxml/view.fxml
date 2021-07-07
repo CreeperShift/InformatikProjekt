@@ -9,7 +9,7 @@
    <children>
       <AnchorPane fx:id="drawingArea" minHeight="800.0" minWidth="900.0" stylesheets="@frontend.css">
          <children>
-            <Label alignment="CENTER" layoutX="436.0" layoutY="392.0" text="Kein Raum vorhanden" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="100.0">
+            <Label fx:id="noRoomLabel" alignment="CENTER" layoutX="436.0" layoutY="392.0" text="Kein Raum vorhanden" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="100.0" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="100.0">
                <font>
                   <Font size="27.0" />
                </font>
