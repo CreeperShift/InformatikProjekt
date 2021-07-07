@@ -111,12 +111,21 @@ public class DataManager implements IData {
 
     @Override
     public List<Integer> getAllDevices() {
-        return null;
+
     }
 
     @Override
-    public List<String> getAllSensors() {
-        return null;
+    public List<String> getAllSensors() throws SQLException {
+        List<String> allSensors = new LinkedList<>();
+        String getSensors = "Select sensors from data";
+        PreparedStatement preparedStatement = connection.prepareStatement(getSensors);
+        ResultSet result = preparedStatement.executeQuery();
+
+        while(result.next()){
+            allSensors.add(result.getString("sensor"));
+        }
+        preparedStatement.close();
+        return allSensors;
     }
 
     @Override
