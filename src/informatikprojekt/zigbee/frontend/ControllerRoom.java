@@ -30,7 +30,6 @@ public class ControllerRoom implements Initializable {
     public Button btnDevice;
     public Button btnDelete;
     public Button btnWand;
-    public Button btnNewRoom;
     public Button btnMove;
     public Button btnCancel;
     public Button btnSave;
