@@ -1,6 +1,7 @@
 package informatikprojekt.zigbee.frontend;
 
 import informatikprojekt.zigbee.backend.DataManager;
+import informatikprojekt.zigbee.backend.Room;
 import informatikprojekt.zigbee.util.CommonUtils;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -37,6 +38,7 @@ public class ControllerBase implements Initializable {
     public Button btnNewRoom;
     private boolean isConnected = false;
     public static ControllerBase INSTANCE;
+    private Room currentRoom;
 
     private static Window activeWindow = Window.START;
 
@@ -60,6 +62,9 @@ public class ControllerBase implements Initializable {
 
     public void onBtnNewRoom(ActionEvent actionEvent) {
         setActiveWindow(Window.CREATEROOM);
+        currentRoom = new Room("testRoom");
+        ControllerRoom.get().setRoom(currentRoom);
+
         contentPanel.getChildren().clear();
         createRoom.setPrefHeight(contentPanel.getPrefHeight());
         createRoom.setPrefWidth(contentPanel.getPrefWidth());

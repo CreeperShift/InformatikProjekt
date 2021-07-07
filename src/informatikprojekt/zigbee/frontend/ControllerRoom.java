@@ -1,13 +1,14 @@
 package informatikprojekt.zigbee.frontend;
 
 import informatikprojekt.zigbee.Main;
-import informatikprojekt.zigbee.util.LineGraph;
+import informatikprojekt.zigbee.backend.Room;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
@@ -22,10 +23,7 @@ import java.net.URL;
 import java.util.*;
 
 public class ControllerRoom implements Initializable {
-    public ColorPicker guiColorPicker;
-    public TextField guiBSize;
     public AnchorPane drawingArea;
-    public ToggleButton editMode;
     public Button btnClear;
     public Button btnDevice;
     public Button btnDelete;
@@ -34,13 +32,13 @@ public class ControllerRoom implements Initializable {
     public Button btnCancel;
     public Button btnSave;
     private Line currentLine;
-    private LineGraph lineGraph = new LineGraph();
     private Circle currentCircle = null;
-    private boolean toggleButtonActive = false;
     public CheckBox cbGitterNetzLinien;
     public CheckBox cbLineal;
     private Circle activeCircle = null;
     private final Map<Line, Boolean> draggedLines = new HashMap<>();
+    private Room room;
+    private static ControllerRoom INSTANCE;
 
     private final List<Line> gridList = new ArrayList<>();
     private final List<Line> lineList = new ArrayList<>();
@@ -55,6 +53,15 @@ public class ControllerRoom implements Initializable {
     public void onBtnSave(ActionEvent actionEvent) {
     }
 
+    public void setRoom(Room room) {
+        this.room = room;
+        GitterNetzLinien(25, Color.LIGHTGRAY);
+        GitterNetzLinien(100, Color.LIGHTPINK);
+    }
+
+    public static ControllerRoom get() {
+        return INSTANCE;
+    }
 
     enum TOOL_TYPE {
         NONE, WAND, DEVICE, DELETE, MOVE
@@ -67,6 +74,7 @@ public class ControllerRoom implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         drawingArea.getStyleClass().add(JMetroStyleClass.BACKGROUND);
+        INSTANCE = this;
     }
 
     private void GitterNetzLinien(int increase, Color color) {
@@ -148,58 +156,6 @@ public class ControllerRoom implements Initializable {
         Main.s.setCursor(Cursor.DEFAULT);
     }
 
-    public void onEditMode(ActionEvent actionEvent) {
-
-        if(!Main.isConnected) {
-            if (!toggleButtonActive) {
-                setToolbarDisabled(false);
-                lineGraph.getCircles().forEach(c -> c.setStroke(Color.BLACK));
-                if (cbGitterNetzLinien.isSelected()) {
-                    drawingArea.getChildren().addAll(0, gridList);
-                }
-                if (cbLineal.isSelected()) {
-                    drawingArea.getChildren().addAll(0, lineList);
-                    drawingArea.getChildren().addAll(0, textList);
-                }
-            } else {
-                setToolbarDisabled(true);
-                drawingArea.getChildren().removeAll(gridList);
-                drawingArea.getChildren().removeAll(lineList);
-                drawingArea.getChildren().removeAll(textList);
-                lineGraph.getCircles().forEach(c -> c.setStroke(Color.TRANSPARENT));
-            }
-
-            toggleButtonActive = !toggleButtonActive;
-        }
-    }
-
-    //TODO:
-    public void onNewRoom(ActionEvent actionEvent) {
-
-        drawingArea.getChildren().clear();
-        editMode.setDisable(false);
-        GitterNetzLinien(25, Color.LIGHTGRAY);
-        GitterNetzLinien(100, Color.LIGHTPINK);
-        editMode.fire();
-    }
-
-    private void setToolbarDisabled(boolean bool) {
-
-        if (bool) {
-            activeTool = TOOL_TYPE.NONE;
-            Main.s.setCursor(Cursor.DEFAULT);
-        }
-        btnWand.setDisable(bool);
-        btnClear.setDisable(bool);
-        btnDelete.setDisable(bool);
-        btnDevice.setDisable(bool);
-        guiColorPicker.setDisable(bool);
-        guiBSize.setDisable(bool);
-        cbGitterNetzLinien.setDisable(bool);
-        cbLineal.setDisable(bool);
-        btnMove.setDisable(bool);
-    }
-
     public void guiDelete(ActionEvent actionEvent) {
 
         if (activeTool != TOOL_TYPE.DELETE) {
@@ -220,7 +176,7 @@ public class ControllerRoom implements Initializable {
         drawingArea.getChildren().addAll(gridList);
         drawingArea.getChildren().addAll(lineList);
         drawingArea.getChildren().addAll(textList);
-        lineGraph = new LineGraph();
+        room.clear();
     }
 
     public void gitterOnMouseClicked(MouseEvent event) {
@@ -257,16 +213,17 @@ public class ControllerRoom implements Initializable {
 
     public void linealOnMouseMoved(MouseEvent event) {
         if (cbLineal.isSelected()) {
-                lineX.setStroke(Color.RED);
-                lineY.setStroke(Color.RED);
-                lineX.setStrokeWidth(2);
-                lineY.setStrokeWidth(2);
-                lineX.setStartX(event.getX());
-                lineX.setEndX(event.getX());
-                lineY.setStartY(event.getY());
-                lineY.setEndY(event.getY());
-                if(!drawingArea.getChildren().contains(lineX) && !drawingArea.getChildren().contains(lineY)){
-                drawingArea.getChildren().addAll(lineX, lineY);}
+            lineX.setStroke(Color.RED);
+            lineY.setStroke(Color.RED);
+            lineX.setStrokeWidth(2);
+            lineY.setStrokeWidth(2);
+            lineX.setStartX(event.getX());
+            lineX.setEndX(event.getX());
+            lineY.setStartY(event.getY());
+            lineY.setEndY(event.getY());
+            if (!drawingArea.getChildren().contains(lineX) && !drawingArea.getChildren().contains(lineY)) {
+                drawingArea.getChildren().addAll(lineX, lineY);
+            }
         }
     }
 
@@ -281,7 +238,7 @@ public class ControllerRoom implements Initializable {
     public void onMouseDragEntered(MouseDragEvent mouseDragEvent) {
         if (activeTool == TOOL_TYPE.WAND) {
 
-            if (lineGraph.isEmpty()) {
+            if (room.getRoomGraph().isEmpty()) {
                 currentCircle = new Circle();
                 currentLine = new Line();
                 currentCircle.setRadius(15);
@@ -290,21 +247,18 @@ public class ControllerRoom implements Initializable {
                 currentCircle.setStrokeWidth(4);
                 currentCircle.setCenterX(mouseDragEvent.getX());
                 currentCircle.setCenterY(mouseDragEvent.getY());
-                currentLine.setStrokeWidth(Double.parseDouble(guiBSize.getText()));
-                currentLine.setStroke(guiColorPicker.getValue());
+                currentLine.setStrokeWidth(4);
+                currentLine.setStroke(Color.BLACK);
                 currentLine.setStartX(mouseDragEvent.getX());
                 currentLine.setStartY(mouseDragEvent.getY());
 
                 drawingArea.getChildren().add(currentCircle);
                 drawingArea.getChildren().add(currentLine);
-                lineGraph.addCircle(currentCircle);
+                room.getRoomGraph().addCircle(currentCircle);
                 setupCircleHandlers(currentCircle);
                 activeCircle = currentCircle;
             }
         }
-    }
-
-    public void onMouseDragExited(MouseDragEvent mouseDragEvent) {
     }
 
     public void onMouseDragReleased(MouseDragEvent mouseDragEvent) {
@@ -345,8 +299,8 @@ public class ControllerRoom implements Initializable {
                 circle.setCenterY(currentLine.getEndY());
                 drawingArea.getChildren().add(circle);
                 setupCircleHandlers(circle);
-                lineGraph.addCircle(circle);
-                lineGraph.addEdge(circle, currentCircle, currentLine);
+                room.getRoomGraph().addCircle(circle);
+                room.getRoomGraph().addEdge(circle, currentCircle, currentLine);
             } else {
                 /*
                 A circle is at the location, we get the top most one and connect the line to it.
@@ -357,7 +311,7 @@ public class ControllerRoom implements Initializable {
                 } else {
                     currentLine.setEndX(circle.getCenterX());
                     currentLine.setEndY(circle.getCenterY());
-                    lineGraph.addEdge(circle, currentCircle, currentLine);
+                    room.getRoomGraph().addEdge(circle, currentCircle, currentLine);
                 }
             }
 
@@ -430,7 +384,7 @@ public class ControllerRoom implements Initializable {
     private void moveCircle(double x, double y) {
         if (draggedLines.isEmpty()) {
 
-            for (Line line : lineGraph.getLine(activeCircle)) {
+            for (Line line : room.getRoomGraph().getLine(activeCircle)) {
                 if (line.getEndX() == activeCircle.getCenterX() && line.getEndY() == activeCircle.getCenterY()) {
                     draggedLines.put(line, true);
                 } else {
@@ -464,12 +418,11 @@ public class ControllerRoom implements Initializable {
 
         c.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (activeTool == TOOL_TYPE.DELETE) {
-                if (event.getSource() instanceof Circle) {
-                    Circle circle = (Circle) event.getSource();
-                    Set<Line> linesToRemove = new HashSet<>(lineGraph.getLine(circle));
+                if (event.getSource() instanceof Circle circle) {
+                    Set<Line> linesToRemove = new HashSet<>(room.getRoomGraph().getLine(circle));
                     drawingArea.getChildren().remove(circle);
                     drawingArea.getChildren().removeAll(linesToRemove);
-                    lineGraph.removeCircle(circle);
+                    room.getRoomGraph().removeCircle(circle);
                 }
             }
         });
@@ -478,8 +431,8 @@ public class ControllerRoom implements Initializable {
             Circle source = (Circle) event.getSource();
             if (activeTool == TOOL_TYPE.WAND && currentLine == null) {
                 currentLine = new Line();
-                currentLine.setStrokeWidth(Double.parseDouble(guiBSize.getText()));
-                currentLine.setStroke(guiColorPicker.getValue());
+                currentLine.setStrokeWidth(4);
+                currentLine.setStroke(Color.BLACK);
 
                 currentLine.setStartX(source.getCenterX());
                 currentLine.setStartY(source.getCenterY());
