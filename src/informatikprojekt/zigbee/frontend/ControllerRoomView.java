@@ -26,7 +26,7 @@ public class ControllerRoomView implements Initializable {
 
     public void addRoom(Room room){
         this.room = room;
-        drawingArea.getChildren().remove(noRoomLabel);
+        drawingArea.getChildren().clear();
         loadGraph();
     }
 
