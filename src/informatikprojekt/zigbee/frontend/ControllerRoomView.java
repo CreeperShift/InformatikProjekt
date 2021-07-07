@@ -24,18 +24,22 @@ public class ControllerRoomView implements Initializable {
         INSTANCE = this;
     }
 
-    public void addRoom(Room room){
-        this.room = room;
-        drawingArea.getChildren().clear();
-        loadGraph();
+    public void addRoom(Room room) {
+        if (this.room != room) {
+            this.room = room;
+            drawingArea.getChildren().clear();
+            loadGraph();
+            room.getDeviceList().forEach(d -> d.addTo(drawingArea));
+        }
     }
 
-    private void loadGraph(){
-        for(Circle c : room.getRoomGraph().getCircles()){
+    private void loadGraph() {
 
-            for(Map.Entry<Circle, Line> entry : room.getRoomGraph().getAdj(c).entrySet()){
+        for (Circle c : room.getRoomGraph().getCircles()) {
+
+            for (Map.Entry<Circle, Line> entry : room.getRoomGraph().getAdj(c).entrySet()) {
                 Line l = entry.getValue();
-                if(!drawingArea.getChildren().contains(l)){
+                if (!drawingArea.getChildren().contains(l)) {
                     drawingArea.getChildren().add(l);
                 }
             }

@@ -1,5 +1,6 @@
 package informatikprojekt.zigbee.backend;
 
+import informatikprojekt.zigbee.frontend.Device;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
@@ -50,7 +51,7 @@ public class DataManager implements IData {
     public void startReader() {
 
         if (uartReader == null || isStopped() || isFailed()) {
-            uartReader = new MockUartReader(port);
+            uartReader = new UartReader(port);
             uartReader.startReader();
         }
     }
@@ -128,19 +129,20 @@ public class DataManager implements IData {
         if (res.next()) {
             id = res.getInt("id");
         }
-
+        PreparedStatement createPoint = connection.prepareStatement(queryCreatePoints);
         for (Circle c : room.getRoomGraph().getCircles()) {
-            PreparedStatement createPoint = connection.prepareStatement(queryCreatePoints);
+
             createPoint.setDouble(1, c.getCenterX());
             createPoint.setDouble(2, c.getCenterY());
             createPoint.setInt(3, id);
             createPoint.executeUpdate();
         }
-
+        createPoint.close();
+        PreparedStatement connections = connection.prepareStatement(createConnections);
         for (Circle c : room.getRoomGraph().getCircles()) {
             for (Circle connected : room.getRoomGraph().getAdj(c).keySet()) {
 
-                PreparedStatement connections = connection.prepareStatement(createConnections);
+
                 connections.setInt(1, id);
                 connections.setDouble(2, c.getCenterX());
                 connections.setDouble(3, c.getCenterY());
@@ -150,6 +152,20 @@ public class DataManager implements IData {
                 connections.executeUpdate();
             }
         }
+        connections.close();
+
+        String deviceQuery = "INSERT INTO device (id, networkID, x, y, room_FK) values (NULL, ?, ?, ?, ?)";
+        PreparedStatement devices = connection.prepareStatement(deviceQuery);
+        for (Device device : room.getDeviceList()) {
+
+            devices.setInt(1, device.getID());
+            devices.setDouble(2, device.getCircle().getCenterX());
+            devices.setDouble(3, device.getCircle().getCenterY());
+            devices.setInt(4, id);
+            devices.executeUpdate();
+        }
+        devices.close();
+
     }
 
     @Override
@@ -190,6 +206,17 @@ public class DataManager implements IData {
                 }
                 connectedPointsData.close();
             }
+
+            String deviceQuery = "SELECT networkID, x, y FROM device WHERE room_FK == ?;";
+            PreparedStatement devices = connection.prepareStatement(deviceQuery);
+            devices.setInt(1, roomData.getInt("id"));
+            ResultSet deviceSet = devices.executeQuery();
+
+            while (deviceSet.next()) {
+                Device device = new Device(deviceSet.getInt("networkID"), deviceSet.getDouble("x"), deviceSet.getDouble("y"));
+                room.addDevice(device);
+            }
+            devices.close();
         }
         getRoom.close();
         return room;

@@ -53,7 +53,7 @@ public class ConnectionManager {
 
                     create table if not exists device
                     (
-                    \tid int
+                    \tid integer
                     \t\tconstraint device_pk
                     \t\t\tprimary key,
                     \tnetworkID int,

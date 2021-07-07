@@ -81,7 +81,7 @@ public class UartReader extends Thread {
                 }
             }
             try {
-                Thread.sleep(10);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -194,10 +194,6 @@ public class UartReader extends Thread {
     }
 
     private void addDataToList(String[] dataSplit) {
-
-        for (String s : dataSplit) {
-            System.out.println(s);
-        }
 
         if (dataSplit[0].equals("0")) {
 

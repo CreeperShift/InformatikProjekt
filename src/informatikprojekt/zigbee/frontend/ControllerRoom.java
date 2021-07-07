@@ -83,6 +83,7 @@ public class ControllerRoom implements Initializable {
                         drawingArea.getChildren().addAll(0, gridList);
                     }
                     loadGraph();
+                   room.getDeviceList().forEach(d -> d.addTo(drawingArea));
                 });
                 t.cancel();
             }
@@ -93,6 +94,14 @@ public class ControllerRoom implements Initializable {
 
     public static ControllerRoom get() {
         return INSTANCE;
+    }
+
+    public void onMouseClicked(MouseEvent event) {
+        if (activeTool == TOOL_TYPE.DEVICE) {
+        Device device = new Device(event.getX(), event.getY());
+        room.addDevice(device);
+        device.addTo(drawingArea);
+        }
     }
 
     enum TOOL_TYPE {
@@ -161,23 +170,23 @@ public class ControllerRoom implements Initializable {
         }
     }
 
-    private void loadGraph(){
-        for(Circle c : room.getRoomGraph().getCircles()){
-            if(!drawingArea.getChildren().contains(c)) {
+    private void loadGraph() {
+        for (Circle c : room.getRoomGraph().getCircles()) {
+            if (!drawingArea.getChildren().contains(c)) {
                 drawingArea.getChildren().add(c);
                 setupCircleHandlers(c);
             }
 
-            for(Map.Entry<Circle, Line> entry : room.getRoomGraph().getAdj(c).entrySet()){
+            for (Map.Entry<Circle, Line> entry : room.getRoomGraph().getAdj(c).entrySet()) {
                 Line l = entry.getValue();
                 Circle adjCircle = entry.getKey();
 
-                if(!drawingArea.getChildren().contains(adjCircle)){
+                if (!drawingArea.getChildren().contains(adjCircle)) {
                     setupCircleHandlers(adjCircle);
                     drawingArea.getChildren().add(adjCircle);
                 }
 
-                if(!drawingArea.getChildren().contains(l)){
+                if (!drawingArea.getChildren().contains(l)) {
                     drawingArea.getChildren().add(l);
                 }
             }
@@ -224,6 +233,11 @@ public class ControllerRoom implements Initializable {
     }
 
     public void guiDevice(ActionEvent actionEvent) {
+        if (activeTool != TOOL_TYPE.DEVICE) {
+            activeTool = TOOL_TYPE.DEVICE;
+        } else {
+            resetTool();
+        }
     }
 
     public void guiClearAll(ActionEvent actionEvent) {
@@ -262,12 +276,12 @@ public class ControllerRoom implements Initializable {
         }
     }
 
-    public void keinLinealOnMouseExited(MouseEvent event) {
+    public void onMouseExit(MouseEvent event) {
         drawingArea.getChildren().remove(lineX);
         drawingArea.getChildren().remove(lineY);
     }
 
-    public void linealOnMouseMoved(MouseEvent event) {
+    public void onMouseMoved(MouseEvent event) {
         if (cbLineal.isSelected()) {
             lineX.setStroke(Color.RED);
             lineY.setStroke(Color.RED);

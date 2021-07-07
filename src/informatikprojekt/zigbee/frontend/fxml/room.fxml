@@ -10,7 +10,7 @@
 
 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="informatikprojekt.zigbee.frontend.ControllerRoom">
    <children>
-      <AnchorPane fx:id="drawingArea" maxWidth="1130.0" minHeight="750.0" onDragDetected="#onDragDetected" onMouseDragEntered="#onMouseDragEntered" onMouseDragOver="#onMouseDragOver" onMouseDragReleased="#onMouseDragReleased" onMouseExited="#keinLinealOnMouseExited" onMouseMoved="#linealOnMouseMoved" prefHeight="750.0" stylesheets="@frontend.css" VBox.vgrow="ALWAYS" />
+      <AnchorPane fx:id="drawingArea" maxWidth="1130.0" minHeight="750.0" onDragDetected="#onDragDetected" onMouseClicked="#onMouseClicked" onMouseDragEntered="#onMouseDragEntered" onMouseDragOver="#onMouseDragOver" onMouseDragReleased="#onMouseDragReleased" onMouseExited="#onMouseExit" onMouseMoved="#onMouseMoved" prefHeight="750.0" stylesheets="@frontend.css" VBox.vgrow="ALWAYS" />
       <Separator />
       <HBox alignment="TOP_CENTER" style="-fx-padding: 15; -fx-spacing: 15;" styleClass="drawingToolBar">
          <children>
