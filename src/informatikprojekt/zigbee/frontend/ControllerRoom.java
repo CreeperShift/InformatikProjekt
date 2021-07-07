@@ -180,11 +180,17 @@ public class ControllerRoom implements Initializable {
     }
 
     public void gitterOnMouseClicked(MouseEvent event) {
-        if (cbGitterNetzLinien.isSelected() && !drawingArea.getChildren().containsAll(gridList)) {
+        if (cbGitterNetzLinien.isSelected() /*&& !drawingArea.getChildren().containsAll(gridList)*/) {
+            if (cbGitterNetzLinien.isSelected()) {
+                GitterNetzLinien(25, Color.LIGHTGRAY);
+                GitterNetzLinien(100, Color.LIGHTPINK);
+            }
+
             drawingArea.getChildren().addAll(0, gridList);
-        } else {
+
+        }else {
             drawingArea.getChildren().removeAll(gridList);
-        }
+            }
     }
 
     public void linealOnMouseClicked(MouseEvent event) {

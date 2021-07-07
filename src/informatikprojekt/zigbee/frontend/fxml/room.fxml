@@ -21,7 +21,7 @@
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="1.0" HBox.hgrow="NEVER" />
             <Button fx:id="btnClear" mnemonicParsing="false" onAction="#guiClearAll" text="Clear All" />
             <Separator orientation="VERTICAL" prefHeight="0.0" prefWidth="1.0" />
-            <CheckBox fx:id="cbGitterNetzLinien" mnemonicParsing="false" onMouseClicked="#gitterOnMouseClicked" selected="true" text="Gitternetzlinien">
+            <CheckBox fx:id="cbGitterNetzLinien" mnemonicParsing="false" onMouseClicked="#gitterOnMouseClicked" text="Gitternetzlinien">
                <HBox.margin>
                   <Insets top="4.0" />
                </HBox.margin>
