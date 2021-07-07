@@ -96,13 +96,28 @@
                                     <Font size="24.0" />
                                  </font>
                               </Label>
-                              <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                              <HBox alignment="CENTER" prefHeight="68.0" prefWidth="435.0" spacing="8.0">
                                  <children>
-                                    <Button fx:id="btnNewRoom" alignment="CENTER" contentDisplay="CENTER" layoutX="193.0" layoutY="70.0" mnemonicParsing="false" onAction="#onBtnNewRoom" prefHeight="58.0" prefWidth="138.0" text="Raum erstellen" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="15.0">
-                                       <font>
-                                          <Font size="17.0" />
-                                       </font>
-                                    </Button>
+                                    <Label text="Raum:" />
+                                    <TextField fx:id="txtRoomName" prefHeight="25.0" prefWidth="126.0" />
+                                 </children>
+                              </HBox>
+                              <AnchorPane prefHeight="96.0" prefWidth="435.0">
+                                 <children>
+                                    <HBox alignment="CENTER" prefHeight="81.0" prefWidth="435.0" spacing="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                       <children>
+                                          <Button fx:id="btnNewRoom" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onBtnNewRoom" prefHeight="58.0" prefWidth="138.0" text="Raum erstellen">
+                                             <font>
+                                                <Font size="17.0" />
+                                             </font>
+                                          </Button>
+                                          <Button fx:id="btnRoomLoad" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onBtnLoadRoom" prefHeight="58.0" prefWidth="138.0" text="Raum laden">
+                                             <font>
+                                                <Font size="17.0" />
+                                             </font>
+                                          </Button>
+                                       </children>
+                                    </HBox>
                                  </children>
                               </AnchorPane>
                            </children>

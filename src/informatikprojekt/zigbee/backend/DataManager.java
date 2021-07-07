@@ -196,6 +196,7 @@ public class DataManager implements IData {
 
     private Circle createCircle(double x, double y) {
         Circle circle = new Circle();
+        System.out.println("x: " + x + " y: " + y);
         circle.setCenterX(x);
         circle.setCenterX(y);
         circle.setRadius(15);

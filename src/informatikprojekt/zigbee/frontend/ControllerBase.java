@@ -20,6 +20,7 @@ import jfxtras.styles.jmetro.JMetroStyleClass;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.*;
 
 public class ControllerBase implements Initializable {
@@ -36,6 +37,7 @@ public class ControllerBase implements Initializable {
     public TextArea consoleOut;
     public CheckBox autoScroll;
     public Button btnNewRoom;
+    public TextField txtRoomName;
     private boolean isConnected = false;
     public static ControllerBase INSTANCE;
     private Room currentRoom;
@@ -61,14 +63,38 @@ public class ControllerBase implements Initializable {
     }
 
     public void onBtnNewRoom(ActionEvent actionEvent) {
-        setActiveWindow(Window.CREATEROOM);
-        currentRoom = new Room("testRoom");
-        contentPanel.getChildren().clear();
-        createRoom.setPrefHeight(contentPanel.getPrefHeight());
-        createRoom.setPrefWidth(contentPanel.getPrefWidth());
-        createRoom.setMinWidth(contentPanel.getWidth());
-        contentPanel.getChildren().add(createRoom);
-        ControllerRoom.get().setRoom(currentRoom);
+        if (!txtRoomName.getText().isBlank()) {
+            setActiveWindow(Window.CREATEROOM);
+            currentRoom = new Room(txtRoomName.getText());
+            contentPanel.getChildren().clear();
+            createRoom.setPrefHeight(contentPanel.getPrefHeight());
+            createRoom.setPrefWidth(contentPanel.getPrefWidth());
+            createRoom.setMinWidth(contentPanel.getWidth());
+            contentPanel.getChildren().add(createRoom);
+            ControllerRoom.get().setRoom(currentRoom);
+        }
+    }
+
+    public void onBtnLoadRoom(ActionEvent actionEvent) {
+        if (!txtRoomName.getText().isBlank()) {
+            setActiveWindow(Window.CREATEROOM);
+            Room r = null;
+            try {
+                r = DataManager.get().readRoom(txtRoomName.getText());
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            if (r == null) {
+                r = new Room(txtRoomName.getText());
+            }
+            currentRoom = r;
+            contentPanel.getChildren().clear();
+            createRoom.setPrefHeight(contentPanel.getPrefHeight());
+            createRoom.setPrefWidth(contentPanel.getPrefWidth());
+            createRoom.setMinWidth(contentPanel.getWidth());
+            contentPanel.getChildren().add(createRoom);
+            ControllerRoom.get().setRoom(currentRoom);
+        }
     }
 
     public enum Window {

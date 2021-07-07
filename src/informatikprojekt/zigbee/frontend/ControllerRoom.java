@@ -51,12 +51,14 @@ public class ControllerRoom implements Initializable {
     private final Line lineY = new Line(25, 0, 0, 0);
 
     public void onBtnCancel(ActionEvent actionEvent) {
+        drawingArea.getChildren().clear();
         ControllerBase.INSTANCE.btnStart.fire();
     }
 
     public void onBtnSave(ActionEvent actionEvent) {
         try {
             DataManager.get().writeRoom(room);
+            drawingArea.getChildren().clear();
             ControllerBase.INSTANCE.btnStart.fire();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -79,6 +81,7 @@ public class ControllerRoom implements Initializable {
                     if (!drawingArea.getChildren().containsAll(gridList)) {
                         drawingArea.getChildren().addAll(0, gridList);
                     }
+                    loadGraph();
                 });
                 t.cancel();
             }
@@ -154,6 +157,30 @@ public class ControllerRoom implements Initializable {
         for (int i = 100; i < drawingArea.getHeight(); i += 100) {
             Text text2 = new Text(0, i + 25, "" + i);
             textList.add(text2);
+        }
+    }
+
+    private void loadGraph(){
+        for(Circle c : room.getRoomGraph().getCircles()){
+            if(!drawingArea.getChildren().contains(c)) {
+                drawingArea.getChildren().add(c);
+                setupCircleHandlers(c);
+            }
+
+            for(Map.Entry<Circle, Line> entry : room.getRoomGraph().getAdj(c).entrySet()){
+                Line l = entry.getValue();
+                Circle adjCircle = entry.getKey();
+
+                if(!drawingArea.getChildren().contains(adjCircle)){
+                    setupCircleHandlers(adjCircle);
+                    drawingArea.getChildren().add(adjCircle);
+                }
+
+                if(!drawingArea.getChildren().contains(l)){
+                    drawingArea.getChildren().add(l);
+                }
+            }
+
         }
     }
 
