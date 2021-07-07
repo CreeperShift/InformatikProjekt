@@ -96,8 +96,17 @@ public class DataManager implements IData {
     }
 
     @Override
-    public List<String> getAllDataTypes() {
-        return null;
+    public List<String> getAllDataTypes() throws SQLException {
+        List<String> allDataTypes = new LinkedList<>();
+        String getDataTypes = "Select dataType from data";
+        PreparedStatement preparedStatement = connection.prepareStatement(getDataTypes);
+        ResultSet result = preparedStatement.executeQuery();
+
+        while(result.next()){
+            allDataTypes.add(result.getString("dataType"));
+        }
+        preparedStatement.close();
+        return allDataTypes;
     }
 
     @Override
