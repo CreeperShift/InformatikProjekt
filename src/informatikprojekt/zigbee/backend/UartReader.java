@@ -62,15 +62,20 @@ public class UartReader extends Thread {
                     data = data.concat(String.valueOf(b));
                 }
                 if (!data.isBlank()) {
-                    data = data.substring(0, data.length() - 1);
+                    /*                    data = data.substring(0, data.length() - 1);*/
                     String finalData = data;
                     Platform.runLater(() -> {
                         CommonUtils.consoleString(finalData);
                     });
                     String[] dataSplit = data.split(";");
-
-                    processData(dataSplit);
-
+                    try {
+                        if (Integer.parseInt(dataSplit[0]) == 0) {
+                            processData(dataSplit);
+                        }
+                    }catch(Exception e){
+                        e.printStackTrace();
+                        System.err.println("STRING MALFORMED");
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -195,13 +200,18 @@ public class UartReader extends Thread {
 
     private void addDataToList(String[] dataSplit) {
 
-        if (dataSplit[0].equals("0")) {
+        try {
+            if (dataSplit[0].equals("0")) {
 
-            for (int i = 4; i < (Integer.parseInt(dataSplit[3]) * 2) + 4; i = i + 2) {
+                for (int i = 4; i < (Integer.parseInt(dataSplit[3]) * 2) + 4; i = i + 2) {
 
-                Data data = new Data(Integer.parseInt(dataSplit[1]), dataSplit[2], dataSplit[i], Float.parseFloat(dataSplit[i + 1]));
-                dataSet.add(data);
+                    Data data = new Data(Integer.parseInt(dataSplit[1]), dataSplit[2], dataSplit[i], Float.parseFloat(dataSplit[i + 1]));
+                    dataSet.add(data);
+                }
             }
+        }catch (ArrayIndexOutOfBoundsException e){
+            e.printStackTrace();
+            System.out.println("Received malformed String, trying again. Possibly just started the connection.");
         }
     }
 
