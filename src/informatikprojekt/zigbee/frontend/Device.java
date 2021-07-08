@@ -1,5 +1,6 @@
 package informatikprojekt.zigbee.frontend;
 
+import informatikprojekt.zigbee.util.CommonUtils;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -14,7 +15,8 @@ public class Device {
     private final int id;
     private final Text text;
     private final Circle circle;
-    private PopOver popOver;
+    private final PopOver popOver;
+    private boolean isRender = false;
 
 
     public Device(double x, double y) {
@@ -25,8 +27,13 @@ public class Device {
     public Device(int id, double x, double y) {
         this.id = id;
         popOver = new PopOver();
+        CommonUtils.addPopOver(popOver);
+        DeviceContent deviceContent = new DeviceContent(id);
+        popOver.setContentNode(deviceContent);
         popOver.setDetachable(false);
         popOver.setAnimated(true);
+        popOver.setMaxHeight(100);
+        popOver.setMaxWidth(70);
         popOver.setX(x);
         popOver.setY(y);
         circle = new Circle();
@@ -44,23 +51,23 @@ public class Device {
         text.setMouseTransparent(true);
 
         circle.setOnMouseClicked(event -> {
-            if (popOver != null && !popOver.isDetached()) {
-                popOver.hide();
-            }
-
-            if (event.getClickCount() == 2) {
-                if (popOver != null && popOver.isShowing()) {
+            if (isRender) {
+                if (popOver.isShowing()) {
                     popOver.hide(Duration.ZERO);
+
+                } else {
+                    popOver.setArrowLocation(PopOver.ArrowLocation.RIGHT_CENTER);
+                    popOver.show(ControllerRoomView.INSTANCE.drawingArea, event.getX() + 440, event.getY() + 88);
                 }
             }
-            if (popOver != null) {
-                popOver.setArrowLocation(PopOver.ArrowLocation.RIGHT_CENTER);
-                popOver.show(ControllerRoomView.INSTANCE.drawingArea, event.getX() + 440, event.getY() + 88);
-            }
-
 
         });
 
+
+    }
+
+    public void setRender() {
+        isRender = true;
     }
 
     public void addTo(AnchorPane anchorPane) {

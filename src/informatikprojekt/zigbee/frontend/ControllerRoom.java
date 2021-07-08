@@ -235,6 +235,7 @@ public class ControllerRoom implements Initializable {
     public void guiDevice(ActionEvent actionEvent) {
         if (activeTool != TOOL_TYPE.DEVICE) {
             activeTool = TOOL_TYPE.DEVICE;
+            Main.s.setCursor(Cursor.DEFAULT);
         } else {
             resetTool();
         }

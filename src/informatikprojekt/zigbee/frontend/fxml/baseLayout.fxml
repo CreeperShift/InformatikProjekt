@@ -40,6 +40,11 @@
                         <Font size="19.0" />
                      </font>
                   </Button>
+                  <Button fx:id="btnOverview" mnemonicParsing="false" onAction="#onBtnOverview" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Übersicht">
+                     <font>
+                        <Font size="19.0" />
+                     </font>
+                  </Button>
                   <Button fx:id="btnGraph" mnemonicParsing="false" onAction="#onButtonGraph" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Graph">
                      <font>
                         <Font size="19.0" />

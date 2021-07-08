@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="informatikprojekt.zigbee.frontend.ControllerOverview">
+   <children>
+      <AnchorPane prefHeight="57.0" prefWidth="600.0">
+         <children>
+            <Label alignment="CENTER" text="Luftqualität Übersicht" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="15.0">
+               <children>
+                  <Label text="Aktuell Luftqualität">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Rectangle arcWidth="5.0" fill="#434343" height="100.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                        <Circle fx:id="ledRED" fill="#e81414" radius="35.0" stroke="BLACK" strokeType="INSIDE" />
+                     </children>
+                  </StackPane>
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Rectangle arcWidth="5.0" fill="#434343" height="100.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                        <Circle fx:id="ledORANGE" fill="#e55d15" radius="35.0" stroke="BLACK" strokeType="INSIDE" />
+                     </children>
+                  </StackPane>
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Rectangle arcWidth="5.0" fill="#434343" height="100.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                        <Circle fx:id="ledGREEN" fill="#2fa137" radius="35.0" stroke="BLACK" strokeType="INSIDE" />
+                     </children>
+                  </StackPane>
+               </children>
+            </VBox>
+         </children>
+      </AnchorPane>
+   </children>
+</VBox>

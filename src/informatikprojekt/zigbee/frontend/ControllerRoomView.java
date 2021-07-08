@@ -29,7 +29,10 @@ public class ControllerRoomView implements Initializable {
             this.room = room;
             drawingArea.getChildren().clear();
             loadGraph();
-            room.getDeviceList().forEach(d -> d.addTo(drawingArea));
+            room.getDeviceList().forEach(d -> {
+                d.setRender();
+                d.addTo(drawingArea);
+            });
         }
     }
 

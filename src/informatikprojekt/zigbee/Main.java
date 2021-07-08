@@ -33,6 +33,7 @@ public class Main extends Application {
         primaryStage.setScene(s);
         primaryStage.setResizable(false);
         primaryStage.show();
+        primaryStage.setOnCloseRequest(windowEvent -> CommonUtils.closePopOvers());
     }
 
 

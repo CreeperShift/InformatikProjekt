@@ -4,7 +4,9 @@ import informatikprojekt.zigbee.frontend.ControllerBase;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import org.controlsfx.control.PopOver;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -15,6 +17,7 @@ public class CommonUtils {
     public static final String HUMIDITY = "Feuchtigkeit";
     public static final String CO2 = "CO2";
     public static final String VOC = "VoC";
+    private static List<PopOver> popOverCleanupList = new ArrayList<>();
 
     public static final Map<Integer, String> sensors = new HashMap<>() {{
         put(1, "SHT21");
@@ -24,6 +27,14 @@ public class CommonUtils {
     }};
 
     private static final List<Timer> timers = new ArrayList<>();
+
+    public static void addPopOver(PopOver p) {
+        popOverCleanupList.add(p);
+    }
+
+    public static void closePopOvers() {
+        popOverCleanupList.forEach(p -> p.hide(javafx.util.Duration.ZERO));
+    }
 
     public static String getSensorName(int id) {
         return sensors.getOrDefault(id, "Unknown Sensor");

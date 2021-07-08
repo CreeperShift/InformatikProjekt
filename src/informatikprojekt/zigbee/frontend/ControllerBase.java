@@ -39,6 +39,7 @@ public class ControllerBase implements Initializable {
     public CheckBox autoScroll;
     public Button btnNewRoom;
     public TextField txtRoomName;
+    public Button btnOverview;
     private boolean isConnected = false;
     public static ControllerBase INSTANCE;
     private Room currentRoom;
@@ -53,6 +54,7 @@ public class ControllerBase implements Initializable {
     public VBox createRoom;
     public VBox contentStart;
     public VBox content;
+    public VBox overview;
     public static TextArea textConsole;
     public static CheckBox checkStayConsole;
 
@@ -114,8 +116,9 @@ public class ControllerBase implements Initializable {
         }
     }
 
+
     public enum Window {
-        START, ROOM, GRAPH, DATA, CREATEROOM;
+        START, ROOM, GRAPH, DATA, CREATEROOM, OVERVIEW;
     }
 
     public static Window getActiveWindow() {
@@ -129,7 +132,7 @@ public class ControllerBase implements Initializable {
         ledStatus.fillProperty().bindBidirectional(ledStatusNavbar.fillProperty());
 
         INSTANCE = this;
-        allButtons = new Button[]{btnRoom, btnStart, btnData, btnGraph};
+        allButtons = new Button[]{btnRoom, btnStart, btnData, btnGraph, btnOverview};
         contentPanel.getStyleClass().add(JMetroStyleClass.BACKGROUND);
 
 
@@ -141,6 +144,7 @@ public class ControllerBase implements Initializable {
             createRoom = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/room.fxml")));
             graphPanel = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/graph.fxml")));
             dataPanel = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/data.fxml")));
+            overview = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("fxml/overview.fxml")));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -151,6 +155,7 @@ public class ControllerBase implements Initializable {
     private void setActiveWindow(Window window) {
         activeWindow = window;
     }
+
 
 
     public void onButtonRoom(ActionEvent actionEvent) {
@@ -192,6 +197,17 @@ public class ControllerBase implements Initializable {
         contentPanel.getChildren().clear();
         contentPanel.getChildren().add(graphPanel);
     }
+    public void onBtnOverview(ActionEvent actionEvent) {
+        setActiveWindow(Window.OVERVIEW);
+        setButtonActive(btnOverview);
+        overview.setPrefHeight(contentPanel.getPrefHeight());
+        overview.setPrefWidth(contentPanel.getPrefWidth());
+        overview.setMinWidth(contentPanel.getWidth());
+        overview.setMinHeight(contentPanel.getHeight());
+        contentPanel.getChildren().clear();
+        contentPanel.getChildren().add(overview);
+    }
+
 
     public void onButtonData(ActionEvent actionEvent) {
         setActiveWindow(Window.DATA);
