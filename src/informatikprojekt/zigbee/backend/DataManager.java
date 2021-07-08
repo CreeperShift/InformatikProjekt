@@ -98,11 +98,11 @@ public class DataManager implements IData {
     @Override
     public List<String> getAllDataTypes() throws SQLException {
         List<String> allDataTypes = new LinkedList<>();
-        String getDataTypes = "Select dataType from data";
+        String getDataTypes = "Select distinct dataType from data";
         PreparedStatement preparedStatement = connection.prepareStatement(getDataTypes);
         ResultSet result = preparedStatement.executeQuery();
 
-        while(result.next()){
+        while (result.next()) {
             allDataTypes.add(result.getString("dataType"));
         }
         preparedStatement.close();
@@ -111,17 +111,17 @@ public class DataManager implements IData {
 
     @Override
     public List<Integer> getAllDevices() {
-
+        return null;
     }
 
     @Override
     public List<String> getAllSensors() throws SQLException {
         List<String> allSensors = new LinkedList<>();
-        String getSensors = "Select sensors from data";
+        String getSensors = "Select distinct sensor from data";
         PreparedStatement preparedStatement = connection.prepareStatement(getSensors);
         ResultSet result = preparedStatement.executeQuery();
 
-        while(result.next()){
+        while (result.next()) {
             allSensors.add(result.getString("sensor"));
         }
         preparedStatement.close();
