@@ -51,7 +51,7 @@ public class DataManager implements IData {
     public void startReader() {
 
         if (uartReader == null || isStopped() || isFailed()) {
-            uartReader = new MockUartReader(port);
+            uartReader = new UartReader(port);
             uartReader.startReader();
         }
     }
