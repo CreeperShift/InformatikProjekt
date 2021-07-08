@@ -257,10 +257,6 @@ public class DataManager implements IData {
         }
     }
 
-    public final List<DataSet> getDataAll() {
-        return dataSets;
-    }
-
     public boolean isConnected() {
         return uartReader.getReaderState() == UartReader.State.CONNECTED;
     }
