@@ -1,6 +1,7 @@
 package informatikprojekt.zigbee.backend;
 
 import gnu.io.NRSerialPort;
+import informatikprojekt.zigbee.frontend.ControllerBase;
 import informatikprojekt.zigbee.util.CommonUtils;
 import javafx.application.Platform;
 
@@ -8,6 +9,8 @@ import java.io.DataInputStream;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -72,9 +75,9 @@ public class UartReader extends Thread {
                         if (Integer.parseInt(dataSplit[0]) == 0) {
                             processData(dataSplit);
                         }
-                    }catch(Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
-                        System.err.println("STRING MALFORMED");
+                        System.out.println("Received malformed String, trying again. Possibly just started the connection.");
                     }
                 }
             } catch (Exception e) {
@@ -143,6 +146,7 @@ public class UartReader extends Thread {
         writeTimer.schedule(new TimerTask() {
             @Override
             public void run() {
+                List<Data> currentData = new ArrayList<>();
                 Connection connection = null;
                 try {
                     Class.forName("org.sqlite.JDBC");
@@ -165,6 +169,7 @@ public class UartReader extends Thread {
 
                         while (!getDataSet().isEmpty()) {
                             Data d = getDataSet().take();
+                            currentData.add(d);
                             createData.setString(1, timestamp.toString());
                             createData.setString(2, d.SensorName());
                             createData.setString(3, d.dataType());
@@ -187,6 +192,7 @@ public class UartReader extends Thread {
                 } catch (SQLException | ClassNotFoundException throwables) {
                     throwables.printStackTrace();
                 }
+                notifyOthers(currentData);
                 writeTimer.cancel();
                 try {
                     assert connection != null;
@@ -209,11 +215,16 @@ public class UartReader extends Thread {
                     dataSet.add(data);
                 }
             }
-        }catch (ArrayIndexOutOfBoundsException e){
+        } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
             System.out.println("Received malformed String, trying again. Possibly just started the connection.");
         }
     }
 
 
+    private synchronized void notifyOthers(List<Data> data) {
+        Platform.runLater(() -> {
+            ControllerBase.setDataList(data);
+        });
+    }
 }

@@ -1,5 +1,6 @@
 package informatikprojekt.zigbee.frontend;
 
+import informatikprojekt.zigbee.backend.Data;
 import informatikprojekt.zigbee.backend.DataManager;
 import informatikprojekt.zigbee.backend.Room;
 import informatikprojekt.zigbee.util.CommonUtils;
@@ -54,6 +55,22 @@ public class ControllerBase implements Initializable {
     public VBox content;
     public static TextArea textConsole;
     public static CheckBox checkStayConsole;
+
+    /*
+    Contains the latest data as read by the UART reader.
+     */
+    private static List<Data> latestData = new ArrayList<>();
+
+    public static void setDataList(List<Data> data) {
+        latestData = data;
+    }
+
+    /*
+    Returns a read only view of the latest data.
+     */
+    public static List<Data> getDataList() {
+        return Collections.unmodifiableList(latestData);
+    }
 
     public boolean isConnected() {
         return isConnected;
@@ -144,7 +161,7 @@ public class ControllerBase implements Initializable {
         content.setPrefWidth(contentPanel.getPrefWidth());
         content.setMinWidth(contentPanel.getWidth());
         contentPanel.getChildren().add(content);
-        if(currentRoom != null) {
+        if (currentRoom != null) {
             ControllerRoomView.INSTANCE.addRoom(currentRoom);
         }
     }
