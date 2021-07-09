@@ -35,4 +35,6 @@ public interface IData {
     void editRoom(Room room);
 
     boolean hasRoomData(String name);
+
+    void deleteRoom(String name);
 }

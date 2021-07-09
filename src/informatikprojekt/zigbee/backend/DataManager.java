@@ -267,6 +267,37 @@ public class DataManager implements IData {
         //TODO:Edit room
     }
 
+    @Override
+    public boolean hasRoomData(String name) {
+        PreparedStatement dataStatement;
+        try (Connection conn = ConnectionManager.getConnection()) {
+            String dataQuery = "SELECT Count(room.id) from room inner join recording r on room.id = r.room_FK where roomName = ?;";
+            dataStatement = conn.prepareStatement(dataQuery);
+            dataStatement.setString(1, name);
+            ResultSet resultSet = dataStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(0) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public void deleteRoom(String name) {
+        PreparedStatement deleteStatement;
+        try (Connection conn = ConnectionManager.getConnection()) {
+/*            String dataQuery = "SELECT Count(room.id) from room inner join recording r on room.id = r.room_FK where roomName = ?;";*/
+            String dataQuery = "delete from room where roomName = ?";
+            deleteStatement = conn.prepareStatement(dataQuery);
+            deleteStatement.setString(1, name);
+            deleteStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private Circle createCircle(double x, double y) {
         Circle circle = new Circle();
         circle.setCenterX(x);

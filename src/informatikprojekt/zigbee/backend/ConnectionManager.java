@@ -38,6 +38,9 @@ public class ConnectionManager {
         if (conn.isClosed()) {
             conn = DriverManager.getConnection("jdbc:sqlite:zigbee.sqlite");
         }
+        Statement state = conn.createStatement();
+        state.executeUpdate("PRAGMA foreign_keys = ON");
+        state.close();
 
         return conn;
     }
@@ -114,6 +117,7 @@ public class ConnectionManager {
                     "\tx double(30),\n" +
                     "\ty double(30),\n" +
                     "\troomID_FK int\n" +
+                    " CONSTRAINT room_point_FK " +
                     "\t\treferences room\n" +
                     "\t\t\ton update cascade on delete cascade\n" +
                     ");\n" +
@@ -121,9 +125,11 @@ public class ConnectionManager {
                     "create table if not exists graph\n" +
                     "(\n" +
                     "\troomPoint_FK int\n" +
+                    " CONSTRAINT room_point_FK_c " +
                     "\t\treferences roomPoints\n" +
                     "\t\t\ton update cascade on delete cascade,\n" +
                     "\tconnected_FK int\n" +
+                    " CONSTRAINT room_connected_point_FK_c " +
                     "\t\treferences roomPoints\n" +
                     "\t\t\ton update cascade on delete cascade,\n" +
                     "\tconstraint graph_pk\n" +
