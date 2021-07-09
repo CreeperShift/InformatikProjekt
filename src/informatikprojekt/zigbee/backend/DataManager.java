@@ -75,8 +75,19 @@ public class DataManager implements IData {
     }
 
     @Override
-    public List<SQLData> getDailyMeanForType(String type, LocalDateTime from, LocalDateTime to) {
-        return null;
+    public List<SQLData> getDailyMeanForType(String type, LocalDateTime from, LocalDateTime to) throws SQLException{
+        Connection connection = ConnectionManager.getConnection();
+        List<SQLData> meanForType = new LinkedList<>();
+        String getMeanForTypes = "Select avg(dataValue) from math where dataType Like" + type;
+        PreparedStatement preparedStatement = connection.prepareStatement(getMeanForTypes);
+        ResultSet result = preparedStatement.executeQuery();
+
+        while (result.next()) {
+            meanForType.add(result.getObject());
+        }
+        preparedStatement.close();
+        return meanForType;
+    }
     }
 
     @Override
@@ -90,8 +101,8 @@ public class DataManager implements IData {
     }
 
     @Override
-    public List<SQLData> getStandardDeviationForType(String type) {
-        return null;
+    public List<SQLData> getStandardDeviationForType(String type) throws SQLException{
+
     }
 
     @Override
@@ -110,8 +121,18 @@ public class DataManager implements IData {
     }
 
     @Override
-    public List<Integer> getAllDevices() {
-        return null;
+    public List<Integer> getAllDevices() throws SQLException{
+        Connection connection = ConnectionManager.getConnection();
+        List<Integer> allDevices = new LinkedList<>();
+        String getSensors = "Select distinct networkID from device";
+        PreparedStatement preparedStatement = connection.prepareStatement(getSensors);
+        ResultSet result = preparedStatement.executeQuery();
+
+        while (result.next()) {
+            allDevices.add(result.getInt("networkID"));
+        }
+        preparedStatement.close();
+        return allDevices;
     }
 
     @Override
