@@ -77,18 +77,29 @@ public class DataManager implements IData {
     @Override
     public List<SQLData> getDailyMeanForType(String type, LocalDateTime from, LocalDateTime to) throws SQLException{
         Connection connection = ConnectionManager.getConnection();
-        List<SQLData> meanForType = new LinkedList<>();
-        String getMeanForTypes = "Select avg(dataValue) from math where dataType Like" + type;
-        PreparedStatement preparedStatement = connection.prepareStatement(getMeanForTypes);
+        List<Double> dataValue = new LinkedList<>();
+        String getTypeForMean = "SELECT DISTINCT dataValue FROM data WHERE dataType LIKE'"+type+"'";
+        PreparedStatement preparedStatement = connection.prepareStatement(getTypeForMean);
         ResultSet result = preparedStatement.executeQuery();
 
         while (result.next()) {
-            meanForType.add(result.getObject());
+            dataValue.add(result.getDouble("dataValue"));
         }
+
+        /*Verständnissproblem für i und n i= LocalDateTime from, n = LocalDateTime to ?*/
+        double n=5, sum=0, dailyMean;
+        for(int i=0 ;i<n;i++)
+        {
+            sum = sum + dataValue.get(i);
+        }
+        dailyMean = sum/n;
+        System.out.println("Daily Mean :"+dailyMean);
+
         preparedStatement.close();
-        return meanForType;
+
+        return null;
     }
-    }
+
 
     @Override
     public List<SQLData> getDailyMinForType(String type, LocalDateTime from, LocalDateTime to) {
@@ -101,15 +112,47 @@ public class DataManager implements IData {
     }
 
     @Override
-    public List<SQLData> getStandardDeviationForType(String type) throws SQLException{
+    public List<SQLData> getStandardDeviationForType(String type, LocalDateTime from, LocalDateTime to) throws SQLException{
+        Connection connection = ConnectionManager.getConnection();
+        List<Double> dataValue = new LinkedList<>();
+        String getTypeForSD = "SELECT DISTINCT dataValue FROM data WHERE dataType LIKE'"+type+"'";
+        PreparedStatement preparedStatement = connection.prepareStatement(getTypeForSD);
+        ResultSet result = preparedStatement.executeQuery();
 
+        while (result.next()) {
+            dataValue.add(result.getDouble("dataValue"));
+        }
+
+        /*Verständnissproblem für i und n i= LocalDateTime from, n = LocalDateTime to ?*/
+        double n=5, sum=0, mean;
+        for(int i=0 ;i<n;i++)
+        {
+            sum = sum + dataValue.get(i);
+        }
+        mean = sum/n;
+        System.out.println("Mean :"+mean);
+
+        sum = 0;
+        /*Verständnissproblem für i und n i= LocalDateTime from, n = LocalDateTime to ?*/
+        for(int i=0;i<n;i++)
+        {
+            sum += Math.pow((dataValue.get(i)-mean),2);
+
+        }
+        mean = sum/(n-1);
+        double deviation = Math.sqrt(mean);
+        System.out.println("standard deviation :"+deviation);
+
+        preparedStatement.close();
+
+        return null;
     }
 
     @Override
     public List<String> getAllDataTypes() throws SQLException {
         Connection connection = ConnectionManager.getConnection();
         List<String> allDataTypes = new LinkedList<>();
-        String getDataTypes = "Select distinct dataType from data";
+        String getDataTypes = "SELECT DISTINCT dataType FROM data";
         PreparedStatement preparedStatement = connection.prepareStatement(getDataTypes);
         ResultSet result = preparedStatement.executeQuery();
 

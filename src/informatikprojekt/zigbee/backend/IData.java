@@ -18,7 +18,7 @@ public interface IData {
 
     List<SQLData> getDailyMaxForType(String type, LocalDateTime from, LocalDateTime to) throws SQLException;
 
-    List<SQLData> getStandardDeviationForType(String type) throws SQLException;
+    List<SQLData> getStandardDeviationForType(String type, LocalDateTime from, LocalDateTime to) throws SQLException;
 
     List<String> getAllDataTypes() throws SQLException;
 
