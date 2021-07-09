@@ -259,7 +259,7 @@ public class ControllerBase implements Initializable {
         if (btnConnect.getText().equalsIgnoreCase("Verbinden")) {
 
             DataManager.get().setPort(fieldPort.getText());
-            DataManager.get().startReader();
+            DataManager.get().startReader(currentRoom.getName());
             Timer t1 = new Timer();
             t1.schedule(new TimerTask() {
                 @Override

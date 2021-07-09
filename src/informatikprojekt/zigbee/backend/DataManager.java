@@ -47,10 +47,10 @@ public class DataManager implements IData {
         this.port = port;
     }
 
-    public void startReader() {
+    public void startReader(String roomName) {
 
         if (uartReader == null || isStopped() || isFailed()) {
-            uartReader = new UartReader(port);
+            uartReader = new UartReader(port, roomName);
             uartReader.startReader();
         }
     }
@@ -127,6 +127,11 @@ public class DataManager implements IData {
         }
         preparedStatement.close();
         return allSensors;
+    }
+
+    @Override
+    public float getHourlyAverage(String type) {
+        return 0;
     }
 
     @Override

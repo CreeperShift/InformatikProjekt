@@ -5,7 +5,7 @@ import java.sql.SQLException;
 public class MockUartReader extends UartReader {
 
     public MockUartReader(String port) {
-        super(port);
+        super(port, "test");
     }
 
     @Override

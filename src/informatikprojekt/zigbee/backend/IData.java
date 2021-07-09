@@ -26,6 +26,8 @@ public interface IData {
 
     List<String> getAllSensors() throws SQLException;
 
+    float getHourlyAverage(String type);
+
     boolean existRoom(String name);
 
     void writeRoom(Room room) throws SQLException;

@@ -2,7 +2,10 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Circle?>
@@ -13,46 +16,152 @@
    <children>
       <AnchorPane prefHeight="57.0" prefWidth="600.0">
          <children>
-            <Label alignment="CENTER" text="Luftqualität Übersicht" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="5.0">
+            <Label alignment="CENTER" text="Luftqualität Übersicht" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
                <font>
                   <Font size="24.0" />
                </font>
             </Label>
          </children>
       </AnchorPane>
+      <Separator prefWidth="200.0" />
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="15.0">
+            <HBox alignment="CENTER" prefHeight="345.0" prefWidth="800.0" spacing="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Label text="Aktuell Luftqualität">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets bottom="5.0" />
-                     </VBox.margin>
-                  </Label>
-                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                  <VBox alignment="CENTER" prefHeight="330.0" prefWidth="158.0">
                      <children>
-                        <Rectangle arcWidth="5.0" fill="#434343" height="100.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
-                        <Circle fx:id="ledRED" fill="#e81414" radius="35.0" stroke="BLACK" strokeType="INSIDE" />
+                        <Label text="Aktuelle Luftqualität" VBox.vgrow="ALWAYS">
+                           <font>
+                              <Font size="16.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <Rectangle arcWidth="5.0" fill="#434343" height="100.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                              <Circle fx:id="ledRED" fill="#e81414" radius="35.0" stroke="BLACK" strokeType="INSIDE" />
+                           </children>
+                        </StackPane>
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <Rectangle arcWidth="5.0" fill="#434343" height="100.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                              <Circle fx:id="ledORANGE" fill="#e55d15" radius="35.0" stroke="BLACK" strokeType="INSIDE" />
+                           </children>
+                        </StackPane>
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <Rectangle arcWidth="5.0" fill="#434343" height="100.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
+                              <Circle fx:id="ledGREEN" fill="#2fa137" radius="35.0" stroke="BLACK" strokeType="INSIDE" />
+                           </children>
+                        </StackPane>
                      </children>
-                  </StackPane>
-                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                  </VBox>
+                  <VBox prefHeight="288.0" prefWidth="209.0" style="-fx-background-color: lightgray;">
                      <children>
-                        <Rectangle arcWidth="5.0" fill="#434343" height="100.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
-                        <Circle fx:id="ledORANGE" fill="#e55d15" radius="35.0" stroke="BLACK" strokeType="INSIDE" />
+                        <HBox prefHeight="28.0" prefWidth="209.0" spacing="5.0">
+                           <children>
+                              <Label text="Temperatur:">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets right="13.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <Label fx:id="tempValue" text="OK">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="28.0" prefWidth="209.0" spacing="5.0">
+                           <children>
+                              <Label text="Feuchtigkeit:">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets right="10.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <Label fx:id="humValue" text="OK">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="28.0" prefWidth="209.0" spacing="5.0">
+                           <children>
+                              <Label text="CO2:">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets right="62.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <Label fx:id="co2Value" text="OK">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="28.0" prefWidth="209.0" spacing="5.0">
+                           <children>
+                              <Label text="VOC:">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                                 <HBox.margin>
+                                    <Insets right="60.0" />
+                                 </HBox.margin>
+                              </Label>
+                              <Label fx:id="vocValue" text="OK">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </HBox>
                      </children>
-                  </StackPane>
-                  <StackPane prefHeight="150.0" prefWidth="200.0">
-                     <children>
-                        <Rectangle arcWidth="5.0" fill="#434343" height="100.0" stroke="BLACK" strokeType="INSIDE" width="100.0" />
-                        <Circle fx:id="ledGREEN" fill="#2fa137" radius="35.0" stroke="BLACK" strokeType="INSIDE" />
-                     </children>
-                  </StackPane>
+                     <HBox.margin>
+                        <Insets top="30.0" />
+                     </HBox.margin>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                     <effect>
+                        <DropShadow />
+                     </effect>
+                  </VBox>
                </children>
-            </VBox>
+            </HBox>
          </children>
+         <VBox.margin>
+            <Insets top="15.0" />
+         </VBox.margin>
+      </AnchorPane>
+      <AnchorPane prefHeight="200.0" prefWidth="200.0">
+         <children>
+            <Label alignment="CENTER" text="Hinweise:" textAlignment="CENTER" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="10.0">
+               <font>
+                  <Font size="22.0" />
+               </font>
+            </Label>
+            <Label fx:id="txtHinweis" alignment="CENTER" layoutX="10.0" layoutY="10.0" text="Keine..." textAlignment="CENTER" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="40.0">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Label>
+         </children>
+         <VBox.margin>
+            <Insets top="15.0" />
+         </VBox.margin>
       </AnchorPane>
    </children>
 </VBox>

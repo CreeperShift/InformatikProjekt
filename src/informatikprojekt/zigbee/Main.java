@@ -18,7 +18,7 @@ public class Main extends Application {
     public static Scene s;
     public static BorderPane root;
     public static Stage mainStage;
-    public static boolean dev = false;
+    public static boolean dev = true;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
