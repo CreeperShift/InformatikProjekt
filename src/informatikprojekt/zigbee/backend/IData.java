@@ -26,7 +26,7 @@ public interface IData {
 
     List<String> getAllSensors() throws SQLException;
 
-    float get15MinAverage(String type, int recordID);
+    float get15MinAverage(String type);
 
     boolean existRoom(String name);
 

@@ -271,6 +271,7 @@ public class ControllerBase implements Initializable {
                             ledStatusNavbar.setFill(Color.GREEN);
                             ControllerGraph.INSTANCE.setupData();
                             ControllerData.INSTANCE.setupData();
+                            ControllerOverview.INSTANCE.startTimer();
                             CommonUtils.consoleString("Connected.");
                         });
                         t1.cancel();

@@ -130,7 +130,10 @@ public class DataManager implements IData {
     }
 
     @Override
-    public float get15MinAverage(String type, int recordID) {
+    public float get15MinAverage(String type) {
+
+        int id = getCurrentRecordID();
+
         try (Connection connection = ConnectionManager.getConnection()) {
 
             String minQuery = "select avg(dataValue)\n" +
@@ -140,7 +143,7 @@ public class DataManager implements IData {
                     "  AND dataType = ? AND d.timeRecorded <= (datetime('now', '-15 minutes'))\n" +
                     "group by dataType;";
             PreparedStatement getMinAverage = connection.prepareStatement(minQuery);
-            getMinAverage.setInt(1, recordID);
+            getMinAverage.setInt(1, id);
             getMinAverage.setString(2, type);
             ResultSet resultSet = getMinAverage.executeQuery();
             if (resultSet.next()) {

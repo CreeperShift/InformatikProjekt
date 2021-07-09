@@ -70,7 +70,7 @@
                                     <Insets right="13.0" />
                                  </HBox.margin>
                               </Label>
-                              <Label fx:id="tempValue" text="OK">
+                              <Label fx:id="tempValue" text="n/a">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -87,7 +87,7 @@
                                     <Insets right="10.0" />
                                  </HBox.margin>
                               </Label>
-                              <Label fx:id="humValue" text="OK">
+                              <Label fx:id="humValue" text="n/a">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -104,7 +104,7 @@
                                     <Insets right="62.0" />
                                  </HBox.margin>
                               </Label>
-                              <Label fx:id="co2Value" text="OK">
+                              <Label fx:id="co2Value" text="n/a">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
@@ -121,7 +121,7 @@
                                     <Insets right="60.0" />
                                  </HBox.margin>
                               </Label>
-                              <Label fx:id="vocValue" text="OK">
+                              <Label fx:id="vocValue" text="n/a">
                                  <font>
                                     <Font size="15.0" />
                                  </font>
