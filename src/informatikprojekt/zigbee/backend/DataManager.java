@@ -20,7 +20,6 @@ public class DataManager implements IData {
     private final LinkedList<DataSet> dataSets = new LinkedList<>();
     private static UartReader uartReader;
     private String port = "COM1";
-    Connection connection = ConnectionManager.getConnection();
 
     private static DataManager INSTANCE = null;
 
@@ -97,6 +96,7 @@ public class DataManager implements IData {
 
     @Override
     public List<String> getAllDataTypes() throws SQLException {
+        Connection connection = ConnectionManager.getConnection();
         List<String> allDataTypes = new LinkedList<>();
         String getDataTypes = "Select distinct dataType from data";
         PreparedStatement preparedStatement = connection.prepareStatement(getDataTypes);
@@ -116,6 +116,7 @@ public class DataManager implements IData {
 
     @Override
     public List<String> getAllSensors() throws SQLException {
+        Connection connection = ConnectionManager.getConnection();
         List<String> allSensors = new LinkedList<>();
         String getSensors = "Select distinct sensor from data";
         PreparedStatement preparedStatement = connection.prepareStatement(getSensors);
@@ -130,6 +131,7 @@ public class DataManager implements IData {
 
     @Override
     public void writeRoom(Room room) throws SQLException {
+        Connection connection = ConnectionManager.getConnection();
 
         String queryCreateRoom = "INSERT INTO room (id, roomName, created) VALUES (NULL, ?, ?)";
         String queryRoomID = "SELECT id from room where created = ?";
@@ -183,11 +185,12 @@ public class DataManager implements IData {
             devices.executeUpdate();
         }
         devices.close();
-
+        connection.close();
     }
 
     @Override
     public Room readRoom(String name) throws SQLException {
+        Connection connection = ConnectionManager.getConnection();
         Room room = new Room(name);
         String getRoomQuery = "SELECT * from room where roomName == ?;";
         PreparedStatement getRoom = connection.prepareStatement(getRoomQuery);
@@ -237,6 +240,7 @@ public class DataManager implements IData {
             devices.close();
         }
         getRoom.close();
+        connection.close();
         return room;
     }
 
@@ -258,6 +262,9 @@ public class DataManager implements IData {
     }
 
     public boolean isConnected() {
+        if (uartReader == null) {
+            return false;
+        }
         return uartReader.getReaderState() == UartReader.State.CONNECTED;
     }
 

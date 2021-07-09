@@ -6,7 +6,10 @@ import informatikprojekt.zigbee.util.CommonUtils;
 import javafx.application.Platform;
 
 import java.io.DataInputStream;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -89,7 +92,7 @@ public class UartReader extends Thread {
                 }
             }
             try {
-                Thread.sleep(500);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -153,15 +156,18 @@ public class UartReader extends Thread {
                     connection = DriverManager.getConnection("jdbc:sqlite:zigbee.sqlite");
 
                     isReading = false;
-                    String createDataSet = "INSERT INTO dataset (id, recordedAt) VALUES ( NULL, ?)";
-                    String createDataPoint = "INSERT INTO data (dataID, dataSetID, sensor, dataType, dataValue, device_FK) values (NULL, (select id from dataset where recordedAt = ?), ?, ?, ?, ?);";
+                    String createDataSet = "INSERT INTO dataset (id, dateRecorded, timeRecorded) VALUES ( NULL, ?, ?)";
+                    String createDataPoint = "INSERT INTO data (dataID, dataSetID, sensor, dataType, dataValue, device_FK) values (NULL, (select id from dataset where dateRecorded == ? AND timeRecorded == ?), ?, ?, ?, ?);";
                     try {
                         PreparedStatement statement = connection.prepareStatement(createDataSet);
                         LocalDateTime loc = LocalDateTime.now();
-                        DateTimeFormatter format = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss");
-                        Timestamp timestamp = Timestamp.valueOf(loc.format(format));
+                        DateTimeFormatter formatDay = DateTimeFormatter.ofPattern("uuuu-MM-dd");
+                        DateTimeFormatter formatTime = DateTimeFormatter.ofPattern("HH:mm:ss");
+                        String date = loc.format(formatDay);
+                        String time = loc.format(formatTime);
 
-                        statement.setString(1, timestamp.toString());
+                        statement.setString(1, date);
+                        statement.setString(2, time);
                         statement.executeUpdate();
                         statement.close();
                         PreparedStatement createData = connection.prepareStatement(createDataPoint);
@@ -170,11 +176,12 @@ public class UartReader extends Thread {
                         while (!getDataSet().isEmpty()) {
                             Data d = getDataSet().take();
                             currentData.add(d);
-                            createData.setString(1, timestamp.toString());
-                            createData.setString(2, d.SensorName());
-                            createData.setString(3, d.dataType());
-                            createData.setFloat(4, d.value());
-                            createData.setInt(5, d.Device());
+                            createData.setString(1, date);
+                            createData.setString(2, time);
+                            createData.setString(3, d.SensorName());
+                            createData.setString(4, d.dataType());
+                            createData.setFloat(5, d.value());
+                            createData.setInt(6, d.Device());
                             Platform.runLater(() -> {
                                 CommonUtils.consoleString("REC> " + "Device " + d.Device() + " " + d.SensorName() + " " + d.dataType() + " " + d.value());
                             });
@@ -201,7 +208,7 @@ public class UartReader extends Thread {
                     throwables.printStackTrace();
                 }
             }
-        }, 5000, 1000);
+        }, 3000, 1000);
     }
 
     private void addDataToList(String[] dataSplit) {
@@ -217,6 +224,7 @@ public class UartReader extends Thread {
             }
         } catch (ArrayIndexOutOfBoundsException e) {
             e.printStackTrace();
+            dataSet.clear();
             System.out.println("Received malformed String, trying again. Possibly just started the connection.");
         }
     }

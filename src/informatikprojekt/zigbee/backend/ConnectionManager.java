@@ -9,15 +9,16 @@ import java.util.List;
 
 public class ConnectionManager {
     private static List<Connection> connectionList = new ArrayList<>();
+    private static Connection conn;
 
     private ConnectionManager() {
 
     }
 
-    public static void stopConnections(){
-        for(Connection con : connectionList){
+    public static void stopConnections() {
+        for (Connection con : connectionList) {
             try {
-                if(!con.isClosed()) {
+                if (!con.isClosed()) {
                     con.close();
                 }
             } catch (SQLException throwables) {
@@ -27,9 +28,18 @@ public class ConnectionManager {
     }
 
     public static Connection getConnection() throws SQLException {
-        Connection con = DriverManager.getConnection("jdbc:sqlite:zigbee.sqlite");
-        connectionList.add(con);
-        return con;
+
+
+        if (conn == null) {
+            conn = DriverManager.getConnection("jdbc:sqlite:zigbee.sqlite");
+            connectionList.add(conn);
+        }
+
+        if (conn.isClosed()) {
+            conn = DriverManager.getConnection("jdbc:sqlite:zigbee.sqlite");
+        }
+
+        return conn;
     }
 
     public static void firstRun() {
@@ -37,9 +47,10 @@ public class ConnectionManager {
             String createQuery = """
                     create table if not exists dataset
                     (
-                    \tid integer
-                    \t\tprimary key,
-                    \trecordedAt datetime(4) not null
+                    	id integer
+                    		primary key,
+                    	dateRecorded date,
+                    	timeRecorded time
                     );
 
                     create table if not exists room
