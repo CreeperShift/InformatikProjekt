@@ -77,16 +77,14 @@ public class ConnectionManager {
                     "\troom_FK int\n" +
                     "\t\treferences room\n" +
                     "\t\t\ton update cascade on delete cascade,\n" +
-                    "\tdateStarted date,\n" +
-                    "\ttimeStarted time\n" +
+                    "\ttimeStarted datetime" +
                     ");\n" +
                     "\n" +
                     "create table if not exists dataset\n" +
                     "(\n" +
                     "\tid integer\n" +
                     "\t\tprimary key,\n" +
-                    "\tdateRecorded date,\n" +
-                    "\ttimeRecorded time,\n" +
+                    "\ttimeRecorded datetime,\n" +
                     "\trecording_FK int\n" +
                     "\t\treferences recording\n" +
                     "\t\t\ton update cascade on delete cascade\n" +

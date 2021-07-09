@@ -12,11 +12,11 @@ public interface IData {
     @Deprecated
     List<DataSet> getDataForTime(LocalDateTime from);
 
-    List<SQLData> getDailyMeanForType(String type, LocalDateTime from, LocalDateTime to) throws SQLException;
+    List<Float> getDailyMeanForType(String type, LocalDateTime from, LocalDateTime to) throws SQLException;
 
-    List<SQLData> getDailyMinForType(String type, LocalDateTime from, LocalDateTime to) throws SQLException;
+    List<Float> getDailyMinForType(String type, LocalDateTime from, LocalDateTime to) throws SQLException;
 
-    List<SQLData> getDailyMaxForType(String type, LocalDateTime from, LocalDateTime to) throws SQLException;
+    List<Float> getDailyMaxForType(String type, LocalDateTime from, LocalDateTime to) throws SQLException;
 
     List<SQLData> getStandardDeviationForType(String type) throws SQLException;
 
@@ -26,7 +26,7 @@ public interface IData {
 
     List<String> getAllSensors() throws SQLException;
 
-    float getHourlyAverage(String type);
+    float get15MinAverage(String type, int recordID);
 
     boolean existRoom(String name);
 
@@ -39,4 +39,7 @@ public interface IData {
     boolean hasRoomData(String name);
 
     void deleteRoom(String name);
+
+    int getCurrentRecordID();
+
 }

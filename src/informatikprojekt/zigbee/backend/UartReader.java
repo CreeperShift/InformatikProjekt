@@ -7,8 +7,7 @@ import javafx.application.Platform;
 
 import java.io.DataInputStream;
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -66,20 +65,17 @@ public class UartReader extends Thread {
 
                 try {
                     Connection conn = ConnectionManager.getConnection();
-                    String recordingQuery = "INSERT INTO recording (id, room_FK, dateStarted, timeStarted) values (NULL, (select id from room where roomName == ?), ?, ?)";
+                    String recordingQuery = "INSERT INTO recording (id, room_FK, timeStarted) values (NULL, (select id from room where roomName == ?), ?)";
                     PreparedStatement recording = conn.prepareStatement(recordingQuery);
-                    Date date = Date.valueOf(LocalDate.now());
-                    Time time = Time.valueOf(LocalTime.now());
+                    Timestamp date = Timestamp.valueOf(LocalDateTime.now());
                     recording.setString(1, roomName);
-                    recording.setDate(2, date);
-                    recording.setTime(3, time);
+                    recording.setTimestamp(2, date);
                     recording.executeUpdate();
                     recording.close();
 
-                    String getID = "select id from recording where dateStarted == ? AND timeStarted == ?";
+                    String getID = "select id from recording where timeStarted == ?";
                     PreparedStatement recordingID = conn.prepareStatement(getID);
-                    recordingID.setDate(1, date);
-                    recordingID.setTime(2, time);
+                    recordingID.setTimestamp(1, date);
                     ResultSet resultSet = recordingID.executeQuery();
                     if (resultSet.next()) {
                         recID = resultSet.getInt("id");
@@ -189,17 +185,15 @@ public class UartReader extends Thread {
                     connection = DriverManager.getConnection("jdbc:sqlite:zigbee.sqlite");
 
                     isReading = false;
-                    String createDataSet = "INSERT INTO dataset (id, dateRecorded, timeRecorded, recording_FK) VALUES ( NULL, ?, ?, ?)";
-                    String createDataPoint = "INSERT INTO data (dataID, dataSetID, sensor, dataType, dataValue, device_FK) values (NULL, (select id from dataset where dateRecorded == ? AND timeRecorded == ?), ?, ?, ?, ?);";
+                    String createDataSet = "INSERT INTO dataset (id, timeRecorded, recording_FK) VALUES ( NULL, ?, ?)";
+                    String createDataPoint = "INSERT INTO data (dataID, dataSetID, sensor, dataType, dataValue, device_FK) values (NULL, (select id from dataset where timeRecorded == ?), ?, ?, ?, ?);";
                     try {
                         PreparedStatement statement = connection.prepareStatement(createDataSet);
 
-                        Date date = Date.valueOf(LocalDate.now());
-                        Time time = Time.valueOf(LocalTime.now());
+                        Timestamp date = Timestamp.valueOf(LocalDateTime.now());
 
-                        statement.setDate(1, date);
-                        statement.setTime(2, time);
-                        statement.setInt(3, recID);
+                        statement.setTimestamp(1, date);
+                        statement.setInt(2, recID);
                         statement.executeUpdate();
                         statement.close();
                         PreparedStatement createData = connection.prepareStatement(createDataPoint);
@@ -208,12 +202,11 @@ public class UartReader extends Thread {
                         while (!getDataSet().isEmpty()) {
                             Data d = getDataSet().take();
                             currentData.add(d);
-                            createData.setDate(1, date);
-                            createData.setTime(2, time);
-                            createData.setString(3, d.SensorName());
-                            createData.setString(4, d.dataType());
-                            createData.setFloat(5, d.value());
-                            createData.setInt(6, d.Device());
+                            createData.setTimestamp(1, date);
+                            createData.setString(2, d.SensorName());
+                            createData.setString(3, d.dataType());
+                            createData.setFloat(4, d.value());
+                            createData.setInt(5, d.Device());
                             Platform.runLater(() -> {
                                 CommonUtils.consoleString("REC> " + "Device " + d.Device() + " " + d.SensorName() + " " + d.dataType() + " " + d.value());
                             });

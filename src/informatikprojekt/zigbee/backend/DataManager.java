@@ -75,17 +75,17 @@ public class DataManager implements IData {
     }
 
     @Override
-    public List<SQLData> getDailyMeanForType(String type, LocalDateTime from, LocalDateTime to) {
+    public List<Float> getDailyMeanForType(String type, LocalDateTime from, LocalDateTime to) {
         return null;
     }
 
     @Override
-    public List<SQLData> getDailyMinForType(String type, LocalDateTime from, LocalDateTime to) {
+    public List<Float> getDailyMinForType(String type, LocalDateTime from, LocalDateTime to) {
         return null;
     }
 
     @Override
-    public List<SQLData> getDailyMaxForType(String type, LocalDateTime from, LocalDateTime to) {
+    public List<Float> getDailyMaxForType(String type, LocalDateTime from, LocalDateTime to) {
         return null;
     }
 
@@ -130,7 +130,26 @@ public class DataManager implements IData {
     }
 
     @Override
-    public float getHourlyAverage(String type) {
+    public float get15MinAverage(String type, int recordID) {
+        try (Connection connection = ConnectionManager.getConnection()) {
+
+            String minQuery = "select avg(dataValue)\n" +
+                    "from data inner join dataset d on d.id = data.dataSetID\n" +
+                    "    inner join recording on d.recording_FK = recording.id\n" +
+                    "where recording.id = ?\n" +
+                    "  AND dataType = ? AND d.timeRecorded <= (datetime('now', '-15 minutes'))\n" +
+                    "group by dataType;";
+            PreparedStatement getMinAverage = connection.prepareStatement(minQuery);
+            getMinAverage.setInt(1, recordID);
+            getMinAverage.setString(2, type);
+            ResultSet resultSet = getMinAverage.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getFloat(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return 0;
     }
 
@@ -297,9 +316,30 @@ public class DataManager implements IData {
             deleteStatement = conn.prepareStatement(dataQuery);
             deleteStatement.setString(1, name);
             deleteStatement.executeUpdate();
+            deleteStatement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public int getCurrentRecordID() {
+        try (Connection connection = ConnectionManager.getConnection()) {
+            String query = "select max(id) from recording;";
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                int id = resultSet.getInt(1);
+                resultSet.close();
+                statement.close();
+                return id;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
 
     private Circle createCircle(double x, double y) {
