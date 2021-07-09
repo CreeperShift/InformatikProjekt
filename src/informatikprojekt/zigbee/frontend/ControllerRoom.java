@@ -60,26 +60,37 @@ public class ControllerRoom implements Initializable {
 
     public void onBtnSave(ActionEvent actionEvent) {
         if (DataManager.get().existRoom(room.getName())) {
+            if (DataManager.get().hasRoomData(room.getName())) {
 
-            Optional<String> result = checkForValidName();
-            while (result.isPresent()) {
-                if (!result.get().isBlank() && !DataManager.get().existRoom(result.get())) {
-                    room.setName(result.get());
-                    room.setCreated(LocalDateTime.now());
-                    try {
-                        DataManager.get().writeRoom(room);
-                        drawingArea.getChildren().clear();
-                        ControllerRoomView.INSTANCE.addRoom(room);
-                        ControllerBase.INSTANCE.txtDatensatz.setText("Aktueller Raum: " + room.getName());
-                        ControllerBase.INSTANCE.txtRoomName.setText(room.getName());
-                        ControllerBase.INSTANCE.btnStart.fire();
-                        break;
-                    } catch (SQLException exception) {
-                        exception.printStackTrace();
+                Optional<String> result = checkForValidName();
+                while (result.isPresent()) {
+                    if (!result.get().isBlank() && !DataManager.get().existRoom(result.get())) {
+                        room.setName(result.get());
+                        room.setCreated(LocalDateTime.now());
+                        try {
+                            DataManager.get().writeRoom(room);
+                            drawingArea.getChildren().clear();
+                            ControllerRoomView.INSTANCE.addRoom(room);
+                            ControllerBase.INSTANCE.txtDatensatz.setText("Aktueller Raum: " + room.getName());
+                            ControllerBase.INSTANCE.txtRoomName.setText(room.getName());
+                            ControllerBase.INSTANCE.btnStart.fire();
+                            break;
+                        } catch (SQLException exception) {
+                            exception.printStackTrace();
+                        }
+
                     }
-
+                    result = checkForValidName();
                 }
-                result = checkForValidName();
+            } else {
+                try {
+                    DataManager.get().deleteRoom(room.getName());
+                    DataManager.get().writeRoom(room);
+                    drawingArea.getChildren().clear();
+                    ControllerBase.INSTANCE.btnStart.fire();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
 
         } else {
@@ -97,7 +108,7 @@ public class ControllerRoom implements Initializable {
     private Optional<String> checkForValidName() {
         TextInputDialog td = new TextInputDialog(room.getName());
         td.setTitle("Raum error");
-        td.setContentText("Raum bereits vorhanden, bitte neuen Namen eingeben.");
+        td.setContentText("Raum existiert und enthält Datensätze, bitte neuen Namen eingeben.");
         return td.showAndWait();
     }
 

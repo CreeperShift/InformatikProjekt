@@ -19,6 +19,7 @@ import jfxtras.styles.jmetro.JMetroStyleClass;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.*;
 
 public class ControllerBase implements Initializable {
@@ -106,7 +107,7 @@ public class ControllerBase implements Initializable {
     }
 
     public void onBtnLoadRoom(ActionEvent actionEvent) {
-/*        if (!txtRoomName.getText().isBlank()) {
+        if (!txtRoomName.getText().isBlank()) {
             if (DataManager.get().existRoom(txtRoomName.getText())) {
                 try {
                     currentRoom = DataManager.get().readRoom(txtRoomName.getText());
@@ -123,9 +124,7 @@ public class ControllerBase implements Initializable {
                 alert.setHeaderText("Es existiert kein Raum mit diesem Name.");
                 alert.showAndWait();
             }
-        }*/
-       DataManager.get().deleteRoom(txtRoomName.getText());
-
+        }
     }
 
     public void onBtnRoomEdit(ActionEvent actionEvent) {

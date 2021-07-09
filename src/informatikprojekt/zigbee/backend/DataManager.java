@@ -276,7 +276,7 @@ public class DataManager implements IData {
             dataStatement.setString(1, name);
             ResultSet resultSet = dataStatement.executeQuery();
             if (resultSet.next()) {
-                return resultSet.getInt(0) > 0;
+                return resultSet.getInt(1) > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -288,7 +288,6 @@ public class DataManager implements IData {
     public void deleteRoom(String name) {
         PreparedStatement deleteStatement;
         try (Connection conn = ConnectionManager.getConnection()) {
-/*            String dataQuery = "SELECT Count(room.id) from room inner join recording r on room.id = r.room_FK where roomName = ?;";*/
             String dataQuery = "delete from room where roomName = ?";
             deleteStatement = conn.prepareStatement(dataQuery);
             deleteStatement.setString(1, name);
