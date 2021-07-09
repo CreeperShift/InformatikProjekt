@@ -8,10 +8,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
@@ -83,14 +80,22 @@ public class ControllerBase implements Initializable {
 
     public void onBtnNewRoom(ActionEvent actionEvent) {
         if (!txtRoomName.getText().isBlank()) {
-            setActiveWindow(Window.CREATEROOM);
-            currentRoom = new Room(txtRoomName.getText());
-            contentPanel.getChildren().clear();
-            createRoom.setPrefHeight(contentPanel.getPrefHeight());
-            createRoom.setPrefWidth(contentPanel.getPrefWidth());
-            createRoom.setMinWidth(contentPanel.getWidth());
-            contentPanel.getChildren().add(createRoom);
-            ControllerRoom.get().setRoom(currentRoom);
+            if (DataManager.get().existRoom(txtRoomName.getText())) {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle("Error Raum");
+                alert.setHeaderText("Raum existiert bereits!");
+                alert.setContentText("Bitte neuen Namen wählen oder den Raum laden.");
+                alert.showAndWait();
+            } else {
+                setActiveWindow(Window.CREATEROOM);
+                currentRoom = new Room(txtRoomName.getText());
+                contentPanel.getChildren().clear();
+                createRoom.setPrefHeight(contentPanel.getPrefHeight());
+                createRoom.setPrefWidth(contentPanel.getPrefWidth());
+                createRoom.setMinWidth(contentPanel.getWidth());
+                contentPanel.getChildren().add(createRoom);
+                ControllerRoom.get().setRoom(currentRoom);
+            }
         }
     }
 
@@ -157,7 +162,6 @@ public class ControllerBase implements Initializable {
     }
 
 
-
     public void onButtonRoom(ActionEvent actionEvent) {
         setActiveWindow(Window.ROOM);
         setButtonActive(btnRoom);
@@ -197,6 +201,7 @@ public class ControllerBase implements Initializable {
         contentPanel.getChildren().clear();
         contentPanel.getChildren().add(graphPanel);
     }
+
     public void onBtnOverview(ActionEvent actionEvent) {
         setActiveWindow(Window.OVERVIEW);
         setButtonActive(btnOverview);

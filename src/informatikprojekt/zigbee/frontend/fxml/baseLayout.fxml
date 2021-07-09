@@ -35,12 +35,12 @@
                         <Font size="19.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnRoom" mnemonicParsing="false" onAction="#onButtonRoom" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Raumansicht">
+                  <Button fx:id="btnOverview" mnemonicParsing="false" onAction="#onBtnOverview" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Übersicht">
                      <font>
                         <Font size="19.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnOverview" mnemonicParsing="false" onAction="#onBtnOverview" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Übersicht">
+                  <Button fx:id="btnRoom" mnemonicParsing="false" onAction="#onButtonRoom" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Raumansicht">
                      <font>
                         <Font size="19.0" />
                      </font>

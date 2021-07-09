@@ -57,14 +57,18 @@ public class ControllerRoom implements Initializable {
     }
 
     public void onBtnSave(ActionEvent actionEvent) {
-        try {
-            DataManager.get().writeRoom(room);
-            drawingArea.getChildren().clear();
-            ControllerBase.INSTANCE.btnStart.fire();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+        if (DataManager.get().existRoom(room.getName())) {
+            DataManager.get().editRoom(room);
+        } else {
+            try {
+                DataManager.get().writeRoom(room);
+                drawingArea.getChildren().clear();
+                ControllerBase.INSTANCE.btnStart.fire();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
 
+        }
     }
 
     /*
@@ -83,7 +87,7 @@ public class ControllerRoom implements Initializable {
                         drawingArea.getChildren().addAll(0, gridList);
                     }
                     loadGraph();
-                   room.getDeviceList().forEach(d -> d.addTo(drawingArea));
+                    room.getDeviceList().forEach(d -> d.addTo(drawingArea));
                 });
                 t.cancel();
             }
@@ -98,9 +102,9 @@ public class ControllerRoom implements Initializable {
 
     public void onMouseClicked(MouseEvent event) {
         if (activeTool == TOOL_TYPE.DEVICE) {
-        Device device = new Device(event.getX(), event.getY());
-        room.addDevice(device);
-        device.addTo(drawingArea);
+            Device device = new Device(event.getX(), event.getY());
+            room.addDevice(device);
+            device.addTo(drawingArea);
         }
     }
 

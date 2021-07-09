@@ -130,6 +130,24 @@ public class DataManager implements IData {
     }
 
     @Override
+    public boolean existRoom(String name) {
+
+        try (Connection connection = ConnectionManager.getConnection()) {
+            String queryExistRoom = "SELECT COUNT(roomName) from room where roomName == ?;";
+            PreparedStatement existRoom = connection.prepareStatement(queryExistRoom);
+            existRoom.setString(1, name);
+            ResultSet resultRoom = existRoom.executeQuery();
+
+            if (resultRoom.next()) {
+                return resultRoom.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
     public void writeRoom(Room room) throws SQLException {
         Connection connection = ConnectionManager.getConnection();
 
@@ -242,6 +260,11 @@ public class DataManager implements IData {
         getRoom.close();
         connection.close();
         return room;
+    }
+
+    @Override
+    public void editRoom(Room room) {
+        //TODO:Edit room
     }
 
     private Circle createCircle(double x, double y) {
