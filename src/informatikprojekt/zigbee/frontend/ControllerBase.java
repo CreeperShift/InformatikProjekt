@@ -1,5 +1,6 @@
 package informatikprojekt.zigbee.frontend;
 
+import informatikprojekt.zigbee.Main;
 import informatikprojekt.zigbee.backend.Data;
 import informatikprojekt.zigbee.backend.DataManager;
 import informatikprojekt.zigbee.backend.Room;
@@ -37,6 +38,8 @@ public class ControllerBase implements Initializable {
     public Button btnNewRoom;
     public TextField txtRoomName;
     public Button btnOverview;
+    public Button btnRoomEdit;
+    public Label txtDatensatz;
     private boolean isConnected = false;
     public static ControllerBase INSTANCE;
     private Room currentRoom;
@@ -89,6 +92,10 @@ public class ControllerBase implements Initializable {
             } else {
                 setActiveWindow(Window.CREATEROOM);
                 currentRoom = new Room(txtRoomName.getText());
+                txtDatensatz.setText("Aktueller Raum: " + currentRoom.getName());
+                btnConnect.setDisable(false);
+                btnRoom.setDisable(false);
+                btnRoomEdit.setDisable(false);
                 contentPanel.getChildren().clear();
                 createRoom.setPrefHeight(contentPanel.getPrefHeight());
                 createRoom.setPrefWidth(contentPanel.getPrefWidth());
@@ -101,17 +108,29 @@ public class ControllerBase implements Initializable {
 
     public void onBtnLoadRoom(ActionEvent actionEvent) {
         if (!txtRoomName.getText().isBlank()) {
+            if (DataManager.get().existRoom(txtRoomName.getText())) {
+                try {
+                    currentRoom = DataManager.get().readRoom(txtRoomName.getText());
+                    btnRoomEdit.setDisable(false);
+                    txtDatensatz.setText("Aktueller Raum: " + currentRoom.getName());
+                    btnConnect.setDisable(false);
+                    btnRoom.setDisable(false);
+                } catch (SQLException exception) {
+                    exception.printStackTrace();
+                }
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Raum nicht gefunden");
+                alert.setHeaderText("Es existiert kein Raum mit diesem Name.");
+                alert.showAndWait();
+            }
+        }
+
+    }
+
+    public void onBtnRoomEdit(ActionEvent actionEvent) {
+        if (!txtRoomName.getText().isBlank()) {
             setActiveWindow(Window.CREATEROOM);
-            Room r = null;
-            try {
-                r = DataManager.get().readRoom(txtRoomName.getText());
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-            if (r == null) {
-                r = new Room(txtRoomName.getText());
-            }
-            currentRoom = r;
             contentPanel.getChildren().clear();
             createRoom.setPrefHeight(contentPanel.getPrefHeight());
             createRoom.setPrefWidth(contentPanel.getPrefWidth());
@@ -132,6 +151,7 @@ public class ControllerBase implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
         textConsole = consoleOut;
         checkStayConsole = autoScroll;
         ledStatus.fillProperty().bindBidirectional(ledStatusNavbar.fillProperty());
@@ -139,7 +159,12 @@ public class ControllerBase implements Initializable {
         INSTANCE = this;
         allButtons = new Button[]{btnRoom, btnStart, btnData, btnGraph, btnOverview};
         contentPanel.getStyleClass().add(JMetroStyleClass.BACKGROUND);
-
+        if (Main.dev) {
+            for (Button b : allButtons) {
+                b.setDisable(false);
+            }
+            btnConnect.setDisable(false);
+        }
 
         setButtonActive(btnStart);
 

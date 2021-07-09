@@ -35,22 +35,22 @@
                         <Font size="19.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnOverview" mnemonicParsing="false" onAction="#onBtnOverview" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Übersicht">
+                  <Button fx:id="btnOverview" disable="true" mnemonicParsing="false" onAction="#onBtnOverview" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Übersicht">
                      <font>
                         <Font size="19.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnRoom" mnemonicParsing="false" onAction="#onButtonRoom" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Raumansicht">
+                  <Button fx:id="btnRoom" disable="true" mnemonicParsing="false" onAction="#onButtonRoom" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Raumansicht">
                      <font>
                         <Font size="19.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnGraph" mnemonicParsing="false" onAction="#onButtonGraph" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Graph">
+                  <Button fx:id="btnGraph" disable="true" mnemonicParsing="false" onAction="#onButtonGraph" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Graph">
                      <font>
                         <Font size="19.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnData" mnemonicParsing="false" onAction="#onButtonData" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Data">
+                  <Button fx:id="btnData" disable="true" mnemonicParsing="false" onAction="#onButtonData" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Data">
                      <font>
                         <Font size="19.0" />
                      </font>
@@ -96,7 +96,7 @@
                      <children>
                         <VBox prefHeight="200.0" prefWidth="875.0">
                            <children>
-                              <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="465.0" text="Aktueller Datensatz: Keiner" textAlignment="CENTER">
+                              <Label fx:id="txtDatensatz" alignment="CENTER" contentDisplay="CENTER" prefHeight="30.0" prefWidth="465.0" text="Aktueller Raum: Keiner" textAlignment="CENTER">
                                  <font>
                                     <Font size="24.0" />
                                  </font>
@@ -113,12 +113,17 @@
                                        <children>
                                           <Button fx:id="btnNewRoom" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onBtnNewRoom" prefHeight="58.0" prefWidth="138.0" text="Raum erstellen">
                                              <font>
-                                                <Font size="17.0" />
+                                                <Font size="14.0" />
                                              </font>
                                           </Button>
                                           <Button fx:id="btnRoomLoad" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onBtnLoadRoom" prefHeight="58.0" prefWidth="138.0" text="Raum laden">
                                              <font>
-                                                <Font size="17.0" />
+                                                <Font size="14.0" />
+                                             </font>
+                                          </Button>
+                                          <Button fx:id="btnRoomEdit" alignment="CENTER" contentDisplay="CENTER" disable="true" mnemonicParsing="false" onAction="#onBtnRoomEdit" prefHeight="58.0" prefWidth="138.0" text="Raum bearbeiten">
+                                             <font>
+                                                <Font size="14.0" />
                                              </font>
                                           </Button>
                                        </children>
@@ -146,7 +151,7 @@
                                     <TextField fx:id="fieldPort" prefHeight="25.0" prefWidth="103.0" promptText="COM" text="COM1" />
                                  </children>
                               </HBox>
-                              <Button fx:id="btnConnect" mnemonicParsing="false" onAction="#onBtnConnect" prefHeight="69.0" prefWidth="159.0" text="Verbinden">
+                              <Button fx:id="btnConnect" disable="true" mnemonicParsing="false" onAction="#onBtnConnect" prefHeight="69.0" prefWidth="159.0" text="Verbinden">
                                  <font>
                                     <Font size="21.0" />
                                  </font>

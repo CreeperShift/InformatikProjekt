@@ -11,6 +11,7 @@ import javafx.scene.ImageCursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
@@ -23,6 +24,7 @@ import jfxtras.styles.jmetro.JMetroStyleClass;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 public class ControllerRoom implements Initializable {
@@ -58,7 +60,28 @@ public class ControllerRoom implements Initializable {
 
     public void onBtnSave(ActionEvent actionEvent) {
         if (DataManager.get().existRoom(room.getName())) {
-            DataManager.get().editRoom(room);
+
+            Optional<String> result = checkForValidName();
+            while (result.isPresent()) {
+                if (!result.get().isBlank() && !DataManager.get().existRoom(result.get())) {
+                    room.setName(result.get());
+                    room.setCreated(LocalDateTime.now());
+                    try {
+                        DataManager.get().writeRoom(room);
+                        drawingArea.getChildren().clear();
+                        ControllerRoomView.INSTANCE.addRoom(room);
+                        ControllerBase.INSTANCE.txtDatensatz.setText("Aktueller Raum: " + room.getName());
+                        ControllerBase.INSTANCE.txtRoomName.setText(room.getName());
+                        ControllerBase.INSTANCE.btnStart.fire();
+                        break;
+                    } catch (SQLException exception) {
+                        exception.printStackTrace();
+                    }
+
+                }
+                result = checkForValidName();
+            }
+
         } else {
             try {
                 DataManager.get().writeRoom(room);
@@ -69,6 +92,13 @@ public class ControllerRoom implements Initializable {
             }
 
         }
+    }
+
+    private Optional<String> checkForValidName() {
+        TextInputDialog td = new TextInputDialog(room.getName());
+        td.setTitle("Raum error");
+        td.setContentText("Raum bereits vorhanden, bitte neuen Namen eingeben.");
+        return td.showAndWait();
     }
 
     /*

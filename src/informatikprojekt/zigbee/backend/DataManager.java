@@ -152,7 +152,7 @@ public class DataManager implements IData {
         Connection connection = ConnectionManager.getConnection();
 
         String queryCreateRoom = "INSERT INTO room (id, roomName, created) VALUES (NULL, ?, ?)";
-        String queryRoomID = "SELECT id from room where created = ?";
+        String queryRoomID = "SELECT id from room where roomName == ?";
         String queryCreatePoints = "INSERT INTO roomPoints (id, x, y, roomID_FK) VALUES (NULL, ?, ?, ?)";
         String createConnections = "INSERT INTO graph (roomPoint_FK, connected_FK) VALUES ((select id from roomPoints where roomID_FK == ? AND x == ? and y == ?), (select id from roomPoints where roomID_FK == ? AND x == ? and y == ?))";
 
@@ -161,7 +161,7 @@ public class DataManager implements IData {
         createRoom.setString(2, room.getCreatedFormatted());
         createRoom.executeUpdate();
         PreparedStatement getID = connection.prepareStatement(queryRoomID);
-        getID.setString(1, room.getCreatedFormatted());
+        getID.setString(1, room.getName());
         ResultSet res = getID.executeQuery();
         int id = 0;
         if (res.next()) {

@@ -33,4 +33,6 @@ public interface IData {
     Room readRoom(String name) throws SQLException;
 
     void editRoom(Room room);
+
+    boolean hasRoomData(String name);
 }
