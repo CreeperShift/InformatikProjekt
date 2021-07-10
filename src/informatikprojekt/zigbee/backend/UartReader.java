@@ -6,6 +6,7 @@ import informatikprojekt.zigbee.util.CommonUtils;
 import javafx.application.Platform;
 
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class UartReader extends Thread {
     public void run() {
         serial = new NRSerialPort(port, baudRate);
         serial.connect();
+        DataInputStream ins = new DataInputStream(serial.getInputStream());
 
         while (serial != null && serial.isConnected() && activeState != State.ENDED) {
             activeState = State.CONNECTED;
@@ -90,10 +92,13 @@ public class UartReader extends Thread {
                 createdRecording = true;
             }
 
-            try (DataInputStream ins = new DataInputStream(serial.getInputStream())) {
+            try {
                 String data = "";
                 while (ins.available() > 0) {// read all bytes
                     char b = (char) ins.read();
+                    if (b == '#') {
+                        break;
+                    }
                     data = data.concat(String.valueOf(b));
                 }
                 if (!data.isBlank()) {
@@ -121,7 +126,7 @@ public class UartReader extends Thread {
                 }
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(250);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -133,6 +138,11 @@ public class UartReader extends Thread {
 
         if (serial != null && serial.isConnected()) {
             serial.disconnect();
+            try {
+                ins.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             activeState = State.ENDED;
         }
         this.stop();

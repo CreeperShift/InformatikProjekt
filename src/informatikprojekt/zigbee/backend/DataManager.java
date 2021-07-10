@@ -290,11 +290,6 @@ public class DataManager implements IData {
     }
 
     @Override
-    public void editRoom(Room room) {
-        //TODO:Edit room
-    }
-
-    @Override
     public boolean hasRoomData(String name) {
         PreparedStatement dataStatement;
         try (Connection conn = ConnectionManager.getConnection()) {
