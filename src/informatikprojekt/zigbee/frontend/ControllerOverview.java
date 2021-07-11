@@ -90,7 +90,15 @@ public class ControllerOverview implements Initializable {
     }
 
     private void evaluateVOC() {
-        //TODO: add VOC levels?
+        if (voc < 0.3) {
+            low++;
+        } else if (voc < 3) {
+            med++;
+            hints.add("Reizung oder Beeinträchtigung des Wohlbefindens durch flüchtige organische Stoffe.");
+        } else {
+            high++;
+            hints.add("Reizungen, Unwohlsein und Kopfschmerzen durch erhöhte flüchtige organische Stoffe.");
+        }
     }
 
     private void evaluateTemp() {
