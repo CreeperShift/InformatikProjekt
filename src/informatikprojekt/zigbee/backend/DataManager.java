@@ -5,10 +5,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -338,6 +335,29 @@ public class DataManager implements IData {
         }
 
         return 0;
+    }
+
+    @Override
+    public List<String> getRecordingsForRoom(String room) {
+
+        List<String> recordings = new LinkedList<>();
+
+        try (Connection connection = ConnectionManager.getConnection()) {
+            String query = "select timeStarted from recording inner join room r on recording.room_FK = r.id where roomName == ?;";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, room);
+            ResultSet resultSet = statement.executeQuery();
+
+            while(resultSet.next()) {
+                Timestamp t = resultSet.getTimestamp(1);
+                recordings.add(t.toString());
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return recordings;
     }
 
     private Circle createCircle(double x, double y) {

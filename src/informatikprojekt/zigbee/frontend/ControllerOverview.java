@@ -64,7 +64,7 @@ public class ControllerOverview implements Initializable {
                     tempValue.setText(temp + "");
                     humValue.setText(hum + "");
                     vocValue.setText(voc + "");
-                    co2Value.setText(co2 + "");
+                    co2Value.setText(String.format(Locale.US, "%.2f", co2));
                     setValues();
                     setLEDs();
                     setHints();
@@ -86,7 +86,6 @@ public class ControllerOverview implements Initializable {
         evaluateTemp();
         evaluateHum();
         evaluateVOC();
-
     }
 
     private void evaluateVOC() {
@@ -111,6 +110,7 @@ public class ControllerOverview implements Initializable {
         } else {
             low++;
         }
+        //TODO: > 35c oder so warnung
 
     }
 

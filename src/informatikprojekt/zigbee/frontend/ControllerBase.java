@@ -6,6 +6,8 @@ import informatikprojekt.zigbee.backend.DataManager;
 import informatikprojekt.zigbee.backend.Room;
 import informatikprojekt.zigbee.util.CommonUtils;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import jfxtras.styles.jmetro.JMetroStyleClass;
+import org.controlsfx.control.SearchableComboBox;
 
 import java.io.IOException;
 import java.net.URL;
@@ -40,6 +43,10 @@ public class ControllerBase implements Initializable {
     public Button btnOverview;
     public Button btnRoomEdit;
     public Label txtDatensatz;
+    public Button btnRoomLoad;
+    public Button btnLoadRecording;
+    public SearchableComboBox<String> boxRecording;
+    public Button btnNewRecording;
     private boolean isConnected = false;
     public static ControllerBase INSTANCE;
     private Room currentRoom;
@@ -113,8 +120,15 @@ public class ControllerBase implements Initializable {
                     currentRoom = DataManager.get().readRoom(txtRoomName.getText());
                     btnRoomEdit.setDisable(false);
                     txtDatensatz.setText("Aktueller Raum: " + currentRoom.getName());
-                    btnConnect.setDisable(false);
                     btnRoom.setDisable(false);
+                    if (DataManager.get().hasRoomData(currentRoom.getName())) {
+                        btnLoadRecording.setDisable(false);
+                        List<String> recordings = DataManager.get().getRecordingsForRoom(currentRoom.getName());
+                        ObservableList<String> strings = FXCollections.observableArrayList(recordings);
+                        boxRecording.setItems(strings);
+                        boxRecording.setDisable(false);
+                    }
+                    btnNewRecording.setDisable(false);
                 } catch (SQLException exception) {
                     exception.printStackTrace();
                 }
@@ -137,6 +151,15 @@ public class ControllerBase implements Initializable {
             contentPanel.getChildren().add(createRoom);
             ControllerRoom.get().setRoom(currentRoom);
         }
+    }
+
+    public void onBtnNewRecording(ActionEvent actionEvent) {
+        fieldPort.setDisable(false);
+        btnConnect.setDisable(false);
+    }
+
+    public void onBtnLoadRecording(ActionEvent actionEvent) {
+        DataManager.get().getRecordingsForRoom(currentRoom.getName());
     }
 
 
@@ -260,6 +283,7 @@ public class ControllerBase implements Initializable {
 
             DataManager.get().setPort(fieldPort.getText());
             DataManager.get().startReader(currentRoom.getName());
+            setButtonsWhileConnected(true);
             Timer t1 = new Timer();
             t1.schedule(new TimerTask() {
                 @Override
@@ -292,6 +316,7 @@ public class ControllerBase implements Initializable {
                     if (DataManager.get().isStopped()) {
                         Platform.runLater(() -> {
                             btnConnect.setText("Verbinden");
+                            setButtonsWhileConnected(false);
                             ledStatusNavbar.setFill(Color.RED);
                             isConnected = false;
                             CommonUtils.consoleString("Disconnected.");
@@ -301,6 +326,16 @@ public class ControllerBase implements Initializable {
                 }
             }, 100, 100);
         }
+    }
+
+    private void setButtonsWhileConnected(boolean isDisabled) {
+
+        btnLoadRecording.setDisable(isDisabled);
+        btnRoomEdit.setDisable(isDisabled);
+        btnRoomLoad.setDisable(isDisabled);
+        btnNewRecording.setDisable(isDisabled);
+        btnNewRoom.setDisable(isDisabled);
+
     }
 
 }

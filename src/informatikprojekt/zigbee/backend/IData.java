@@ -40,4 +40,6 @@ public interface IData {
 
     int getCurrentRecordID();
 
+    List<String> getRecordingsForRoom(String room);
+
 }
