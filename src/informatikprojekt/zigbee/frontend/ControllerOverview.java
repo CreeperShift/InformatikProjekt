@@ -3,8 +3,11 @@ package informatikprojekt.zigbee.frontend;
 import informatikprojekt.zigbee.backend.DataManager;
 import informatikprojekt.zigbee.util.CommonUtils;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
@@ -22,6 +25,8 @@ public class ControllerOverview implements Initializable {
     public Label co2Value;
     public Label vocValue;
     public Label txtHinweis;
+    public HBox titlepane;
+    public DatePicker datePicker;
     List<String> hints = new LinkedList<>();
 
     int low = 0;
@@ -45,6 +50,39 @@ public class ControllerOverview implements Initializable {
 
         ledRED.setFill(Color.GRAY);
         ledORANGE.setFill(Color.GRAY);
+
+/*        Spinner<LocalTime> spinner = new Spinner<>(new SpinnerValueFactory<>() {
+            {
+                setConverter(new LocalTimeStringConverter(DateTimeFormatter.ofPattern("HH:mm"), DateTimeFormatter.ofPattern("HH:mm")));
+                if(getValue() == null){
+                    setValue(LocalTime.MIDNIGHT);
+                }
+            }
+            @Override
+            public void decrement(int steps) {
+                if (getValue() == null)
+                    setValue(LocalTime.now());
+                else {
+                    LocalTime time = (LocalTime) getValue();
+                    setValue(time.minusMinutes(steps));
+                }
+            }
+
+            @Override
+            public void increment(int steps) {
+                if (this.getValue() == null)
+                    setValue(LocalTime.now());
+                else {
+                    LocalTime time = (LocalTime) getValue();
+                    setValue(time.plusMinutes(steps));
+                }
+            }
+        });
+        spinner.setEditable(true);
+        spinner.setPrefWidth(80);
+        spinner.setMinWidth(80);
+        titlepane.getChildren().add(1,spinner);*/
+
     }
 
     public void startTimer() {
@@ -61,9 +99,9 @@ public class ControllerOverview implements Initializable {
                     voc = DataManager.get().get15MinAverage("VOC");
 
                     resetEval();
-                    tempValue.setText(temp + "");
-                    humValue.setText(hum + "");
-                    vocValue.setText(voc + "");
+                    tempValue.setText(String.format(Locale.US, "%.2f", temp));
+                    humValue.setText(String.format(Locale.US, "%.2f", hum));
+                    vocValue.setText(String.format(Locale.US, "%.2f", voc));
                     co2Value.setText(String.format(Locale.US, "%.2f", co2));
                     setValues();
                     setLEDs();
@@ -190,4 +228,6 @@ public class ControllerOverview implements Initializable {
 
     }
 
+    public void onBtnSetTime(ActionEvent actionEvent) {
+    }
 }

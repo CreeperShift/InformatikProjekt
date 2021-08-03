@@ -2,6 +2,12 @@ package informatikprojekt.zigbee.backend;
 
 import java.sql.SQLException;
 
+
+/*
+MockUartReader to provide Fake Data
+ */
+
+
 public class MockUartReader extends UartReader {
 
     public MockUartReader(String port) {

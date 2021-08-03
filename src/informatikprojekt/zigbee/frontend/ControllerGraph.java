@@ -1,26 +1,37 @@
 package informatikprojekt.zigbee.frontend;
 
+import com.opencsv.CSVWriter;
+import informatikprojekt.zigbee.Main;
 import informatikprojekt.zigbee.backend.DataManager;
 import informatikprojekt.zigbee.backend.DataSet;
+import informatikprojekt.zigbee.backend.ExportData;
 import informatikprojekt.zigbee.backend.SensorData;
 import informatikprojekt.zigbee.util.CommonUtils;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class ControllerGraph implements Initializable {
     public VBox box;
@@ -28,7 +39,11 @@ public class ControllerGraph implements Initializable {
     public Button btnFeucht;
     public Button btnCO2;
     public Button btnVoC;
+    public HBox buttonPanel;
+    public ComboBox<String> btnCombo;
+    public Button onBtnUpdate;
     private NumberAxis dataAxis;
+    private CategoryAxis timeAxis;
     private boolean setupDone = false;
     public static ControllerGraph INSTANCE;
     private Button[] buttons;
@@ -36,9 +51,15 @@ public class ControllerGraph implements Initializable {
     private XYChart.Series<NumberAxis, NumberAxis> humidSeries;
     private XYChart.Series<NumberAxis, NumberAxis> co2Series;
     private XYChart.Series<NumberAxis, NumberAxis> vocSeries;
-    private LineChart<NumberAxis, NumberAxis> lineChart;
+    private LineChart<CategoryAxis, NumberAxis> lineChart;
     private LocalDateTime start;
     private Button activeButton;
+
+    private String activeType = "";
+    private String activeCalc = "Mean";
+    private boolean initialSetupDone = false;
+
+    private List<Button> dataButtons = new LinkedList<>();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -47,27 +68,132 @@ public class ControllerGraph implements Initializable {
         buttons = new Button[]{btnCO2, btnTemp, btnFeucht, btnVoC};
         box.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         dataAxis = new NumberAxis(0, 70, 5);
-        NumberAxis timeAxis = new NumberAxis(0, 60, 2);
+        timeAxis = new CategoryAxis();
+        timeAxis.setLabel("Datum");
         lineChart = new LineChart(timeAxis, dataAxis);
-
-        tempSeries = new XYChart.Series();
-        humidSeries = new XYChart.Series();
-        co2Series = new XYChart.Series();
-        vocSeries = new XYChart.Series();
-        tempSeries.setName("Temperatur");
-        humidSeries.setName("Feuchtigkeit");
-        co2Series.setName("CO2");
-        vocSeries.setName("VoC");
-        lineChart.getData().add(tempSeries);
         box.getChildren().add(1, lineChart);
         lineChart.setAnimated(false);
+        lineChart.setPrefHeight(600);
+        List<String> calc = Arrays.asList("Mean", "Min", "Max");
+        ObservableList<String> strings = FXCollections.observableArrayList(calc);
+        btnCombo.setItems(strings);
+        btnCombo.setValue("Mean");
 
+
+    }
+
+    public void setupButtons() {
+
+        Timer t1 = new Timer();
+        CommonUtils.registerTimer(t1);
+        t1.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    List<String> dataTypes = null;
+                    try {
+                        dataTypes = DataManager.get().getAllDataTypes();
+
+                        for (String type : dataTypes) {
+                            if (!checkIfContainsDataType(type)) {
+                                Button newButton = new Button(type);
+                                newButton.setOnAction(new EventHandler<ActionEvent>() {
+                                    @Override
+                                    public void handle(ActionEvent actionEvent) {
+                                        onTypeChange(newButton.getText());
+                                    }
+                                });
+                                dataButtons.add(newButton);
+                                buttonPanel.getChildren().add(newButton);
+                            }
+                        }
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
+        }, 1500, 10000);
+
+    }
+
+
+    private void onTypeChange(String type) {
+        if (!initialSetupDone) {
+
+        }
+
+        if (!activeType.equalsIgnoreCase(type)) {
+            activeType = type;
+
+            updateData();
+
+        }
+    }
+
+    private void updateData() {
+        Map<String, Float> data = DataManager.get().getDailyCalcForType(activeType, activeCalc);
+
+        setDataAxis(activeType);
+
+        XYChart.Series<CategoryAxis, NumberAxis> currentSeries = new XYChart.Series<>();
+        currentSeries.setName(activeType);
+
+        for (Map.Entry<String, Float> e : data.entrySet()) {
+            currentSeries.getData().add(new XYChart.Data(e.getKey(), e.getValue()));
+        }
+
+
+        lineChart.getData().clear();
+        lineChart.getData().add(currentSeries);
+
+    }
+
+    private void setDataAxis(String type) {
+
+        switch (type) {
+            case CommonUtils.TEMPERATURE -> {
+                dataAxis.setLowerBound(0);
+                dataAxis.setUpperBound(70);
+                dataAxis.setTickUnit(5);
+                dataAxis.setLabel("°C");
+            }
+            case CommonUtils.HUMIDITY -> {
+                dataAxis.setLowerBound(0);
+                dataAxis.setUpperBound(100);
+                dataAxis.setTickUnit(10);
+                dataAxis.setLabel("%");
+            }
+            case CommonUtils.CO2 -> {
+                dataAxis.setLowerBound(300);
+                dataAxis.setUpperBound(3500);
+                dataAxis.setTickUnit(100);
+                dataAxis.setLabel("ppm");
+            }
+            case CommonUtils.VOC -> {
+                dataAxis.setLowerBound(0);
+                dataAxis.setUpperBound(10);
+                dataAxis.setTickUnit(0.1);
+                dataAxis.setLabel("ppm");
+            }
+        }
+
+    }
+
+    private boolean checkIfContainsDataType(String type) {
+
+        for (Button b : dataButtons) {
+            if (b.getText().equalsIgnoreCase(type)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
     public void setupData() {
 
         if (!setupDone) {
+            setupButtons();
             Timer timer = new Timer();
             CommonUtils.registerTimer(timer);
             timer.schedule(new TimerTask() {
@@ -138,73 +264,92 @@ public class ControllerGraph implements Initializable {
         }
     }
 
-    private void onBtnDelay() {
-        for (Button b : buttons) {
-            b.setDisable(true);
+    public void onBtnUpdate(ActionEvent actionEvent) {
+        if (!btnCombo.getValue().isBlank() && !activeType.isBlank()) {
+            if (!btnCombo.getValue().equalsIgnoreCase(activeCalc)) {
+                activeCalc = btnCombo.getValue();
+                updateData();
+            }
+        }
 
-            Timer timer = new Timer();
-            CommonUtils.registerTimer(timer);
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
+    }
 
-                    Platform.runLater(() -> {
-                        for (Button b : buttons) {
-                            b.setDisable(false);
-                        }
-                        timer.cancel();
-                    });
+    public void onBtnExport(boolean all) {
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Exportieren");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CSV", "*.csv"));
+        File file = fileChooser.showSaveDialog(Main.mainStage);
+
+        if (file != null) {
+
+            try (CSVWriter writer = new CSVWriter(new FileWriter(file))) {
+                List<ExportData> exportDataList;
+                List<String[]> dataList = new LinkedList<>();
+                if (all) {
+                    String[] header = new String[8];
+                    header[0] = "Recording StartDate";
+                    header[1] = "Recording StartTime";
+                    header[2] = "Dataset Date";
+                    header[3] = "DataSet Time";
+                    header[4] = "Sensor";
+                    header[5] = "Type";
+                    header[6] = "Device";
+                    header[7] = "Value";
+                    dataList.add(header);
+                    exportDataList = DataManager.get().getExportListForRoom(ControllerBase.INSTANCE.currentRoom.getName());
+                } else {
+                    String[] header = new String[6];
+                    header[0] = "Dataset Date";
+                    header[1] = "DataSet Time";
+                    header[2] = "Sensor";
+                    header[3] = "Type";
+                    header[4] = "Device";
+                    header[5] = "Value";
+                    dataList.add(header);
+                    exportDataList = DataManager.get().getExportList();
                 }
-            }, 100, 500);
+
+
+                for (ExportData data : exportDataList) {
+                    if (all) {
+                        String[] header = new String[8];
+                        header[0] = data.recordDate();
+                        header[1] = data.recordTime();
+                        header[2] = data.setDate();
+                        header[3] = data.setTime();
+                        header[4] = data.sensor();
+                        header[5] = data.type();
+                        header[6] = data.device();
+                        header[7] = data.value();
+                        dataList.add(header);
+                    } else {
+                        String[] header = new String[8];
+                        header[0] = data.setDate();
+                        header[1] = data.setTime();
+                        header[2] = data.sensor();
+                        header[3] = data.type();
+                        header[4] = data.device();
+                        header[5] = data.value();
+                        dataList.add(header);
+                    }
+                }
+                writer.writeAll(dataList);
+                CommonUtils.consoleString("Daten wurden exportiert.");
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
+
     }
 
-
-    public void onBtnTemp(ActionEvent actionEvent) {
-        if (activeButton != btnTemp) {
-            lineChart.getData().clear();
-            onBtnDelay();
-            lineChart.getData().add(tempSeries);
-            dataAxis.setLowerBound(0);
-            dataAxis.setUpperBound(70);
-            dataAxis.setTickUnit(5);
-            activeButton = btnTemp;
-        }
+    public void onBtnExportSet(ActionEvent actionEvent) {
+        onBtnExport(false);
     }
 
-    public void onBtnFeucht(ActionEvent actionEvent) {
-        if (activeButton != btnFeucht) {
-            lineChart.getData().clear();
-            onBtnDelay();
-            lineChart.getData().add(humidSeries);
-            dataAxis.setLowerBound(0);
-            dataAxis.setUpperBound(100);
-            dataAxis.setTickUnit(10);
-            activeButton = btnFeucht;
-        }
-    }
-
-    public void onBtnCO2(ActionEvent actionEvent) {
-        if (activeButton != btnCO2) {
-            lineChart.getData().clear();
-            onBtnDelay();
-            lineChart.getData().add(co2Series);
-            dataAxis.setLowerBound(350);
-            dataAxis.setUpperBound(3500);
-            dataAxis.setTickUnit(50);
-            activeButton = btnCO2;
-        }
-    }
-
-    public void onBtnVoC(ActionEvent actionEvent) {
-        if (activeButton != btnVoC) {
-            lineChart.getData().clear();
-            onBtnDelay();
-            lineChart.getData().add(vocSeries);
-            dataAxis.setLowerBound(0);
-            dataAxis.setUpperBound(1000);
-            dataAxis.setTickUnit(100);
-            activeButton = btnVoC;
-        }
+    public void onBtnExportAll(ActionEvent actionEvent) {
+        onBtnExport(true);
     }
 }

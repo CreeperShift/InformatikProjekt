@@ -6,7 +6,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import org.controlsfx.control.PopOver;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -16,7 +15,7 @@ public class CommonUtils {
     public static final String TEMPERATURE = "Temperatur";
     public static final String HUMIDITY = "Feuchtigkeit";
     public static final String CO2 = "CO2";
-    public static final String VOC = "VoC";
+    public static final String VOC = "VOC";
     private static List<PopOver> popOverCleanupList = new ArrayList<>();
 
     public static final Map<Integer, String> sensors = new HashMap<>() {{
@@ -72,6 +71,16 @@ public class CommonUtils {
             ControllerBase.textConsole.setScrollTop(scroll);
         }
 
+    }
+
+    public static String formatTime(LocalDateTime loc) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return loc.format(formatter);
+    }
+
+
+    public static String getCurrentTimeFormatted() {
+        return formatTime(LocalDateTime.now());
     }
 
     public static void registerTimer(Timer t) {

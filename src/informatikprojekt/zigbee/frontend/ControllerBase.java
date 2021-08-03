@@ -30,7 +30,6 @@ public class ControllerBase implements Initializable {
     public Button btnRoom;
     public Button btnStart;
     public Button btnGraph;
-    public Button btnData;
     public VBox sidePanel;
     public Circle ledStatusNavbar;
     public Circle ledStatus;
@@ -49,7 +48,7 @@ public class ControllerBase implements Initializable {
     public Button btnNewRecording;
     private boolean isConnected = false;
     public static ControllerBase INSTANCE;
-    private Room currentRoom;
+    public Room currentRoom;
 
     private static Window activeWindow = Window.START;
 
@@ -64,6 +63,8 @@ public class ControllerBase implements Initializable {
     public VBox overview;
     public static TextArea textConsole;
     public static CheckBox checkStayConsole;
+
+    private boolean isOldData = false;
 
     /*
     Contains the latest data as read by the UART reader.
@@ -100,7 +101,7 @@ public class ControllerBase implements Initializable {
                 setActiveWindow(Window.CREATEROOM);
                 currentRoom = new Room(txtRoomName.getText());
                 txtDatensatz.setText("Aktueller Raum: " + currentRoom.getName());
-                btnConnect.setDisable(false);
+                btnNewRecording.setDisable(false);
                 btnRoom.setDisable(false);
                 btnRoomEdit.setDisable(false);
                 contentPanel.getChildren().clear();
@@ -124,9 +125,13 @@ public class ControllerBase implements Initializable {
                     if (DataManager.get().hasRoomData(currentRoom.getName())) {
                         btnLoadRecording.setDisable(false);
                         List<String> recordings = DataManager.get().getRecordingsForRoom(currentRoom.getName());
+                        Collections.reverse(recordings);
                         ObservableList<String> strings = FXCollections.observableArrayList(recordings);
                         boxRecording.setItems(strings);
                         boxRecording.setDisable(false);
+                    } else {
+                        boxRecording.setDisable(true);
+                        btnLoadRecording.setDisable(true);
                     }
                     btnNewRecording.setDisable(false);
                 } catch (SQLException exception) {
@@ -159,7 +164,36 @@ public class ControllerBase implements Initializable {
     }
 
     public void onBtnLoadRecording(ActionEvent actionEvent) {
-        DataManager.get().getRecordingsForRoom(currentRoom.getName());
+        if (!isOldData) {
+            if (boxRecording.getValue() != null && !boxRecording.getValue().isBlank()) {
+                DataManager.get().loadRecording(boxRecording.getValue());
+                btnNewRecording.setDisable(true);
+                btnConnect.setDisable(true);
+                btnRoomLoad.setDisable(true);
+                btnRoomEdit.setDisable(true);
+                btnNewRoom.setDisable(true);
+                btnRoom.setDisable(false);
+                btnGraph.setDisable(false);
+                btnOverview.setDisable(false);
+
+                btnLoadRecording.setText("Reset");
+                ControllerGraph.INSTANCE.setupData();
+                isOldData = true;
+
+            }
+        } else {
+            isOldData = false;
+            btnLoadRecording.setText("Datensatz laden");
+            btnNewRecording.setDisable(false);
+            btnRoomLoad.setDisable(false);
+            btnRoomEdit.setDisable(false);
+            btnNewRoom.setDisable(false);
+            btnRoom.setDisable(true);
+            btnGraph.setDisable(true);
+            btnOverview.setDisable(true);
+
+        }
+
     }
 
 
@@ -179,7 +213,7 @@ public class ControllerBase implements Initializable {
         ledStatus.fillProperty().bindBidirectional(ledStatusNavbar.fillProperty());
 
         INSTANCE = this;
-        allButtons = new Button[]{btnRoom, btnStart, btnData, btnGraph, btnOverview};
+        allButtons = new Button[]{btnRoom, btnStart, btnGraph, btnOverview};
         contentPanel.getStyleClass().add(JMetroStyleClass.BACKGROUND);
         if (Main.dev) {
             for (Button b : allButtons) {
@@ -261,22 +295,9 @@ public class ControllerBase implements Initializable {
     }
 
 
-    public void onButtonData(ActionEvent actionEvent) {
-        setActiveWindow(Window.DATA);
-
-        setButtonActive(btnData);
-
-        dataPanel.setPrefHeight(contentPanel.getPrefHeight());
-        dataPanel.setPrefWidth(contentPanel.getPrefWidth());
-        dataPanel.setMinWidth(contentPanel.getWidth());
-        dataPanel.setMinHeight(contentPanel.getHeight());
-        contentPanel.getChildren().clear();
-        contentPanel.getChildren().add(dataPanel);
-
-
-    }
-
-
+    /*
+    Verbindung erstellen
+     */
     public void onBtnConnect(ActionEvent actionEvent) {
 
         if (btnConnect.getText().equalsIgnoreCase("Verbinden")) {
@@ -285,6 +306,9 @@ public class ControllerBase implements Initializable {
             DataManager.get().startReader(currentRoom.getName());
             setButtonsWhileConnected(true);
             Timer t1 = new Timer();
+            /*
+            Timer überprüft ob Verbindung funktioniert hat
+             */
             t1.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -297,6 +321,7 @@ public class ControllerBase implements Initializable {
                             ControllerData.INSTANCE.setupData();
                             ControllerOverview.INSTANCE.startTimer();
                             CommonUtils.consoleString("Connected.");
+                            DataManager.get().setCurrentRecording();
                         });
                         t1.cancel();
                     } else if (DataManager.get().isFailed()) {
@@ -335,6 +360,10 @@ public class ControllerBase implements Initializable {
         btnRoomLoad.setDisable(isDisabled);
         btnNewRecording.setDisable(isDisabled);
         btnNewRoom.setDisable(isDisabled);
+        btnRoom.setDisable(!isDisabled);
+        btnOverview.setDisable(!isDisabled);
+        btnGraph.setDisable(!isDisabled);
+        boxRecording.setDisable(isDisabled);
 
     }
 

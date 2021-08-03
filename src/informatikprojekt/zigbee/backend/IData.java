@@ -3,6 +3,7 @@ package informatikprojekt.zigbee.backend;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public interface IData {
 
@@ -12,11 +13,7 @@ public interface IData {
     @Deprecated
     List<DataSet> getDataForTime(LocalDateTime from);
 
-    List<Float> getDailyMeanForType(String type, LocalDateTime from, LocalDateTime to) throws SQLException;
-
-    List<Float> getDailyMinForType(String type, LocalDateTime from, LocalDateTime to) throws SQLException;
-
-    List<Float> getDailyMaxForType(String type, LocalDateTime from, LocalDateTime to) throws SQLException;
+    Map<String, Float> getDailyCalcForType(String type, String calc) throws SQLException;
 
     List<SQLData> getStandardDeviationForType(String type) throws SQLException;
 
@@ -25,6 +22,10 @@ public interface IData {
     List<Integer> getAllDevices() throws SQLException;
 
     List<String> getAllSensors() throws SQLException;
+
+    List<ExportData> getExportList();
+
+    List<ExportData> getExportListForRoom(String name);
 
     float get15MinAverage(String type);
 
@@ -41,5 +42,7 @@ public interface IData {
     int getCurrentRecordID();
 
     List<String> getRecordingsForRoom(String room);
+
+    void loadRecording(String time);
 
 }

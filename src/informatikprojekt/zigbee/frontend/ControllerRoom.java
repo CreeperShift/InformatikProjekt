@@ -128,6 +128,9 @@ public class ControllerRoom implements Initializable {
                         drawingArea.getChildren().addAll(0, gridList);
                     }
                     loadGraph();
+                    if (room.getDeviceList().isEmpty()) {
+                        Device.setGlobalID();
+                    }
                     room.getDeviceList().forEach(d -> d.addTo(drawingArea));
                 });
                 t.cancel();
@@ -292,6 +295,7 @@ public class ControllerRoom implements Initializable {
         drawingArea.getChildren().addAll(gridList);
         drawingArea.getChildren().addAll(lineList);
         drawingArea.getChildren().addAll(textList);
+        Device.setGlobalID();
         room.clear();
     }
 

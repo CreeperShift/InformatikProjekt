@@ -51,11 +51,6 @@
                         <Font size="19.0" />
                      </font>
                   </Button>
-                  <Button fx:id="btnData" disable="true" mnemonicParsing="false" onAction="#onButtonData" prefHeight="42.0" prefWidth="167.0" styleClass="navbarButton" stylesheets="@frontend.css" text="Data">
-                     <font>
-                        <Font size="19.0" />
-                     </font>
-                  </Button>
                   <Separator prefWidth="200.0" />
                   <HBox>
                      <children>

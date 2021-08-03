@@ -83,6 +83,11 @@ public class Device {
         return circle;
     }
 
+
+    public static void setGlobalID() {
+        deviceIDs = 1;
+    }
+
     public Text getText() {
         return text;
     }

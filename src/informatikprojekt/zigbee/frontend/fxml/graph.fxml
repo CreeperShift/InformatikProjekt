@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -11,23 +12,33 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="459.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="informatikprojekt.zigbee.frontend.ControllerGraph">
    <children>
-      <VBox fx:id="box" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox fx:id="box" alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" spacing="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="492.0" text="Graphenansicht" textAlignment="CENTER">
                <font>
                   <Font size="27.0" />
                </font>
                <VBox.margin>
-                  <Insets top="25.0" />
+                  <Insets bottom="25.0" top="25.0" />
                </VBox.margin>
             </Label>
             <Separator prefWidth="200.0" />
-            <HBox fillHeight="false" prefHeight="100.0" prefWidth="100.0" style="-fx-spacing: 15; -fx-padding: 15;">
+            <HBox fx:id="buttonPanel" fillHeight="false" prefHeight="100.0" prefWidth="100.0" style="-fx-spacing: 15; -fx-padding: 15;">
                <children>
-                  <Button fx:id="btnTemp" mnemonicParsing="false" onAction="#onBtnTemp" text="Temperatur" />
-                  <Button fx:id="btnFeucht" mnemonicParsing="false" onAction="#onBtnFeucht" text="Feuchtigkeit" />
-                  <Button fx:id="btnCO2" mnemonicParsing="false" onAction="#onBtnCO2" text="CO2" />
-                  <Button fx:id="btnVoC" mnemonicParsing="false" onAction="#onBtnVoC" text="VoC" />
+                  <ComboBox fx:id="btnCombo" prefHeight="25.0" prefWidth="111.0" />
+                  <Button mnemonicParsing="false" onAction="#onBtnUpdate" text="Update" />
+               </children>
+            </HBox>
+            <Separator prefWidth="200.0" />
+            <Label text="Exportieren">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </Label>
+            <HBox alignment="TOP_CENTER" prefHeight="127.0" prefWidth="459.0" spacing="5.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#onBtnExportSet" text="Nur Datensatz" />
+                  <Button minWidth="92.0" mnemonicParsing="false" onAction="#onBtnExportAll" text="Alle" />
                </children>
             </HBox>
          </children>

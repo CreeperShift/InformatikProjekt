@@ -53,7 +53,7 @@ public class ConnectionManager {
                     "\t\tconstraint room_pk\n" +
                     "\t\t\tprimary key,\n" +
                     "\troomName varchar(50) not null,\n" +
-                    "\tcreated datetime\n" +
+                    "\tcreated text\n" +
                     ");\n" +
                     "\n" +
                     "create table if not exists device\n" +
@@ -77,14 +77,14 @@ public class ConnectionManager {
                     "\troom_FK int\n" +
                     "\t\treferences room\n" +
                     "\t\t\ton update cascade on delete cascade,\n" +
-                    "\ttimeStarted datetime" +
+                    "\ttimeStarted text" +
                     ");\n" +
                     "\n" +
                     "create table if not exists dataset\n" +
                     "(\n" +
                     "\tid integer\n" +
                     "\t\tprimary key,\n" +
-                    "\ttimeRecorded datetime,\n" +
+                    "\ttimeRecorded text,\n" +
                     "\trecording_FK int\n" +
                     "\t\treferences recording\n" +
                     "\t\t\ton update cascade on delete cascade\n" +

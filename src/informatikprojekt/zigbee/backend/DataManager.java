@@ -1,22 +1,21 @@
 package informatikprojekt.zigbee.backend;
 
 import informatikprojekt.zigbee.frontend.Device;
+import informatikprojekt.zigbee.util.CommonUtils;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 
 import java.sql.*;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DataManager implements IData {
 
     private final LinkedList<DataSet> dataSets = new LinkedList<>();
     private static UartReader uartReader;
     private String port = "COM1";
+    private int currentRecording = -1;
 
     private static DataManager INSTANCE = null;
 
@@ -72,18 +71,74 @@ public class DataManager implements IData {
     }
 
     @Override
-    public List<Float> getDailyMeanForType(String type, LocalDateTime from, LocalDateTime to) {
-        return null;
-    }
+    public Map<String, Float> getDailyCalcForType(String type, String calc) {
+        SortedMap<String, Float> valueList = new TreeMap<>();
+        String query;
 
-    @Override
-    public List<Float> getDailyMinForType(String type, LocalDateTime from, LocalDateTime to) {
-        return null;
-    }
 
-    @Override
-    public List<Float> getDailyMaxForType(String type, LocalDateTime from, LocalDateTime to) {
-        return null;
+        switch (calc) {
+            default -> query = "select dataType, round(AVG(dataValue), 2) as mean,\n" +
+                    "       strftime('%d', timeRecorded) as Day,\n" +
+                    "       strftime('%m', timeRecorded) as Month,\n" +
+                    "       strftime('%Y', timeRecorded) as Year\n" +
+                    "from data\n" +
+                    "    inner join dataset d on data.dataSetID = d.id\n" +
+                    "    inner join recording r on d.recording_FK = r.id\n" +
+                    "where r.id = ? and dataType=?\n" +
+                    "group by strftime('%Y', timeRecorded),\n" +
+                    "         strftime('%m', timeRecorded),\n" +
+                    "         strftime('%d', timeRecorded)" +
+                    " order by Year, Month, Day;";
+            case "Min" -> query = "select dataType, round(min(dataValue), 2) as mean,\n" +
+                    "       strftime('%d', timeRecorded) as Day,\n" +
+                    "       strftime('%m', timeRecorded) as Month,\n" +
+                    "       strftime('%Y', timeRecorded) as Year\n" +
+                    "from data\n" +
+                    "    inner join dataset d on data.dataSetID = d.id\n" +
+                    "    inner join recording r on d.recording_FK = r.id\n" +
+                    "where r.id = ? and dataType=?\n" +
+                    "group by strftime('%Y', timeRecorded),\n" +
+                    "         strftime('%m', timeRecorded),\n" +
+                    "         strftime('%d', timeRecorded) " +
+                    " order by Year, Month, Day;";
+            case "Max" -> query = "select dataType, round(max(dataValue), 2) as mean,\n" +
+                    "       strftime('%d', timeRecorded) as Day,\n" +
+                    "       strftime('%m', timeRecorded) as Month,\n" +
+                    "       strftime('%Y', timeRecorded) as Year\n" +
+                    "from data\n" +
+                    "    inner join dataset d on data.dataSetID = d.id\n" +
+                    "    inner join recording r on d.recording_FK = r.id\n" +
+                    "where r.id = ? and dataType=?\n" +
+                    "group by strftime('%Y', timeRecorded),\n" +
+                    "         strftime('%m', timeRecorded),\n" +
+                    "         strftime('%d', timeRecorded)" +
+                    " order by Year, Month, Day;";
+        }
+
+
+        try (Connection connection = ConnectionManager.getConnection()) {
+
+
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, currentRecording);
+            preparedStatement.setString(2, type);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String date = "";
+                String day = resultSet.getString("Day");
+                String month = resultSet.getString("Month");
+                date = day + "-" + month;
+                valueList.put(date, resultSet.getFloat("mean"));
+            }
+            return valueList;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+        return valueList;
     }
 
     @Override
@@ -95,8 +150,9 @@ public class DataManager implements IData {
     public List<String> getAllDataTypes() throws SQLException {
         Connection connection = ConnectionManager.getConnection();
         List<String> allDataTypes = new LinkedList<>();
-        String getDataTypes = "Select distinct dataType from data";
+        String getDataTypes = "select distinct dataType from data inner join dataset d on data.dataSetID = d.id inner join recording r on d.recording_FK = r.id where r.id = ?;";
         PreparedStatement preparedStatement = connection.prepareStatement(getDataTypes);
+        preparedStatement.setInt(1, currentRecording);
         ResultSet result = preparedStatement.executeQuery();
 
         while (result.next()) {
@@ -127,6 +183,84 @@ public class DataManager implements IData {
     }
 
     @Override
+    public List<ExportData> getExportListForRoom(String name) {
+
+        List<ExportData> exportDataList = new LinkedList<>();
+
+        try (Connection connection = ConnectionManager.getConnection()) {
+            String query;
+
+            query = "select date(timeStarted) as RecordDate, time(timeStarted) as RecordTime, date(timeRecorded) as Date, time(timeRecorded) as Time,\n" +
+                    "       sensor, dataType, networkID, dataValue\n" +
+                    "from dataset\n" +
+                    "    inner join recording r on r.id = dataset.recording_FK inner join data d on dataset.id = d.dataSetID inner join device d2 on d2.id = d.device_FK\n" +
+                    "inner join room r2 on r2.id = r.room_FK where roomName = ?;";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, name);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String recordTime = resultSet.getString("RecordTime");
+                String recordDate = resultSet.getString("RecordDate");
+                String date = resultSet.getString("Date");
+                String time = resultSet.getString("Time");
+                String sensor = resultSet.getString("sensor");
+                String type = resultSet.getString("dataType");
+                String id = resultSet.getString("networkID");
+                String value = resultSet.getString("dataValue");
+
+                ExportData exportData = new ExportData(recordDate, recordTime, date, time, sensor, type, id, value);
+                exportDataList.add(exportData);
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+        return exportDataList;
+    }
+
+    @Override
+    public List<ExportData> getExportList() {
+
+        List<ExportData> exportDataList = new LinkedList<>();
+
+        try (Connection connection = ConnectionManager.getConnection()) {
+            String query;
+
+            query = "select date(timeRecorded) as Date, time(timeRecorded) as Time,\n" +
+                    "       sensor, dataType, networkID, dataValue\n" +
+                    "from dataset\n" +
+                    "    inner join recording r on r.id = dataset.recording_FK inner join data d on dataset.id = d.dataSetID inner join device d2 on d2.id = d.device_FK where recording_FK = ?;\n";
+
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, currentRecording);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String date = resultSet.getString("Date");
+                String time = resultSet.getString("Time");
+                String sensor = resultSet.getString("sensor");
+                String type = resultSet.getString("dataType");
+                String id = resultSet.getString("networkID");
+                String value = resultSet.getString("dataValue");
+
+                ExportData exportData = new ExportData("", "", date, time, sensor, type, id, value);
+                exportDataList.add(exportData);
+            }
+
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
+        return exportDataList;
+    }
+
+    @Override
     public float get15MinAverage(String type) {
 
         int id = getCurrentRecordID();
@@ -137,7 +271,7 @@ public class DataManager implements IData {
                     "from data inner join dataset d on d.id = data.dataSetID\n" +
                     "    inner join recording on d.recording_FK = recording.id\n" +
                     "where recording.id = ?\n" +
-                    "  AND dataType = ? AND d.timeRecorded <= (datetime('now', '-15 minutes'))\n" +
+                    "  AND dataType = ? AND DATETIME(d.timeRecorded) >= (datetime('now', 'localtime', '-15 minutes'))\n" +
                     "group by dataType;";
             PreparedStatement getMinAverage = connection.prepareStatement(minQuery);
             getMinAverage.setInt(1, id);
@@ -182,7 +316,7 @@ public class DataManager implements IData {
 
         PreparedStatement createRoom = connection.prepareStatement(queryCreateRoom);
         createRoom.setString(1, room.getName());
-        createRoom.setString(2, room.getCreatedFormatted());
+        createRoom.setString(2, CommonUtils.formatTime(room.getCreated()));
         createRoom.executeUpdate();
         PreparedStatement getID = connection.prepareStatement(queryRoomID);
         getID.setString(1, room.getName());
@@ -337,6 +471,23 @@ public class DataManager implements IData {
         return 0;
     }
 
+    public void setCurrentRecording() {
+        Timer t1 = new Timer();
+        CommonUtils.registerTimer(t1);
+        t1.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (uartReader.getReaderState() == UartReader.State.FAILED) {
+                    t1.cancel();
+                } else if (uartReader.isCreatedRecording()) {
+                    currentRecording = getCurrentRecordID();
+                    t1.cancel();
+                }
+            }
+        }, 500, 500);
+
+    }
+
     @Override
     public List<String> getRecordingsForRoom(String room) {
 
@@ -348,9 +499,10 @@ public class DataManager implements IData {
             statement.setString(1, room);
             ResultSet resultSet = statement.executeQuery();
 
-            while(resultSet.next()) {
-                Timestamp t = resultSet.getTimestamp(1);
-                recordings.add(t.toString());
+            while (resultSet.next()) {
+                String timedate = resultSet.getString(1);
+
+                recordings.add(timedate);
             }
 
         } catch (SQLException e) {
@@ -359,6 +511,26 @@ public class DataManager implements IData {
 
         return recordings;
     }
+
+    @Override
+    public void loadRecording(String time) {
+        try (Connection connection = ConnectionManager.getConnection()) {
+            String query = "select id from recording where timeStarted = ?;";
+            PreparedStatement prep = connection.prepareStatement(query);
+
+            prep.setString(1, time);
+
+            ResultSet resultSet = prep.executeQuery();
+
+            if (resultSet.next()) {
+                currentRecording = resultSet.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private Circle createCircle(double x, double y) {
         Circle circle = new Circle();

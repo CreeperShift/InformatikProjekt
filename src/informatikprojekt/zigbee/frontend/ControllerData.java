@@ -1,7 +1,5 @@
 package informatikprojekt.zigbee.frontend;
 
-import com.opencsv.CSVWriter;
-import informatikprojekt.zigbee.Main;
 import informatikprojekt.zigbee.backend.DataManager;
 import informatikprojekt.zigbee.backend.DataSet;
 import informatikprojekt.zigbee.backend.SensorData;
@@ -14,13 +12,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
-import javafx.stage.FileChooser;
 import jfxtras.styles.jmetro.JMetroStyleClass;
 
-import java.io.*;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class ControllerData implements Initializable {
@@ -223,47 +218,7 @@ public class ControllerData implements Initializable {
 
     public void btnExport(ActionEvent actionEvent) {
 
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Exportieren");
-        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("CSV", "*.csv"));
-        File file = fileChooser.showSaveDialog(Main.mainStage);
 
-        if (file != null) {
-
-            try (CSVWriter writer = new CSVWriter(new FileWriter(file))) {
-
-                List<String[]> dataList = new LinkedList<>();
-
-                String[] header = new String[6];
-                header[0] = "Date";
-                header[1] = "Time";
-                header[2] = "Device";
-                header[3] = "Sensor";
-                header[4] = "Data Type";
-                header[5] = "Data";
-                dataList.add(header);
-
-
-                for (SensorData data : table.getItems()) {
-
-                    String[] dataString = new String[6];
-
-                    dataString[0] = LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE);
-                    dataString[1] = data.getFormattedTime();
-                    dataString[2] = data.getDeviceID() + "";
-                    dataString[3] = data.getSensorName();
-                    dataString[4] = data.getDataType();
-                    dataString[5] = data.getData() + "";
-                    dataList.add(dataString);
-                }
-                writer.writeAll(dataList);
-                CommonUtils.consoleString("Written data");
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
 
     }
 

@@ -8,7 +8,6 @@ import javafx.application.Platform;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -22,8 +21,13 @@ public class UartReader extends Thread {
     private boolean createdRecording = false;
     private int recID = 0;
 
+    private List<Data> battery = new ArrayList<>();
+
     State activeState = State.NONE;
 
+    /*
+    Verbundene States
+     */
     public enum State {
         NONE, CONNECTED, FAILED, ENDED
     }
@@ -50,34 +54,51 @@ public class UartReader extends Thread {
         return dataSet;
     }
 
+    public synchronized boolean isCreatedRecording() {
+        return createdRecording;
+    }
+
     public void startReader() {
         this.start();
     }
 
     @Override
     public void run() {
-        serial = new NRSerialPort(port, baudRate);
-        serial.connect();
-        DataInputStream ins = new DataInputStream(serial.getInputStream());
+        /*
+        Oeffnet eine Serial Verbindung
+         */
+        DataInputStream ins = null;
+        try {
+            serial = new NRSerialPort(port, baudRate);
+            serial.connect();
+            //Erstellt einen DataStream für die Nachricht
+            ins = new DataInputStream(serial.getInputStream());
+        } catch (Exception e) {
+            e.printStackTrace();
+            activeState = State.FAILED;
+        }
 
-        while (serial != null && serial.isConnected() && activeState != State.ENDED) {
+        while (serial != null && ins != null && serial.isConnected() && activeState != State.ENDED) {
             activeState = State.CONNECTED;
 
+            /*
+            Erstellt ein neues Recording in der Datenbank
+             */
             if (!createdRecording) {
 
                 try {
                     Connection conn = ConnectionManager.getConnection();
                     String recordingQuery = "INSERT INTO recording (id, room_FK, timeStarted) values (NULL, (select id from room where roomName == ?), ?)";
                     PreparedStatement recording = conn.prepareStatement(recordingQuery);
-                    Timestamp date = Timestamp.valueOf(LocalDateTime.now());
+                    String date = CommonUtils.getCurrentTimeFormatted();
                     recording.setString(1, roomName);
-                    recording.setTimestamp(2, date);
+                    recording.setString(2, date);
                     recording.executeUpdate();
                     recording.close();
 
                     String getID = "select id from recording where timeStarted == ?";
                     PreparedStatement recordingID = conn.prepareStatement(getID);
-                    recordingID.setTimestamp(1, date);
+                    recordingID.setString(1, date);
                     ResultSet resultSet = recordingID.executeQuery();
                     if (resultSet.next()) {
                         recID = resultSet.getInt("id");
@@ -93,6 +114,7 @@ public class UartReader extends Thread {
             }
 
             try {
+                //Liest nachricht aus bis zum Stopchar #
                 String data = "";
                 while (ins.available() > 0) {// read all bytes
                     char b = (char) ins.read();
@@ -107,14 +129,14 @@ public class UartReader extends Thread {
                     Platform.runLater(() -> {
                         CommonUtils.consoleString(finalData);
                     });
+                    //Aufspalten nach API mit ;
                     String[] dataSplit = data.split(";");
                     try {
-                        if (Integer.parseInt(dataSplit[0]) == 0) {
+                        if (Integer.parseInt(dataSplit[0]) == 0 || Integer.parseInt(dataSplit[0]) == 1) {
+                            //Wenn es SensorDaten also 0 ist dann process
                             processData(dataSplit);
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        System.out.println("Received malformed String, trying again. Possibly just started the connection.");
+                    } catch (Exception ignored) {
                     }
                 }
             } catch (Exception e) {
@@ -162,7 +184,7 @@ public class UartReader extends Thread {
                 }
                 break;
             case 1:
-                //TODO: Battery level?
+                handleBattery(dataSplit);
                 break;
             case 2:
                 //TODO: Error code of some sort?
@@ -170,11 +192,22 @@ public class UartReader extends Thread {
         }
     }
 
+    private void handleBattery(String[] dataSplit) {
+
+        int device = Integer.parseInt(dataSplit[1]);
+        float val = Float.parseFloat(dataSplit[2]);
+
+        battery.add(new Data(device, "Battery", "Batterie", val));
+
+    }
+
     void handleData(String[] dataSplit) throws SQLException {
 
         if (!isReading) {
             isReading = true;
+            //Nach dem ersten Lesen für X sekunden alle Daten aggregieren
             addDataToList(dataSplit);
+            //Nach dem Timer alle gesammelten daten als ein Datensatz in die Datenbank schreiben
             createDatabaseTimer();
         } else {
             addDataToList(dataSplit);
@@ -200,9 +233,9 @@ public class UartReader extends Thread {
                     try {
                         PreparedStatement statement = connection.prepareStatement(createDataSet);
 
-                        Timestamp date = Timestamp.valueOf(LocalDateTime.now());
+                        String date = CommonUtils.getCurrentTimeFormatted();
 
-                        statement.setTimestamp(1, date);
+                        statement.setString(1, date);
                         statement.setInt(2, recID);
                         statement.executeUpdate();
                         statement.close();
@@ -212,7 +245,7 @@ public class UartReader extends Thread {
                         while (!getDataSet().isEmpty()) {
                             Data d = getDataSet().take();
                             currentData.add(d);
-                            createData.setTimestamp(1, date);
+                            createData.setString(1, date);
                             createData.setString(2, d.SensorName());
                             createData.setString(3, d.dataType());
                             createData.setFloat(4, d.value());
@@ -234,6 +267,10 @@ public class UartReader extends Thread {
                 } catch (SQLException | ClassNotFoundException throwables) {
                     throwables.printStackTrace();
                 }
+                if (battery != null) {
+                    currentData.addAll(battery);
+                    battery.clear();
+                }
                 notifyOthers(currentData);
                 writeTimer.cancel();
                 try {
@@ -254,16 +291,23 @@ public class UartReader extends Thread {
                 for (int i = 4; i < (Integer.parseInt(dataSplit[3]) * 2) + 4; i = i + 2) {
 
                     Data data = new Data(Integer.parseInt(dataSplit[1]), dataSplit[2], dataSplit[i], Float.parseFloat(dataSplit[i + 1]));
-                    dataSet.add(data);
+                    if (existsType(data.dataType())) {
+                        dataSet.add(data);
+                    }
                 }
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
             dataSet.clear();
-            System.out.println("Received malformed String, trying again. Possibly just started the connection.");
         }
     }
 
+    private boolean existsType(String type) {
+        return switch (type) {
+            case CommonUtils.CO2, CommonUtils.HUMIDITY, CommonUtils.TEMPERATURE, CommonUtils.VOC -> true;
+            default -> false;
+        };
+
+    }
 
     private synchronized void notifyOthers(List<Data> data) {
         Platform.runLater(() -> {
